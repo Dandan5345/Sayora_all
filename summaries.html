@@ -84,13 +84,13 @@
                 </nav>
             </aside>
 
-            <main class="flex-1 p-6 sm:p-8 min-h-screen">
+            <main class="flex-1 p-4 sm:p-8 min-h-screen">
                 <div class="max-w-7xl mx-auto">
-                     <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
-                        <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול משימות וסיכומים</h1>
-                        <button id="add-task-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2">
+                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+                        <h1 class="text-3xl text-center sm:text-left sm:text-5xl font-bold text-gold">ניהול משימות וסיכומים</h1>
+                        <button id="add-task-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2 w-full sm:w-auto justify-center">
                             <i class="fas fa-plus-circle"></i>
-                            <span>הוספת משימה חדשה</span>
+                            <span>הוספת משימה</span>
                         </button>
                     </div>
                     
@@ -100,7 +100,7 @@
                         <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-green-600 border border-green-400"></div><span>בוצע</span></div>
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-cyan-600 border border-cyan-400"></div><span>בתהליך</span></div>
-                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-700 border border-red-500"></div><span>דחיפות 1 (קריטי)</span></div>
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-700 border border-red-500"></div><span>קריטי</span></div>
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-orange-600 border border-orange-400"></div><span>דחיפות 2</span></div>
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-yellow-600 border border-yellow-400"></div><span>דחיפות 3</span></div>
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-blue-600 border border-blue-400"></div><span>דחיפות 4</span></div>
@@ -119,9 +119,9 @@
     <!-- Modals -->
     <!-- Add/Edit Task Modal -->
     <div id="task-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
-            <form id="task-form" class="p-8 space-y-6">
-                <h2 id="task-modal-title" class="text-3xl font-bold text-gold mb-4 text-center">הוספת משימה חדשה</h2>
+        <div class="modal-content w-full max-w-lg rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <form id="task-form" class="p-6 sm:p-8 space-y-5">
+                <h2 id="task-modal-title" class="text-2xl sm:text-3xl font-bold text-gold mb-4 text-center">הוספת משימה חדשה</h2>
                 <input type="hidden" id="task-id">
                 
                 <div>
@@ -135,24 +135,21 @@
                 <div><label for="task-name" class="block text-sm font-medium text-gray-300 mb-1">שם המשימה</label><input type="text" id="task-name" class="input-field" required></div>
                 <div><label for="task-deadline" class="block text-sm font-medium text-gray-300 mb-1">דדליין</label><input type="text" id="task-deadline" class="input-field" placeholder="לדוגמא: ספטמבר–אוקטובר 2025"></div>
                 <div><label for="task-urgency" class="block text-sm font-medium text-gray-300 mb-1">רמת דחיפות (1=הכי דחוף)</label><select id="task-urgency" class="select-field"><option value="1">1 - קריטי</option><option value="2">2 - גבוהה</option><option value="3" selected>3 - רגילה</option><option value="4">4 - נמוכה</option><option value="5">5 - נמוכה מאוד</option></select></div>
-                <div><label for="task-contact" class="block text-sm font-medium text-gray-300 mb-1">איש קשר</label><input type="text" id="task-contact" class="input-field" placeholder="שם ומספר טלפון (אופציונלי)"></div>
+                <div><label for="task-contact" class="block text-sm font-medium text-gray-300 mb-1">איש קשר</label><input type="text" id="task-contact" class="input-field" placeholder="שם וטלפון (אופציונלי)"></div>
                 <div><label for="task-details" class="block text-sm font-medium text-gray-300 mb-1">פירוט נוסף</label><textarea id="task-details" rows="3" class="textarea-field"></textarea></div>
 
-                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-task-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button><button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור משימה</button></div>
+                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-task-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button><button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור</button></div>
             </form>
         </div>
     </div>
     
     <!-- Update Status Modal -->
     <div id="update-status-modal" class="fixed inset-0 z-[51] hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
-            <div class="p-8">
-                <h2 id="update-modal-title" class="text-3xl font-bold text-gold mb-6 text-center">עדכון סטטוס משימה</h2>
+        <div class="modal-content w-full max-w-lg rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 sm:p-8">
+                <h2 id="update-modal-title" class="text-2xl sm:text-3xl font-bold text-gold mb-6 text-center break-words"></h2>
                 
-                <!-- Task Details Display -->
-                <div id="task-details-display" class="mb-6 p-4 bg-gray-800/50 rounded-lg space-y-2 text-sm border border-gray-700">
-                    <!-- Details will be injected here -->
-                </div>
+                <div id="task-details-display" class="mb-6 p-4 bg-gray-800/50 rounded-lg space-y-2 text-sm border border-gray-700"></div>
                 
                 <div class="space-y-4 mb-6">
                      <div><label class="block text-sm font-medium text-gray-400">מבצע/אחראי</label><input type="text" id="update-assigned-to" class="input-field mt-1"></div>
@@ -171,7 +168,7 @@
     <!-- Category Management Modals -->
     <div id="edit-categories-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
         <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20">
-            <div class="p-8">
+            <div class="p-6">
                 <h2 class="text-2xl font-bold text-gold mb-4">ניהול קטגוריות</h2>
                 <div id="category-list" class="space-y-2 max-h-60 overflow-y-auto mb-4"></div>
                 <button type="button" id="close-edit-categories-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">סגור</button>
@@ -180,8 +177,8 @@
     </div>
     <div id="add-category-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
         <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20">
-            <form id="add-category-form" class="p-8 space-y-4">
-                <h2 class="text-2xl font-bold text-gold">הוספת קטגוריה חדשה</h2>
+            <form id="add-category-form" class="p-6 space-y-4">
+                <h2 class="text-2xl font-bold text-gold">הוסף קטגוריה</h2>
                 <input type="text" id="new-category-name" placeholder="שם הקטגוריה" class="input-field" required>
                 <div class="flex gap-4">
                     <button type="button" id="cancel-add-category-btn" class="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500">ביטול</button>
@@ -258,7 +255,12 @@
         logoutBtn.addEventListener('click', () => signOut(auth));
         
         async function loadData() {
-            await seedInitialData();
+            // Check if initial data needs to be seeded
+            const categoriesRef = collection(db, 'checklistCategories');
+            const snapshot = await getDocs(categoriesRef);
+            if (snapshot.empty) {
+                await seedInitialData();
+            }
 
             onSnapshot(collection(db, 'checklistCategories'), (snapshot) => {
                 categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name, 'he'));
@@ -273,7 +275,7 @@
         }
 
         function renderChecklists() {
-            if (!categories.length) return;
+            if (!categories.length || !tasks.length) return; // Prevent rendering before both are loaded
             checklistContainer.innerHTML = '';
 
             categories.forEach(category => {
@@ -282,7 +284,7 @@
                     .sort((a, b) => a.urgency - b.urgency || a.name.localeCompare(b.name, 'he'));
 
                 const categoryDiv = document.createElement('div');
-                categoryDiv.innerHTML = `<h2 class="text-3xl font-bold text-gold mb-4 border-b-2 border-gold/30 pb-2">${category.name}</h2>`;
+                categoryDiv.innerHTML = `<h2 class="text-2xl sm:text-3xl font-bold text-gold mb-4 border-b-2 border-gold/30 pb-2">${category.name}</h2>`;
                 if(categoryTasks.length > 0) {
                     const tasksGrid = document.createElement('div');
                     tasksGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
@@ -328,8 +330,8 @@
             el.innerHTML = `
                 <div>
                     <div class="flex justify-between items-start">
-                        <h3 class="text-xl font-bold mb-2">${task.name}</h3>
-                        <span class="text-xs font-bold py-1 px-2 rounded-full ${urgencyColor || 'bg-gray-600'}">${task.urgency}</span>
+                        <h3 class="text-lg sm:text-xl font-bold mb-2 break-words">${task.name}</h3>
+                        <span class="text-xs font-bold py-1 px-2 rounded-full flex-shrink-0 ml-2 ${urgencyColor || 'bg-gray-600'}">${task.urgency}</span>
                     </div>
                     ${task.deadline ? `<p class="text-sm text-gray-300 mb-2"><i class="fas fa-calendar-alt fa-fw mr-2"></i>${task.deadline}</p>` : ''}
                     ${task.assignedTo ? `<p class="text-sm text-gray-200 font-semibold mb-2"><i class="fas fa-user-check fa-fw mr-2"></i>${task.assignedTo}</p>`: ''}
@@ -353,7 +355,6 @@
             document.getElementById('update-assigned-to').value = task.assignedTo || '';
             document.getElementById('update-details').value = task.updateDetails || '';
             
-            // Populate the details display
             taskDetailsDisplay.innerHTML = `
                 <p><strong class="text-gray-300">קטגוריה:</strong> ${task.category}</p>
                 <p><strong class="text-gray-300">דדליין:</strong> ${task.deadline || 'לא הוגדר'}</p>
@@ -400,7 +401,7 @@
                 urgency: parseInt(document.getElementById('task-urgency').value),
                 contact: document.getElementById('task-contact').value,
                 details: document.getElementById('task-details').value,
-                status: '', // Default status for new tasks
+                status: '',
                 assignedTo: '',
                 updateDetails: ''
             };
@@ -421,7 +422,7 @@
 
         taskCategorySelect.addEventListener('change', (e) => {
             if (e.target.value === 'add_new_category') {
-                e.target.selectedIndex = 0; // Reset selection
+                e.target.selectedIndex = 0;
                 openAddCategoryModal();
             }
         });
@@ -483,69 +484,66 @@
         
         // Data Seeding
         async function seedInitialData() {
-            const categoriesRef = collection(db, 'checklistCategories');
-            const snapshot = await getDocs(categoriesRef);
-            if (snapshot.empty) {
-                console.log("No categories found, seeding initial data...");
-                const initialData = [
-                    { category: "רישוי ואישורים", task: "שליחת מייל + מעקב תשובה ואישור עקרוני מרט״ג + מועצה תמר", deadline: "ספטמבר–אוקטובר 2025", contact: "רט״ג: info@parks.org.il מועצה אזורית תמר: אגף תרבות/אירועים" },
-                    { category: "רישוי ואישורים", task: "גיוס יועץ בטיחות מוסמך", deadline: "ספטמבר–אוקטובר 2025", contact: "נעם זיו / עדי אוחיון / גבי רפאל" },
-                    { category: "רישוי ואישורים", task: "הכנת תיק רישוי (Site Plan, בטיחות, מהנדס, חשמל)", deadline: "אוקטובר 2025", contact: "SafeEvent, EventPro, מהנדס קונסטרוקציה, חשמלאי בודק" },
-                    { category: "רישוי ואישורים", task: "פנייה רשמית למשטרה/מד״א/כיבוי – דרישות רשמיות", deadline: "נובמבר 2025", contact: "משטרת ישראל – אגף רישוי אירועים; מד״א ירושלים; תחנת כבאות ים המלח" },
-                    { category: "ביטוחים", task: "בחירת ברוקר ביטוח אירועים", deadline: "ספטמבר–אוקטובר 2025", contact: "Betach Toren, Argo Team, Marsh Israel" },
-                    { category: "ביטוחים", task: "שליחת נתונים (Site Plan, לו״ז, קהל) לקבלת הצעות", deadline: "נובמבר 2025", contact: "ברוקר ביטוח נבחר" },
-                    { category: "ביטוחים", task: "סגירת פוליסות ביטוח (צד ג׳, חבות מעבידים, ציוד, ביטול, רחפנים)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
-                    { category: "ביטוחים", task: "קבלת אישור קיום ביטוח (לרשויות)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
-                    { category: "שטח ולוגיסטיקה", task: "הכנת Site Plan סופי", deadline: "אוקטובר 2025", contact: "אדריכל אירועים / שרטט CAD" },
-                    { category: "שטח ולוגיסטיקה", task: "בחירת ספקים (במה/סאונד/תאורה/מסכים/שירותים/גנרטורים)", deadline: "נובמבר–דצמבר 2025", contact: "ברסלב במה, סינקופה סאונד, סונולייט תאורה" },
-                    { category: "שטח ולוגיסטיקה", task: "חתימה על חוזים מול ספקים", deadline: "ינואר 2026", contact: "ספקי ליבה" },
-                    { category: "הפקה ותוכן", task: "סגירת אמנים ראשיים (בינלאומיים)", deadline: "ינואר–פברואר 2026", contact: "Solomun Agency, Artists Israel" },
-                    { category: "הפקה ותוכן", task: "סגירת ליינאפ מקומי (דיג’יים ישראלים)", deadline: "מרץ 2026", contact: "סוכנויות מקומיות" },
-                    { category: "הפקה ותוכן", task: "סגירת רקדנים/תפאורה/שחקנים", deadline: "מרץ–אפריל 2026", contact: "Dancers4U, Crew TLV" },
-                    { category: "שיווק ומכירות", task: "הקמת אתר מכירה (טיקטינג)", deadline: "ינואר 2026", contact: "Eventim, GTC, טיקטסיל" },
-                    { category: "שיווק ומכירות", task: "פתיחת עמודי פסטיבל (IG, TikTok, FB)", deadline: "ינואר 2026", contact: "צוות SAYORA" },
-                    { category: "שיווק ומכירות", task: "קמפיין פתיחה – Early Bird", deadline: "פברואר 2026", contact: "סושיאל + משפיענים" },
-                    { category: "שיווק ומכירות", task: "קמפיינים מתגלגלים (Regular, VIP)", deadline: "מרץ–אוגוסט 2026", contact: "צוות שיווק" },
-                    { category: "תחבורה ובטיחות", task: "תכנון מערך שאטלים (ת״א/ירושלים)", deadline: "מאי 2026", contact: "אגד תעבורה, מטרופולין" },
-                    { category: "תחבורה ובטיחות", task: "סגירת חניונים ושילוט", deadline: "מאי 2026", contact: "מועצה אזורית תמר" },
-                    { category: "תחבורה ובטיחות", task: "חוזה עם חברת אבטחה", deadline: "מאי 2026", contact: "מודיעין אזרחי, רמות אבטחה" },
-                    { category: "תחבורה ובטיחות", task: "סגירת מד״א (אמבולנס, צוותים)", deadline: "מאי 2026", contact: "מד״א ירושלים" },
-                    { category: "תחבורה ובטיחות", task: "סגירת כיבוי אש (צוות/רכב)", deadline: "מאי 2026", contact: "תחנת כבאות ים המלח" },
-                    { category: "פיננסים וחוזים", task: "בניית תקציב מלא (הוצאות/הכנסות)", deadline: "ספטמבר–נובמבר 2025", contact: "Excel פנימי" },
-                    { category: "פיננסים וחוזים", task: "פתיחת עוסק/עמותה לניהול כספים", deadline: "דצמבר 2025", contact: "רו״ח / יועץ מס" },
-                    { category: "פיננסים וחוזים", task: "חיפוש ספונסרים", deadline: "ינואר–מרץ 2026", contact: "RedBull, Absolut, Heineken, מותגי אופנה" },
-                    { category: "פיננסים וחוזים", task: "חתימה על חוזים מול אמנים/ספקים", deadline: "ינואר–מרץ 2026", contact: "סוכנויות אמנים / ספקים" },
-                    { category: "סגירות אחרונות", task: "לוודא אישורים סופיים מכל הרשויות", deadline: "יוני–יולי 2026", contact: "רט״ג, משטרה, מד״א, כיבוי, מועצה" },
-                    { category: "סגירות אחרונות", task: "פגישה לוגיסטית בשטח עם כל הספקים", deadline: "יולי 2026", contact: "כל ספקי הליבה" },
-                    { category: "סגירות אחרונות", task: "חזרה גנרלית לאמנים ותוכן", deadline: "אוגוסט 2026", contact: "אמנים ורקדנים" },
-                    { category: "אחרי האירוע", task: "פירוק והחזרת ציוד", deadline: "אוגוסט 2026", contact: "ספקי ליבה" },
-                    { category: "אחרי האירוע", task: "תשלום לספקים", deadline: "אוגוסט 2026", contact: "הנהלת חשבונות" },
-                    { category: "אחרי האירוע", task: "דו״ח סיכום פיננסי + הפקתי", deadline: "ספטמבר 2026", contact: "צוות SAYORA" }
-                ];
-                
-                const uniqueCategories = [...new Set(initialData.map(item => item.category))];
-                
-                const batch = writeBatch(db);
-                uniqueCategories.forEach(name => {
-                    const docRef = doc(collection(db, 'checklistCategories'));
-                    batch.set(docRef, { name });
+            console.log("Seeding initial data...");
+            const initialData = [
+                { category: "רישוי ואישורים", task: "שליחת מייל + מעקב תשובה ואישור עקרוני מרט״ג + מועצה תמר", deadline: "ספטמבר–אוקטובר 2025", contact: "רט״ג: info@parks.org.il מועצה אזורית תמר: אגף תרבות/אירועים" },
+                { category: "רישוי ואישורים", task: "גיוס יועץ בטיחות מוסמך", deadline: "ספטמבר–אוקטובר 2025", contact: "נעם זיו / עדי אוחיון / גבי רפאל" },
+                { category: "רישוי ואישורים", task: "הכנת תיק רישוי (Site Plan, בטיחות, מהנדס, חשמל)", deadline: "אוקטובר 2025", contact: "SafeEvent, EventPro, מהנדס קונסטרוקציה, חשמלאי בודק" },
+                { category: "רישוי ואישורים", task: "פנייה רשמית למשטרה/מד״א/כיבוי – דרישות רשמיות", deadline: "נובמבר 2025", contact: "משטרת ישראל – אגף רישוי אירועים; מד״א ירושלים; תחנת כבאות ים המלח" },
+                { category: "ביטוחים", task: "בחירת ברוקר ביטוח אירועים", deadline: "ספטמבר–אוקטובר 2025", contact: "Betach Toren, Argo Team, Marsh Israel" },
+                { category: "ביטוחים", task: "שליחת נתונים (Site Plan, לו״ז, קהל) לקבלת הצעות", deadline: "נובמבר 2025", contact: "ברוקר ביטוח נבחר" },
+                { category: "ביטוחים", task: "סגירת פוליסות ביטוח (צד ג׳, חבות מעבידים, ציוד, ביטול, רחפנים)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
+                { category: "ביטוחים", task: "קבלת אישור קיום ביטוח (לרשויות)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
+                { category: "שטח ולוגיסטיקה", task: "הכנת Site Plan סופי", deadline: "אוקטובר 2025", contact: "אדריכל אירועים / שרטט CAD" },
+                { category: "שטח ולוגיסטיקה", task: "בחירת ספקים (במה/סאונד/תאורה/מסכים/שירותים/גנרטורים)", deadline: "נובמבר–דצמבר 2025", contact: "ברסלב במה, סינקופה סאונד, סונולייט תאורה" },
+                { category: "שטח ולוגיסטיקה", task: "חתימה על חוזים מול ספקים", deadline: "ינואר 2026", contact: "ספקי ליבה" },
+                { category: "הפקה ותוכן", task: "סגירת אמנים ראשיים (בינלאומיים)", deadline: "ינואר–פברואר 2026", contact: "Solomun Agency, Artists Israel" },
+                { category: "הפקה ותוכן", task: "סגירת ליינאפ מקומי (דיג’יים ישראלים)", deadline: "מרץ 2026", contact: "סוכנויות מקומיות" },
+                { category: "הפקה ותוכן", task: "סגירת רקדנים/תפאורה/שחקנים", deadline: "מרץ–אפריל 2026", contact: "Dancers4U, Crew TLV" },
+                { category: "שיווק ומכירות", task: "הקמת אתר מכירה (טיקטינג)", deadline: "ינואר 2026", contact: "Eventim, GTC, טיקטסיל" },
+                { category: "שיווק ומכירות", task: "פתיחת עמודי פסטיבל (IG, TikTok, FB)", deadline: "ינואר 2026", contact: "צוות SAYORA" },
+                { category: "שיווק ומכירות", task: "קמפיין פתיחה – Early Bird", deadline: "פברואר 2026", contact: "סושיאל + משפיענים" },
+                { category: "שיווק ומכירות", task: "קמפיינים מתגלגלים (Regular, VIP)", deadline: "מרץ–אוגוסט 2026", contact: "צוות שיווק" },
+                { category: "תחבורה ובטיחות", task: "תכנון מערך שאטלים (ת״א/ירושלים)", deadline: "מאי 2026", contact: "אגד תעבורה, מטרופולין" },
+                { category: "תחבורה ובטיחות", task: "סגירת חניונים ושילוט", deadline: "מאי 2026", contact: "מועצה אזורית תמר" },
+                { category: "תחבורה ובטיחות", task: "חוזה עם חברת אבטחה", deadline: "מאי 2026", contact: "מודיעין אזרחי, רמות אבטחה" },
+                { category: "תחבורה ובטיחות", task: "סגירת מד״א (אמבולנס, צוותים)", deadline: "מאי 2026", contact: "מד״א ירושלים" },
+                { category: "תחבורה ובטיחות", task: "סגירת כיבוי אש (צוות/רכב)", deadline: "מאי 2026", contact: "תחנת כבאות ים המלח" },
+                { category: "פיננסים וחוזים", task: "בניית תקציב מלא (הוצאות/הכנסות)", deadline: "ספטמבר–נובמבר 2025", contact: "Excel פנימי" },
+                { category: "פיננסים וחוזים", task: "פתיחת עוסק/עמותה לניהול כספים", deadline: "דצמבר 2025", contact: "רו״ח / יועץ מס" },
+                { category: "פיננסים וחוזים", task: "חיפוש ספונסרים", deadline: "ינואר–מרץ 2026", contact: "RedBull, Absolut, Heineken, מותגי אופנה" },
+                { category: "פיננסים וחוזים", task: "חתימה על חוזים מול אמנים/ספקים", deadline: "ינואר–מרץ 2026", contact: "סוכנויות אמנים / ספקים" },
+                { category: "סגירות אחרונות", task: "לוודא אישורים סופיים מכל הרשויות", deadline: "יוני–יולי 2026", contact: "רט״ג, משטרה, מד״א, כיבוי, מועצה" },
+                { category: "סגירות אחרונות", task: "פגישה לוגיסטית בשטח עם כל הספקים", deadline: "יולי 2026", contact: "כל ספקי הליבה" },
+                { category: "סגירות אחרונות", task: "חזרה גנרלית לאמנים ותוכן", deadline: "אוגוסט 2026", contact: "אמנים ורקדנים" },
+                { category: "אחרי האירוע", task: "פירוק והחזרת ציוד", deadline: "אוגוסט 2026", contact: "ספקי ליבה" },
+                { category: "אחרי האירוע", task: "תשלום לספקים", deadline: "אוגוסט 2026", contact: "הנהלת חשבונות" },
+                { category: "אחרי האירוע", task: "דו״ח סיכום פיננסי + הפקתי", deadline: "ספטמבר 2026", contact: "צוות SAYORA" }
+            ];
+            
+            const uniqueCategories = [...new Set(initialData.map(item => item.category))];
+            
+            const batch = writeBatch(db);
+            uniqueCategories.forEach(name => {
+                const docRef = doc(collection(db, 'checklistCategories'));
+                batch.set(docRef, { name });
+            });
+            initialData.forEach(item => {
+                const docRef = doc(collection(db, 'checklistItems'));
+                batch.set(docRef, { 
+                    category: item.category,
+                    name: item.task,
+                    deadline: item.deadline || '',
+                    contact: item.contact || '',
+                    urgency: 3, // Default urgency
+                    status: '', assignedTo: '', details: '', updateDetails: ''
                 });
-                initialData.forEach(item => {
-                    const docRef = doc(collection(db, 'checklistItems'));
-                    batch.set(docRef, { 
-                        category: item.category,
-                        name: item.task,
-                        deadline: item.deadline || '',
-                        contact: item.contact || '',
-                        urgency: 3, // Default urgency
-                        status: '', assignedTo: '', details: '', updateDetails: ''
-                    });
-                });
-                await batch.commit();
-                console.log("Initial data seeded successfully.");
-            }
+            });
+            await batch.commit();
+            console.log("Initial data seeded successfully.");
         }
     </script>
 </body>
 </html>
+
 
