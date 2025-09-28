@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAYORA | ניהול עלויות</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #0a0a0a; color: #E0E0E0; }
+        .bg-black-gradient { background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%); }
+        .text-gold { color: #FFD700; }
+        .border-gold { border-color: #FFD700; }
+        #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        #sidebar.open { transform: translateX(0); }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
+        .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
+        .input-field, .select-field, .textarea-field {
+            background-color: #2a2a2a; border: 1px solid #444; color: #E0E0E0;
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+        }
+        .input-field:focus, .select-field:focus, .textarea-field:focus {
+            outline: none; border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        .table-container { border: 1px solid rgba(255, 215, 0, 0.2); background-color: rgba(26, 26, 26, 0.7); backdrop-filter: blur(10px); }
+        .table-row { transition: background-color 0.2s ease-in-out; cursor: pointer; }
+        .table-row:hover { background-color: rgba(255, 215, 0, 0.1); }
+        .conditional-field { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out, opacity 0.5s ease-out; opacity: 0; }
+        .conditional-field.visible { max-height: 500px; opacity: 1; }
+    </style>
+</head>
+<body class="bg-black">
+
+    <div id="app-container" class="hidden bg-black-gradient">
+        <!-- Header -->
+        <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
+                <div class="flex items-center gap-3">
+                    <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
+                    <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
+                </div>
+                <div id="user-info" class="flex items-center gap-3">
+                    <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
+                    <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1 px-3 rounded-md text-sm hover:bg-gold hover:text-black transition-colors">התנתקות</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
+        <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
+            <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
+            <div class="mt-12 space-y-4 text-center">
+                <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="flex">
+            <!-- Desktop Sidebar -->
+            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
+                <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
+                <nav class="space-y-2">
+                    <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                    <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">עלויות</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                    <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                    <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-6 sm:p-8 min-h-screen">
+                <div class="max-w-7xl mx-auto">
+                    <h1 class="text-4xl sm:text-5xl font-bold text-gold mb-8">פירוט עלויות והכנסות</h1>
+                    
+                    <!-- Expenses Table -->
+                    <div class="mb-12">
+                        <h2 class="text-3xl font-semibold text-red-400 mb-4">הוצאות (ספקים)</h2>
+                        <div class="table-container rounded-lg overflow-hidden">
+                            <table class="w-full text-right">
+                                <thead class="bg-gray-800">
+                                    <tr>
+                                        <th class="p-4 font-semibold">שם הספק</th>
+                                        <th class="p-4 font-semibold">תחום</th>
+                                        <th class="p-4 font-semibold">סטטוס</th>
+                                        <th class="p-4 font-semibold">עלות</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expenses-table-body">
+                                    <!-- Rows will be injected here -->
+                                </tbody>
+                                <tfoot class="bg-gray-800 font-bold">
+                                    <tr>
+                                        <td class="p-4 text-lg text-gold" colspan="3">סה"כ הוצאות</td>
+                                        <td id="total-expenses" class="p-4 text-lg text-red-400">0 ₪</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Income Table -->
+                    <div class="mb-12">
+                        <h2 class="text-3xl font-semibold text-green-400 mb-4">הכנסות (ספונסרים)</h2>
+                         <div class="table-container rounded-lg overflow-hidden">
+                            <table class="w-full text-right">
+                                <thead class="bg-gray-800">
+                                    <tr>
+                                        <th class="p-4 font-semibold">שם הספונסר</th>
+                                        <th class="p-4 font-semibold">תחום</th>
+                                        <th class="p-4 font-semibold">סטטוס</th>
+                                        <th class="p-4 font-semibold">סכום מימון</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="income-table-body">
+                                    <!-- Rows will be injected here -->
+                                </tbody>
+                                <tfoot class="bg-gray-800 font-bold">
+                                    <tr>
+                                        <td class="p-4 text-lg text-gold" colspan="3">סה"כ הכנסות</td>
+                                        <td id="total-income" class="p-4 text-lg text-green-400">0 ₪</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                     <!-- Summary Section -->
+                    <div>
+                        <h2 class="text-3xl font-semibold text-gold mb-4">סיכום כללי</h2>
+                        <div class="table-container rounded-lg overflow-hidden p-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                            <div>
+                                <p class="text-lg text-gray-400">סה"כ הוצאות</p>
+                                <p id="summary-expenses" class="text-3xl font-bold text-red-400">0 ₪</p>
+                            </div>
+                            <div>
+                                <p class="text-lg text-gray-400">סה"כ הכנסות</p>
+                                <p id="summary-income" class="text-3xl font-bold text-green-400">0 ₪</p>
+                            </div>
+                            <div>
+                                <p class="text-lg text-gray-400">מאזן (רווח/הפסד)</p>
+                                <p id="summary-balance" class="text-3xl font-bold">0 ₪</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add/Edit Supplier Modal (Copied from suppliers.html) -->
+    <div id="supplier-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <form id="supplier-form" class="p-8 space-y-6">
+                <h2 id="modal-title" class="text-3xl font-bold text-gold mb-4 text-center">עריכת פרטי ספק</h2>
+                <input type="hidden" id="supplier-id">
+                <!-- Fields are identical to suppliers.html -->
+                <div><label for="supplier-name" class="block text-sm font-medium text-gray-300 mb-1">שם הספק</label><input type="text" id="supplier-name" class="input-field" required></div>
+                <div><label class="block text-sm font-medium text-gray-300 mb-2">סוג הספק</label><div class="flex gap-4"><label class="flex items-center"><input type="radio" name="supplier-type" value="regular" class="ml-2" checked> ספק רגיל</label><label class="flex items-center"><input type="radio" name="supplier-type" value="sponsor" class="ml-2"> ספונסר</label></div></div>
+                <div><label for="supplier-phone" class="block text-sm font-medium text-gray-300 mb-1">מספר טלפון</label><input type="tel" id="supplier-phone" class="input-field"></div>
+                <div><label for="supplier-provides" class="block text-sm font-medium text-gray-300 mb-1" id="supplier-provides-label">ספק של?</label><input type="text" id="supplier-provides" class="input-field"></div>
+                <div id="price-field"><label for="price" class="block text-sm font-medium text-gray-300 mb-1" id="price-label">מחיר</label><input type="number" id="price" class="input-field"></div>
+                <div><label class="block text-sm font-medium text-gray-300 mb-2">האם נוצר קשר?</label><div class="flex gap-4"><label class="flex items-center"><input type="radio" name="contacted" value="yes" class="ml-2"> כן</label><label class="flex items-center"><input type="radio" name="contacted" value="no" class="ml-2" checked> לא</label></div></div>
+                <div id="contacted-yes-fields" class="space-y-6 conditional-field"><div><label for="contact-details" class="block text-sm font-medium text-gray-300 mb-1">שם איש קשר ופרטי הסיכום</label><textarea id="contact-details" rows="3" class="textarea-field"></textarea></div></div>
+                <div><label class="block text-sm font-medium text-gray-300 mb-2">האם הכל סגור?</label><div class="flex gap-4"><label class="flex items-center"><input type="radio" name="finalized" value="yes" class="ml-2" checked> כן</label><label class="flex items-center"><input type="radio" name="finalized" value="no" class="ml-2"> לא</label></div></div>
+                <div id="finalized-no-field" class="conditional-field"><label for="pending-details" class="block text-sm font-medium text-gray-300 mb-1">מה לא סגור עדיין?</label><textarea id="pending-details" rows="2" class="textarea-field"></textarea></div>
+                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button><button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור שינויים</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
+            authDomain: "sayora-all.firebaseapp.com",
+            projectId: "sayora-all",
+            storageBucket: "sayora-all.appspot.com",
+            messagingSenderId: "836076195583",
+            appId: "1:836076195583:web:a7b0067b866d7e027a06ca",
+            measurementId: "G-LFN43NSE5K"
+        };
+
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const appContainer = document.getElementById('app-container');
+        const logoutBtn = document.getElementById('logout-btn');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        
+        // Tables & Summaries
+        const expensesTableBody = document.getElementById('expenses-table-body');
+        const incomeTableBody = document.getElementById('income-table-body');
+        const totalExpensesEl = document.getElementById('total-expenses');
+        const totalIncomeEl = document.getElementById('total-income');
+        const summaryExpensesEl = document.getElementById('summary-expenses');
+        const summaryIncomeEl = document.getElementById('summary-income');
+        const summaryBalanceEl = document.getElementById('summary-balance');
+
+        // Modal elements
+        const supplierModal = document.getElementById('supplier-modal');
+        const supplierForm = document.getElementById('supplier-form');
+        const modalTitle = document.getElementById('modal-title');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const supplierIdInput = document.getElementById('supplier-id');
+        const priceLabel = document.getElementById('price-label');
+
+        let suppliersData = new Map(); // Store all suppliers data locally
+
+        // --- Authentication & Page Load ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                appContainer.classList.remove('hidden');
+                welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
+                loadAndRenderData();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => { signOut(auth); });
+
+        // --- Data Loading and Rendering ---
+        function loadAndRenderData() {
+            const suppliersRef = collection(db, 'suppliers');
+            onSnapshot(suppliersRef, (snapshot) => {
+                suppliersData.clear();
+                let totalExpenses = 0;
+                let totalIncome = 0;
+                
+                expensesTableBody.innerHTML = '';
+                incomeTableBody.innerHTML = '';
+
+                snapshot.docs.forEach(doc => {
+                    const supplier = doc.data();
+                    suppliersData.set(doc.id, supplier); // Cache data
+
+                    const row = createTableRow(doc.id, supplier);
+                    if (supplier.type === 'regular') {
+                        expensesTableBody.appendChild(row);
+                        totalExpenses += supplier.price || 0;
+                    } else if (supplier.type === 'sponsor') {
+                        incomeTableBody.appendChild(row);
+                        totalIncome += supplier.price || 0;
+                    }
+                });
+
+                updateSummaries(totalExpenses, totalIncome);
+            });
+        }
+
+        function createTableRow(id, data) {
+            const tr = document.createElement('tr');
+            tr.className = 'table-row border-b border-gray-800';
+            tr.dataset.id = id;
+
+            let statusColor = data.isFinalized ? 'text-green-400' : 'text-yellow-400';
+            let statusText = data.isFinalized ? 'סגור' : 'בטיפול';
+
+            tr.innerHTML = `
+                <td class="p-4 font-semibold text-white">${data.name}</td>
+                <td class="p-4 text-gray-300">${data.provides || ''}</td>
+                <td class="p-4"><span class="${statusColor}">${statusText}</span></td>
+                <td class="p-4 font-bold ${data.type === 'regular' ? 'text-red-400' : 'text-green-400'}">${(data.price || 0).toLocaleString()} ₪</td>
+            `;
+            
+            tr.addEventListener('click', () => openModal(id, data));
+            return tr;
+        }
+
+        function updateSummaries(expenses, income) {
+            const formatCurrency = (num) => `${num.toLocaleString()} ₪`;
+            totalExpensesEl.textContent = formatCurrency(expenses);
+            totalIncomeEl.textContent = formatCurrency(income);
+            summaryExpensesEl.textContent = formatCurrency(expenses);
+            summaryIncomeEl.textContent = formatCurrency(income);
+            
+            const balance = income - expenses;
+            summaryBalanceEl.textContent = formatCurrency(balance);
+            summaryBalanceEl.className = 'text-3xl font-bold'; // Reset class
+            if (balance < 0) {
+                summaryBalanceEl.classList.add('text-red-400');
+            } else {
+                summaryBalanceEl.classList.add('text-green-400');
+            }
+        }
+        
+        // --- Modal & Form Logic (similar to suppliers.html) ---
+        function openModal(id, data) {
+            supplierForm.reset();
+            modalTitle.textContent = 'עריכת פרטי ספק';
+            supplierIdInput.value = id;
+            
+            // Populate form
+            document.getElementById('supplier-name').value = data.name || '';
+            document.querySelector(`input[name="supplier-type"][value="${data.type || 'regular'}"]`).checked = true;
+            document.getElementById('supplier-phone').value = data.phone || '';
+            document.getElementById('supplier-provides').value = data.provides || '';
+            document.getElementById('price').value = data.price || '';
+            document.querySelector(`input[name="contacted"][value="${data.contacted ? 'yes' : 'no'}"]`).checked = true;
+            document.getElementById('contact-details').value = data.contactDetails || '';
+            document.querySelector(`input[name="finalized"][value="${data.isFinalized ? 'yes' : 'no'}"]`).checked = true;
+            document.getElementById('pending-details').value = data.pendingDetails || '';
+
+            handleConditionalFields();
+            supplierModal.classList.remove('hidden');
+            supplierModal.classList.add('flex');
+        }
+
+        function closeModal() {
+            supplierModal.classList.add('hidden');
+            supplierModal.classList.remove('flex');
+        }
+
+        cancelBtn.addEventListener('click', closeModal);
+        supplierModal.addEventListener('click', (e) => {
+            if (e.target === supplierModal) closeModal();
+        });
+
+        supplierForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = supplierIdInput.value;
+            if (!id) return;
+
+            const supplierData = {
+                name: document.getElementById('supplier-name').value,
+                type: document.querySelector('input[name="supplier-type"]:checked').value,
+                phone: document.getElementById('supplier-phone').value,
+                provides: document.getElementById('supplier-provides').value,
+                price: parseInt(document.getElementById('price').value) || 0,
+                contacted: document.querySelector('input[name="contacted"]:checked').value === 'yes',
+                contactDetails: document.getElementById('contact-details').value,
+                isFinalized: document.querySelector('input[name="finalized"]:checked').value === 'yes',
+                pendingDetails: document.getElementById('pending-details').value,
+            };
+
+            try {
+                const supplierRef = doc(db, 'suppliers', id);
+                await setDoc(supplierRef, supplierData);
+                closeModal();
+            } catch (error) {
+                console.error("Error updating supplier: ", error);
+                alert("שגיאה בעדכון הספק.");
+            }
+        });
+
+        function handleConditionalFields() {
+            const isContacted = document.querySelector('input[name="contacted"]:checked').value === 'yes';
+            document.getElementById('contacted-yes-fields').classList.toggle('visible', isContacted);
+            
+            const isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
+            document.getElementById('finalized-no-field').classList.toggle('visible', !isFinalized);
+
+            const supplierType = document.querySelector('input[name="supplier-type"]:checked').value;
+            priceLabel.textContent = supplierType === 'regular' ? 'מה המחיר שסגרנו?' : 'מה סכום המימון?';
+            document.getElementById('supplier-provides-label').textContent = supplierType === 'regular' ? 'ספק של?' : 'מה הספונסר מספק?';
+        }
+        
+        supplierForm.addEventListener('change', handleConditionalFields);
+
+        // Sidebar Logic
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }
+        const closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); }
+        hamburgerBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+    </script>
+</body>
+</html>
+
