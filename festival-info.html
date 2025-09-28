@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAYORA | מידע על הפסטיבל</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #0a0a0a; color: #E0E0E0; }
+        .bg-black-gradient { background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%); }
+        .text-gold { color: #FFD700; }
+        .border-gold { border-color: #FFD700; }
+        #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        #sidebar.open { transform: translateX(0); }
+        .info-card {
+            background-color: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-black">
+
+    <div id="app-container" class="hidden bg-black-gradient">
+        <!-- Header -->
+        <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
+                 <div class="flex items-center gap-3">
+                    <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
+                    <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
+                </div>
+                <div id="user-info" class="flex items-center gap-3">
+                    <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
+                    <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1 px-3 rounded-md text-sm hover:bg-gold hover:text-black transition-colors">התנתקות</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
+        <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
+            <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
+            <div class="mt-12 space-y-4 text-center">
+                 <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="flex">
+            <!-- Desktop Sidebar -->
+            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
+                <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
+                <nav class="space-y-2">
+                    <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">הסבר על הפסטיבל</a>
+                    <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                    <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                    <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-6 sm:p-8">
+                <div class="max-w-4xl mx-auto">
+                    <header class="text-center mb-12">
+                        <h1 class="text-5xl md:text-6xl font-extrabold text-gold leading-tight">SAYORA FESTIVAL</h1>
+                        <p class="text-xl text-gray-300 mt-4">מסע מוזיקלי של אהבה, אחדות וחופש בלב המדבר</p>
+                    </header>
+
+                    <section class="mb-12">
+                        <div class="info-card rounded-xl p-8">
+                            <h2 class="text-3xl font-bold text-gold mb-4 border-b-2 border-gold/30 pb-3">החזון שלנו</h2>
+                            <p class="text-lg text-gray-300 leading-relaxed">
+                                SAYORA הוא יותר מפסטיבל, זוהי חוויה שנועדה לאחד אנשים תחת כיפת השמיים במקום הקסום ביותר בעולם - מצדה. האירוע הראשון שלנו הוא פסטיבל של 12 שעות המיועד ל-2,500 איש, עם במה מרכזית אחת שתארח את מיטב האמנים. מהות הפסטיבל נסובה סביב שלושה ערכי יסוד: <strong class="text-gold">אהבה, אחדות וחופש</strong>. אנו שואפים ליצור מרחב בטוח ומכיל בו כל אחד ואחת ירגישו חופשיים להיות עצמם, להתחבר לאחרים וליהנות ממוזיקה מעולה באווירה בלתי נשכחת.
+                            </p>
+                        </div>
+                    </section>
+
+                    <section class="mb-12">
+                         <h2 class="text-3xl font-bold text-gold mb-6 text-center">מהדורת הפתיחה: פרטים טכניים</h2>
+                         <div class="grid md:grid-cols-2 gap-6">
+                            <div class="info-card rounded-lg p-6 flex items-start gap-4">
+                                <i class="fas fa-map-marker-alt text-3xl text-gold mt-1"></i>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">מיקום</h3>
+                                    <p class="text-gray-400">מצדה, ים המלח</p>
+                                </div>
+                            </div>
+                            <div class="info-card rounded-lg p-6 flex items-start gap-4">
+                                <i class="fas fa-users text-3xl text-gold mt-1"></i>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">כמות קהל</h3>
+                                    <p class="text-gray-400">כ-2,500 משתתפים</p>
+                                </div>
+                            </div>
+                            <div class="info-card rounded-lg p-6 flex items-start gap-4">
+                                <i class="fas fa-clock text-3xl text-gold mt-1"></i>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">משך האירוע</h3>
+                                    <p class="text-gray-400">12 שעות של מוזיקה</p>
+                                </div>
+                            </div>
+                             <div class="info-card rounded-lg p-6 flex items-start gap-4">
+                                <i class="fas fa-utensils text-3xl text-gold mt-1"></i>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">מתחמים</h3>
+                                    <p class="text-gray-400">במה מרכזית, 6 מתחמי מזון ושתיה, אזור לוקרים ושירותים</p>
+                                </div>
+                            </div>
+                         </div>
+                    </section>
+
+                    <section class="mb-12">
+                        <div class="info-card rounded-xl p-8">
+                            <h2 class="text-3xl font-bold text-gold mb-4 border-b-2 border-gold/30 pb-3">החזון לעתיד</h2>
+                            <p class="text-lg text-gray-300 leading-relaxed">
+                                מהדורת הפתיחה היא רק הצעד הראשון. החזון ארוך הטווח שלנו הוא להפוך את SAYORA לפסטיבל בינלאומי מוביל בן 3 ימים. הפסטיבל העתידי יכלול:
+                            </p>
+                            <ul class="list-none space-y-3 mt-4 text-gray-300">
+                                <li class="flex items-center gap-3"><i class="fas fa-check-circle text-gold"></i><span><strong>ארבע במות מוזיקה</strong> עם סגנונות מגוונים.</span></li>
+                                <li class="flex items-center gap-3"><i class="fas fa-check-circle text-gold"></i><span><strong>מתחמי לינה</strong> מעוצבים בסגנון גלמפינג ואוהלים.</span></li>
+                                <li class="flex items-center gap-3"><i class="fas fa-check-circle text-gold"></i><span><strong>שיתופי פעולה</strong> עם מלונות ופתרונות אירוח באזור.</span></li>
+                                <li class="flex items-center gap-3"><i class="fas fa-check-circle text-gold"></i><span><strong>תוכנית תוכן עשירה</strong> הכוללת מסיבות צהריים ולילה, ובבקרים סדנאות יוגה, ספורט ומתחמי צ'יל-אאוט.</span></li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
+            authDomain: "sayora-all.firebaseapp.com",
+            projectId: "sayora-all",
+            storageBucket: "sayora-all.appspot.com",
+            messagingSenderId: "836076195583",
+            appId: "1:836076195583:web:a7b0067b866d7e027a06ca",
+            measurementId: "G-LFN43NSE5K"
+        };
+
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // DOM Elements
+        const appContainer = document.getElementById('app-container');
+        const logoutBtn = document.getElementById('logout-btn');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                appContainer.classList.remove('hidden');
+                welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => signOut(auth));
+
+        // Sidebar Logic
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }
+        const closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); }
+        hamburgerBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+    </script>
+</body>
+</html>
+
