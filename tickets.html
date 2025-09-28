@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAYORA | ניהול כרטיסים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #0a0a0a; color: #E0E0E0; }
+        .bg-black-gradient { background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%); }
+        .text-gold { color: #FFD700; }
+        .border-gold { border-color: #FFD700; }
+        .btn-gold {
+            background-color: #FFD700; color: #111111;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background-color: #e6c200; transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        #sidebar.open { transform: translateX(0); }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
+        .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
+        .input-field, .select-field, .textarea-field {
+            background-color: #2a2a2a; border: 1px solid #444; color: #E0E0E0;
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+        }
+        .input-field:focus, .select-field:focus, .textarea-field:focus {
+            outline: none; border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        .ticket-card-regular {
+            background-color: #1f1f1f;
+            border: 1px solid #444;
+        }
+        .ticket-card-vip {
+            background: radial-gradient(circle, #3a3a3a, #111),
+                        linear-gradient(rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.1));
+            border: 2px solid #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        .editable-count:hover {
+            background-color: rgba(255, 215, 0, 0.2);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-black">
+
+    <div id="app-container" class="hidden bg-black-gradient">
+        <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
+                 <div class="flex items-center gap-3">
+                    <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
+                    <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
+                </div>
+                <div id="user-info" class="flex items-center gap-3">
+                    <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
+                    <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1 px-3 rounded-md text-sm hover:bg-gold hover:text-black transition-colors">התנתקות</button>
+                </div>
+            </div>
+        </header>
+
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
+        <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
+            <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
+            <div class="mt-12 space-y-4 text-center">
+                 <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
+            </div>
+        </nav>
+        
+        <div class="flex">
+            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
+                <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
+                <nav class="space-y-2">
+                    <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                    <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                    <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">כרטיסים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                    <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-6 sm:p-8 min-h-screen">
+                <div class="max-w-7xl mx-auto">
+                     <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+                        <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול כרטיסים</h1>
+                        <button id="add-ticket-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>הוספת סוג כרטיס</span>
+                        </button>
+                    </div>
+                    <div id="tickets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="ticket-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-lg rounded-lg shadow-2xl shadow-gold/20">
+            <form id="ticket-form" class="p-8 space-y-6">
+                <h2 id="ticket-modal-title" class="text-3xl font-bold text-gold mb-4 text-center">הוספת סוג כרטיס</h2>
+                <input type="hidden" id="ticket-id">
+                
+                <div><label for="ticket-name" class="block text-sm font-medium text-gray-300 mb-1">שם הכרטיס (לדוגמה: Early Bird)</label><input type="text" id="ticket-name" class="input-field" required></div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">סוג הכרטיס</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center"><input type="radio" name="ticket-type" value="regular" class="ml-2" checked> רגיל</label>
+                        <label class="flex items-center"><input type="radio" name="ticket-type" value="vip" class="ml-2"> VIP</label>
+                    </div>
+                </div>
+                <div><label for="ticket-benefits" class="block text-sm font-medium text-gray-300 mb-1">מה הכרטיס מקנה?</label><textarea id="ticket-benefits" rows="3" class="textarea-field" placeholder="כל הטבה בשורה נפרדת"></textarea></div>
+                <div><label for="ticket-price" class="block text-sm font-medium text-gray-300 mb-1">מחיר (בש"ח)</label><input type="number" id="ticket-price" class="input-field" required></div>
+
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="cancel-ticket-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
+                    <button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור כרטיס</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
+            authDomain: "sayora-all.firebaseapp.com",
+            projectId: "sayora-all",
+            storageBucket: "sayora-all.appspot.com",
+            messagingSenderId: "836076195583",
+            appId: "1:836076195583:web:a7b0067b866d7e027a06ca",
+            measurementId: "G-LFN43NSE5K"
+        };
+
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const appContainer = document.getElementById('app-container');
+        const logoutBtn = document.getElementById('logout-btn');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        const ticketsContainer = document.getElementById('tickets-container');
+        const addTicketBtn = document.getElementById('add-ticket-btn');
+
+        // Modal
+        const ticketModal = document.getElementById('ticket-modal');
+        const ticketForm = document.getElementById('ticket-form');
+        const ticketModalTitle = document.getElementById('ticket-modal-title');
+        const cancelTicketBtn = document.getElementById('cancel-ticket-btn');
+        const ticketIdInput = document.getElementById('ticket-id');
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                appContainer.classList.remove('hidden');
+                welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
+                loadTickets();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => signOut(auth));
+
+        function loadTickets() {
+            const ticketsRef = collection(db, 'ticketTypes');
+            onSnapshot(ticketsRef, (snapshot) => {
+                ticketsContainer.innerHTML = '';
+                snapshot.docs.forEach(doc => {
+                    ticketsContainer.appendChild(createTicketCard(doc.id, doc.data()));
+                });
+            });
+        }
+        
+        function createTicketCard(id, data) {
+            const cardWrapper = document.createElement('div');
+            const cardClass = data.type === 'vip' ? 'ticket-card-vip' : 'ticket-card-regular';
+            const benefitsList = data.benefits.split('\n').map(b => `<li><i class="fas fa-check text-gold mr-2"></i>${b}</li>`).join('');
+            
+            cardWrapper.innerHTML = `
+                <div class="${cardClass} rounded-xl p-6 flex flex-col h-full">
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center mb-2">
+                             <h3 class="text-3xl font-bold ${data.type === 'vip' ? 'text-gold' : 'text-white'}">${data.name}</h3>
+                             ${data.type === 'vip' ? '<span class="text-xs font-bold bg-gold text-black py-1 px-3 rounded-full uppercase">VIP</span>' : ''}
+                        </div>
+                        <p class="text-4xl font-bold mb-4">${data.price.toLocaleString()} <span class="text-lg">₪</span></p>
+                        <ul class="space-y-2 text-gray-300 mb-4">${benefitsList}</ul>
+                    </div>
+                    <div class="flex justify-end gap-3 mt-4">
+                         <button data-id="${id}" class="edit-btn text-blue-400 hover:text-blue-300 transition-colors text-sm"><i class="fas fa-edit"></i> עריכה</button>
+                         <button data-id="${id}" data-name="${data.name}" class="delete-btn text-red-500 hover:text-red-400 transition-colors text-sm"><i class="fas fa-trash"></i> מחיקה</button>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-gray-800/50 rounded-lg text-center">
+                    <p class="text-sm text-gray-400 mb-1">כמות שנמכרה</p>
+                    <div data-id="${id}" class="editable-count-container text-2xl font-bold text-white">
+                        <span class="count-display p-2 rounded-md transition-colors">${data.soldCount.toLocaleString()}</span>
+                        <input type="number" value="${data.soldCount}" class="count-input hidden w-24 text-center bg-gray-600 rounded-md p-2">
+                    </div>
+                </div>
+            `;
+            
+            // Event Listeners
+            cardWrapper.querySelector('.edit-btn').addEventListener('click', () => openModal(id, data));
+            cardWrapper.querySelector('.delete-btn').addEventListener('click', e => deleteTicket(e.currentTarget.dataset.id, e.currentTarget.dataset.name));
+            
+            const countContainer = cardWrapper.querySelector('.editable-count-container');
+            const countDisplay = cardWrapper.querySelector('.count-display');
+            const countInput = cardWrapper.querySelector('.count-input');
+
+            countDisplay.addEventListener('click', () => {
+                countDisplay.classList.add('hidden');
+                countInput.classList.remove('hidden');
+                countInput.focus();
+                countInput.select();
+            });
+            
+            async function saveCount() {
+                const newCount = parseInt(countInput.value) || 0;
+                await updateDoc(doc(db, 'ticketTypes', id), { soldCount: newCount });
+                countDisplay.textContent = newCount.toLocaleString();
+                countInput.classList.add('hidden');
+                countDisplay.classList.remove('hidden');
+            }
+
+            countInput.addEventListener('blur', saveCount);
+            countInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveCount();
+                }
+            });
+
+
+            return cardWrapper;
+        }
+
+        async function deleteTicket(id, name) {
+            if (confirm(`האם אתה בטוח שברצונך למחוק את הכרטיס "${name}"?`)) {
+                await deleteDoc(doc(db, "ticketTypes", id));
+            }
+        }
+        
+        // Modal Logic
+        function openModal(id = null, data = {}) {
+            ticketForm.reset();
+            if(id) {
+                ticketModalTitle.textContent = 'עריכת סוג כרטיס';
+                ticketIdInput.value = id;
+                document.getElementById('ticket-name').value = data.name;
+                document.querySelector(`input[name="ticket-type"][value="${data.type}"]`).checked = true;
+                document.getElementById('ticket-benefits').value = data.benefits;
+                document.getElementById('ticket-price').value = data.price;
+            } else {
+                ticketModalTitle.textContent = 'הוספת סוג כרטיס';
+                ticketIdInput.value = '';
+            }
+            ticketModal.classList.add('flex');
+            ticketModal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            ticketModal.classList.remove('flex');
+            ticketModal.classList.add('hidden');
+        }
+
+        addTicketBtn.addEventListener('click', () => openModal());
+        cancelTicketBtn.addEventListener('click', closeModal);
+
+        ticketForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = ticketIdInput.value;
+            const ticketData = {
+                name: document.getElementById('ticket-name').value,
+                type: document.querySelector('input[name="ticket-type"]:checked').value,
+                benefits: document.getElementById('ticket-benefits').value,
+                price: parseInt(document.getElementById('ticket-price').value),
+                soldCount: id ? undefined : 0 // Don't reset sold count on edit
+            };
+
+            if (id) {
+                delete ticketData.soldCount; // Ensure soldCount is not overwritten
+                await setDoc(doc(db, 'ticketTypes', id), ticketData, { merge: true });
+            } else {
+                await addDoc(collection(db, 'ticketTypes'), ticketData);
+            }
+            closeModal();
+        });
+
+
+        // Sidebar Logic
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }
+        const closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); }
+        hamburgerBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+    </script>
+</body>
+</html>
