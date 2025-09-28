@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAYORA | ניהול משתמשים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #0a0a0a; color: #E0E0E0; }
+        .bg-black-gradient { background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%); }
+        .text-gold { color: #FFD700; }
+        .border-gold { border-color: #FFD700; }
+        .btn-gold {
+            background-color: #FFD700; color: #111111;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background-color: #e6c200; transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        #sidebar.open { transform: translateX(0); }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
+        .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
+        .input-field {
+            background-color: #2a2a2a; border: 1px solid #444; color: #E0E0E0;
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+        }
+        .input-field:focus {
+            outline: none; border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        .table-container { border: 1px solid rgba(255, 215, 0, 0.2); background-color: rgba(26, 26, 26, 0.7); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="bg-black">
+
+    <div id="app-container" class="hidden bg-black-gradient">
+        <!-- Header -->
+        <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
+                <div class="flex items-center gap-3">
+                    <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
+                    <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
+                </div>
+                <div id="user-info" class="flex items-center gap-3">
+                    <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
+                    <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1 px-3 rounded-md text-sm hover:bg-gold hover:text-black transition-colors">התנתקות</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
+        <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
+            <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
+            <div class="mt-12 space-y-4 text-center">
+                <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="flex">
+            <!-- Desktop Sidebar -->
+            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
+                <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
+                <nav class="space-y-2">
+                    <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                    <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                    <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                    <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ניהול משתמשים</a>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-6 sm:p-8 min-h-screen">
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex justify-between items-center mb-8">
+                        <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול משתמשים</h1>
+                        <button id="add-user-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2">
+                            <i class="fas fa-user-plus"></i>
+                            <span>הוספת משתמש חדש</span>
+                        </button>
+                    </div>
+                    
+                    <div class="table-container rounded-lg overflow-hidden">
+                        <table class="w-full text-right">
+                            <thead class="bg-gray-800">
+                                <tr>
+                                    <th class="p-4 font-semibold">שם מלא</th>
+                                    <th class="p-4 font-semibold">אימייל</th>
+                                    <th class="p-4 font-semibold">פעולות</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- User rows will be injected here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="user-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20">
+            <form id="user-form" class="p-8 space-y-5">
+                <h2 id="modal-title" class="text-3xl font-bold text-gold mb-4 text-center">הוספת משתמש חדש</h2>
+                <div>
+                    <label for="full-name" class="block text-sm font-medium text-gray-300 mb-1">שם מלא</label>
+                    <input type="text" id="full-name" class="input-field" required>
+                </div>
+                <div>
+                    <label for="user-email" class="block text-sm font-medium text-gray-300 mb-1">אימייל</label>
+                    <input type="email" id="user-email" class="input-field" required>
+                </div>
+                <div>
+                    <label for="user-password" class="block text-sm font-medium text-gray-300 mb-1">סיסמה</label>
+                    <input type="password" id="user-password" class="input-field" required autocomplete="new-password">
+                </div>
+                <p id="modal-error" class="text-red-400 h-5 text-center"></p>
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
+                    <button type="submit" id="submit-btn" class="btn-gold font-bold py-2 px-6 rounded-lg">צור משתמש</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
+            authDomain: "sayora-all.firebaseapp.com",
+            projectId: "sayora-all",
+            storageBucket: "sayora-all.appspot.com",
+            messagingSenderId: "836076195583",
+            appId: "1:836076195583:web:a7b0067b866d7e027a06ca",
+            measurementId: "G-LFN43NSE5K"
+        };
+
+        // Import Firebase functions
+        import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Initialize Firebase
+        const mainApp = initializeApp(firebaseConfig);
+        const auth = getAuth(mainApp);
+        const db = getFirestore(mainApp);
+
+        // DOM Elements
+        const appContainer = document.getElementById('app-container');
+        const logoutBtn = document.getElementById('logout-btn');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        const usersTableBody = document.getElementById('users-table-body');
+        const addUserBtn = document.getElementById('add-user-btn');
+        
+        // Modal elements
+        const userModal = document.getElementById('user-modal');
+        const userForm = document.getElementById('user-form');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const modalError = document.getElementById('modal-error');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // --- Authentication & Page Load ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                appContainer.classList.remove('hidden');
+                welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
+                loadUsers();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => { signOut(auth); });
+
+        // --- User Data Logic ---
+        function loadUsers() {
+            const usersRef = collection(db, 'users');
+            onSnapshot(usersRef, (snapshot) => {
+                usersTableBody.innerHTML = '';
+                snapshot.docs.forEach(doc => {
+                    const user = doc.data();
+                    const userRow = createUserRow(doc.id, user);
+                    usersTableBody.appendChild(userRow);
+                });
+            });
+        }
+
+        function createUserRow(id, data) {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-gray-800';
+            
+            tr.innerHTML = `
+                <td class="p-4 font-semibold text-white">${data.fullName}</td>
+                <td class="p-4 text-gray-300">${data.email}</td>
+                <td class="p-4">
+                    <button data-id="${id}" data-name="${data.fullName}" class="delete-btn text-red-500 hover:text-red-400 transition-colors">
+                        <i class="fas fa-trash"></i> מחיקה
+                    </button>
+                </td>
+            `;
+            
+            tr.querySelector('.delete-btn').addEventListener('click', (e) => {
+                const userId = e.currentTarget.dataset.id;
+                const userName = e.currentTarget.dataset.name;
+                deleteUser(userId, userName);
+            });
+            return tr;
+        }
+        
+        // NOTE: This function only deletes the user from the Firestore list.
+        // It DOES NOT delete the user from Firebase Authentication, as this
+        // requires server-side admin privileges. The user will still be able to log in.
+        async function deleteUser(id, name) {
+            if (confirm(`האם אתה בטוח שברצונך למחוק את המשתמש "${name}" מהרשימה?`)) {
+                try {
+                    await deleteDoc(doc(db, "users", id));
+                    console.log("User record deleted from Firestore");
+                } catch (error) {
+                    console.error("Error deleting user record: ", error);
+                    alert("שגיאה במחיקת המשתמש.");
+                }
+            }
+        }
+
+        // --- Modal Logic ---
+        function openModal() {
+            userForm.reset();
+            modalError.textContent = '';
+            userModal.classList.remove('hidden');
+            userModal.classList.add('flex');
+        }
+
+        function closeModal() {
+            userModal.classList.add('hidden');
+            userModal.classList.remove('flex');
+        }
+
+        addUserBtn.addEventListener('click', openModal);
+        cancelBtn.addEventListener('click', closeModal);
+        userModal.addEventListener('click', (e) => {
+            if (e.target === userModal) closeModal();
+        });
+
+        // --- Form Logic for User Creation ---
+        userForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            modalError.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'יוצר משתמש...';
+
+            const fullName = document.getElementById('full-name').value;
+            const email = document.getElementById('user-email').value;
+            const password = document.getElementById('user-password').value;
+            
+            // Use a temporary, secondary Firebase app to create a user
+            // This avoids signing out the current admin user.
+            const tempAppName = 'user-creation-app-' + Date.now();
+            const tempApp = initializeApp(firebaseConfig, tempAppName);
+            const tempAuth = getAuth(tempApp);
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
+                const newUser = userCredential.user;
+                
+                // Now, save user details to Firestore using the main app instance
+                await setDoc(doc(db, "users", newUser.uid), {
+                    fullName: fullName,
+                    email: email
+                });
+
+                closeModal();
+
+            } catch (error) {
+                console.error("User Creation Error:", error);
+                if (error.code === 'auth/email-already-in-use') {
+                    modalError.textContent = 'כתובת האימייל כבר בשימוש.';
+                } else if (error.code === 'auth/weak-password') {
+                    modalError.textContent = 'הסיסמה חלשה מדי (לפחות 6 תווים).';
+                } else if (error.code === 'auth/invalid-email') {
+                    modalError.textContent = 'כתובת האימייל אינה תקינה.';
+                } else {
+                    modalError.textContent = 'אירעה שגיאה ביצירת המשתמש.';
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'צור משתמש';
+                // Clean up the temporary app
+                try {
+                    await deleteApp(tempApp);
+                } catch (e) {
+                    console.error("Could not delete temp app", e);
+                }
+            }
+        });
+
+        // Sidebar Logic
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }
+        const closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); }
+        hamburgerBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+    </script>
+</body>
+</html>
+
