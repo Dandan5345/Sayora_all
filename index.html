@@ -6,10 +6,12 @@
     <title>SAYORA | ניהול הפקה</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         body {
             font-family: 'Assistant', sans-serif;
-            background-color: #111111;
+            background-color: #0a0a0a;
             color: #E0E0E0;
         }
         .bg-black-gradient {
@@ -28,6 +30,7 @@
         }
         .btn-gold:hover {
             background-color: #e6c200;
+            transform: scale(1.05);
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
         .input-field {
@@ -47,15 +50,20 @@
         #sidebar.open {
             transform: translateX(0);
         }
+        .content-card {
+            background-color: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
     </style>
 </head>
-<body class="bg-black-gradient">
+<body class="bg-black">
 
     <!-- Login View -->
-    <div id="login-view" class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div id="login-view" class="flex flex-col items-center justify-center min-h-screen p-4 bg-black-gradient">
         <div class="w-full max-w-sm text-center">
-            <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-40 h-40 object-cover rounded-full mx-auto mb-6 border-2 border-gold shadow-lg">
-            <h1 class="text-4xl font-bold text-gold mb-2">SAYORA</h1>
+            <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-40 h-40 object-cover rounded-full mx-auto mb-6 border-2 border-gold shadow-lg shadow-gold/20">
+            <h1 class="text-4xl font-bold text-gold mb-2" style="letter-spacing: 2px;">SAYORA</h1>
             <p class="text-lg text-gray-300 mb-8">פורטל ניהול והפקה</p>
             
             <form id="login-form" class="space-y-4">
@@ -68,7 +76,7 @@
     </div>
 
     <!-- Main App View -->
-    <div id="main-view" class="hidden">
+    <div id="main-view" class="hidden bg-black-gradient">
         <!-- Header -->
         <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -93,13 +101,13 @@
         <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
             <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
             <div class="mt-12 space-y-4 text-center">
-                <a href="#" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
-                <a href="#" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
-                <a href="#" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
-                <a href="#" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
-                <a href="#" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
-                <a href="#" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
-                <a href="#" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
+                <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
             </div>
         </nav>
         
@@ -109,30 +117,61 @@
             <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
                 <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
                 <nav class="space-y-2">
-                    <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
-                    <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
-                    <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
-                    <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
-                    <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
-                    <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
-                    <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                    <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                    <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                    <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                    <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
                 </nav>
             </aside>
 
-            <main class="flex-1 p-6 sm:p-8">
-                <div class="max-w-4xl mx-auto">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-gold mb-6 border-b-2 border-gold/30 pb-3">ברוכים הבאים לפורטל הניהול של SAYORA</h1>
-                    <div class="bg-gray-900/50 p-6 rounded-lg shadow-xl space-y-4">
-                        <h2 class="text-2xl font-semibold text-gold">חזון הפסטיבל</h2>
-                        <p class="text-gray-300 leading-relaxed">
-                            פסטיבל SAYORA הוא חווית מוזיקה ייחודית של 12 שעות במצדה, המיועדת בשלב זה לכ-2,000 איש. מהות הפסטיבל סובבת סביב ערכים של אהבה, אחדות וחופש, במטרה להעניק לכל משתתף תחושת שייכות ושחרור. האירוע כולל במה מרכזית, מתחמי אוכל ושתייה, שירותים ואזורי שירות לנוחות הקהל.
-                        </p>
-                        <h2 class="text-2xl font-semibold text-gold mt-4">העתיד של SAYORA</h2>
-                        <p class="text-gray-300 leading-relaxed">
-                            החזון שלנו הוא להרחיב את הפסטיבל לאירוע של שלושה ימים מלאים, שיכללו ארבע במות מוזיקה ומתחמי לינה מגוונים, החל מאוהלים ועד שיתופי פעולה עם מלונות באזור. בעתיד, ימי הפסטיבל יכללו מסיבות משעות הצהריים עד הלילה, ובבקרים יתקיימו פעילויות העשרה כמו יוגה, ספורט ומתחמי רגיעה ('צ'יל') עם ערסלים.
-                        </p>
+            <main class="flex-1 p-6 sm:p-8 min-h-screen">
+                <div class="max-w-5xl mx-auto">
+                    <div class="text-center mb-10">
+                        <h1 class="text-4xl sm:text-5xl font-bold text-gold mb-4">פורטל הניהול של SAYORA</h1>
+                        <p class="text-lg text-gray-300">המקום המרכזי לכל המידע, התכנון והתיאום של צוות ההפקה.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mb-12">
+                        <div class="content-card p-6 rounded-lg">
+                            <i class="fas fa-users text-4xl text-gold mb-3"></i>
+                            <h3 class="text-2xl font-bold">2,500 איש</h3>
+                            <p class="text-gray-400">קיבולת נוכחית</p>
+                        </div>
+                        <div class="content-card p-6 rounded-lg">
+                            <i class="fas fa-clock text-4xl text-gold mb-3"></i>
+                            <h3 class="text-2xl font-bold">12 שעות</h3>
+                            <p class="text-gray-400">של מוזיקה וחוויה</p>
+                        </div>
+                        <div class="content-card p-6 rounded-lg">
+                            <i class="fas fa-map-marker-alt text-4xl text-gold mb-3"></i>
+                            <h3 class="text-2xl font-bold">מצדה</h3>
+                            <p class="text-gray-400">לוקיישן עוצר נשימה</p>
+                        </div>
+                    </div>
+
+                    <div class="content-card p-6 sm:p-8 rounded-lg shadow-xl space-y-6">
+                        <div>
+                            <h2 class="text-3xl font-semibold text-gold mb-3 flex items-center gap-3"><i class="fas fa-heart"></i> חזון הפסטיבל</h2>
+                            <p class="text-gray-300 leading-relaxed">
+                                SAYORA הוא יותר מפסטיבל, זוהי תנועה. חווית מוזיקה סוחפת של 12 שעות בנוף המדברי וההיסטורי של מצדה, המיועדת בשלב זה לכ-2,500 איש. מהות הפסטיבל סובבת סביב שלושה ערכי יסוד: <strong>אהבה, אחדות וחופש</strong>. אנו שואפים ליצור מרחב בטוח ומכיל בו כל משתתף ומשתתפת ירגישו את החיבור לעצמם, לסביבה ולאנשים סביבם, וייקחו חלק בחוויה בלתי נשכחת.
+                            </p>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-semibold text-gold mb-3 flex items-center gap-3"><i class="fas fa-rocket"></i> התוכניות לעתיד</h2>
+                            <p class="text-gray-300 leading-relaxed">
+                                החזון שלנו הוא להתרחב ולהפוך את SAYORA לפסטיבל בינלאומי מוביל של שלושה ימים. התוכנית כוללת הקמה של ארבע במות מוזיקה עם ליינאפים מגוונים, מתחמי לינה ייחודיים החל מאוהלי גלמפינג ועד שיתופי פעולה עם מלונות באזור ים המלח. ימי הפסטיבל יציעו חוויה הוליסטית: מסיבות ומופעים משעות הצהריים עד השעות הקטנות של הלילה, ובבקרים יתקיימו סדנאות, שיעורי יוגה, פעילויות ספורט ומתחמי 'צ'יל' רגועים להטענת מצברים.
+                            </p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Footer -->
+                <footer class="text-center mt-12 text-sm text-gray-500">
+                    <p>&copy; 2025 SAYORA Festival | נבנה על ידי דורון נקש</p>
+                </footer>
             </main>
         </div>
     </div>
@@ -177,12 +216,10 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in
                 loginView.classList.add('hidden');
                 mainView.classList.remove('hidden');
                 welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
             } else {
-                // User is signed out
                 mainView.classList.add('hidden');
                 loginView.classList.remove('hidden');
                 emailInput.value = '';
@@ -194,13 +231,9 @@
             e.preventDefault();
             const email = emailInput.value;
             const password = passwordInput.value;
-            loginError.textContent = ''; // Clear previous errors
+            loginError.textContent = ''; 
 
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signed in 
-                    console.log("User signed in successfully");
-                })
                 .catch((error) => {
                     console.error("Login Error:", error.code, error.message);
                     if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
@@ -234,4 +267,5 @@
     </script>
 </body>
 </html>
+
 
