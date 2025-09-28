@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAYORA | סיכומים ומשימות</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #0a0a0a; color: #E0E0E0; }
+        .bg-black-gradient { background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%); }
+        .text-gold { color: #FFD700; }
+        .border-gold { border-color: #FFD700; }
+        .btn-gold {
+            background-color: #FFD700; color: #111111;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background-color: #e6c200; transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        #sidebar.open { transform: translateX(0); }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
+        .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
+        .input-field, .select-field, .textarea-field {
+            background-color: #2a2a2a; border: 1px solid #444; color: #E0E0E0;
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+        }
+        .input-field:focus, .select-field:focus, .textarea-field:focus {
+            outline: none; border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        .task-item { transition: all 0.2s ease-in-out; }
+        .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
+    </style>
+</head>
+<body class="bg-black">
+
+    <div id="app-container" class="hidden bg-black-gradient">
+        <!-- Header -->
+        <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
+                 <div class="flex items-center gap-3">
+                    <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
+                    <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
+                </div>
+                <div id="user-info" class="flex items-center gap-3">
+                    <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
+                    <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1 px-3 rounded-md text-sm hover:bg-gold hover:text-black transition-colors">התנתקות</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
+        <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
+            <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
+            <div class="mt-12 space-y-4 text-center">
+                 <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="flex">
+            <!-- Desktop Sidebar -->
+            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
+                <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
+                <nav class="space-y-2">
+                    <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                    <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                    <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">סיכומים</a>
+                    <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-6 sm:p-8 min-h-screen">
+                <div class="max-w-7xl mx-auto">
+                     <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+                        <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול משימות וסיכומים</h1>
+                        <button id="add-task-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>הוספת משימה חדשה</span>
+                        </button>
+                    </div>
+                    <div id="checklist-container" class="space-y-10">
+                        <!-- Checklists will be rendered here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add/Edit Task Modal -->
+    <div id="task-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <form id="task-form" class="p-8 space-y-6">
+                <h2 id="task-modal-title" class="text-3xl font-bold text-gold mb-4 text-center">הוספת משימה חדשה</h2>
+                <input type="hidden" id="task-id">
+                
+                <div>
+                    <label for="task-category" class="block text-sm font-medium text-gray-300 mb-2">קטגוריה</label>
+                    <div class="flex gap-2">
+                        <select id="task-category" class="select-field flex-grow" required></select>
+                        <button type="button" id="edit-categories-btn" class="p-2 bg-gray-600 rounded-md hover:bg-gray-500" title="עריכת קטגוריות"><i class="fas fa-edit"></i></button>
+                    </div>
+                </div>
+
+                <div><label for="task-name" class="block text-sm font-medium text-gray-300 mb-1">שם המשימה</label><input type="text" id="task-name" class="input-field" required></div>
+                <div><label for="task-deadline" class="block text-sm font-medium text-gray-300 mb-1">דדליין</label><input type="date" id="task-deadline" class="input-field" style="color-scheme: dark;"></div>
+                <div><label for="task-urgency" class="block text-sm font-medium text-gray-300 mb-1">רמת דחיפות (1=הכי דחוף)</label><select id="task-urgency" class="select-field"><option value="1">1 - קריטי</option><option value="2">2 - גבוהה</option><option value="3" selected>3 - רגילה</option><option value="4">4 - נמוכה</option><option value="5">5 - נמוכה מאוד</option></select></div>
+                <div><label for="task-contact" class="block text-sm font-medium text-gray-300 mb-1">איש קשר</label><input type="text" id="task-contact" class="input-field" placeholder="שם ומספר טלפון (אופציונלי)"></div>
+                <div><label for="task-details" class="block text-sm font-medium text-gray-300 mb-1">פירוט נוסף</label><textarea id="task-details" rows="3" class="textarea-field"></textarea></div>
+
+                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-task-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button><button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור משימה</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Update Status Modal -->
+    <div id="update-status-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20">
+            <div class="p-8">
+                 <h2 id="update-modal-title" class="text-3xl font-bold text-gold mb-6 text-center">עדכון סטטוס משימה</h2>
+                 <div class="space-y-4 mb-6">
+                     <div><label class="block text-sm font-medium text-gray-400">מבצע/אחראי</label><input type="text" id="update-assigned-to" class="input-field mt-1"></div>
+                     <div><label class="block text-sm font-medium text-gray-400">פירוט נוסף</label><textarea id="update-details" rows="3" class="textarea-field mt-1"></textarea></div>
+                 </div>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button id="status-done" class="bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-500 transition-colors flex items-center justify-center gap-2"><i class="fas fa-check-circle"></i>בוצע</button>
+                    <button id="status-progress" class="bg-cyan-600 text-white font-bold py-3 rounded-lg hover:bg-cyan-500 transition-colors flex items-center justify-center gap-2"><i class="fas fa-tasks"></i>בתהליך</button>
+                    <button id="status-not-done" class="bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-500 transition-colors flex items-center justify-center gap-2"><i class="fas fa-times-circle"></i>לא בוצע</button>
+                 </div>
+                 <button type="button" id="cancel-update-btn" class="w-full mt-6 bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">סגור</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Management Modals -->
+    <div id="edit-categories-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20">
+            <div class="p-8">
+                <h2 class="text-2xl font-bold text-gold mb-4">ניהול קטגוריות</h2>
+                <div id="category-list" class="space-y-2 max-h-60 overflow-y-auto mb-4"></div>
+                <button type="button" id="close-edit-categories-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">סגור</button>
+            </div>
+        </div>
+    </div>
+    <div id="add-category-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20">
+            <form id="add-category-form" class="p-8 space-y-4">
+                <h2 class="text-2xl font-bold text-gold">הוספת קטגוריה חדשה</h2>
+                <input type="text" id="new-category-name" placeholder="שם הקטגוריה" class="input-field" required>
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-add-category-btn" class="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500">ביטול</button>
+                    <button type="submit" class="flex-1 btn-gold font-bold py-2 px-4 rounded-lg">שמור</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
+            authDomain: "sayora-all.firebaseapp.com",
+            projectId: "sayora-all",
+            storageBucket: "sayora-all.appspot.com",
+            messagingSenderId: "836076195583",
+            appId: "1:836076195583:web:a7b0067b866d7e027a06ca",
+            measurementId: "G-LFN43NSE5K"
+        };
+
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const appContainer = document.getElementById('app-container');
+        const logoutBtn = document.getElementById('logout-btn');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        const checklistContainer = document.getElementById('checklist-container');
+        const addTaskBtn = document.getElementById('add-task-btn');
+
+        // Task Modal
+        const taskModal = document.getElementById('task-modal');
+        const taskForm = document.getElementById('task-form');
+        const taskModalTitle = document.getElementById('task-modal-title');
+        const cancelTaskBtn = document.getElementById('cancel-task-btn');
+        const taskCategorySelect = document.getElementById('task-category');
+
+        // Status Modal
+        const updateStatusModal = document.getElementById('update-status-modal');
+        const updateModalTitle = document.getElementById('update-modal-title');
+        const cancelUpdateBtn = document.getElementById('cancel-update-btn');
+        let currentTaskIdForStatusUpdate = null;
+
+        // Category Modals
+        const editCategoriesBtn = document.getElementById('edit-categories-btn');
+        const editCategoriesModal = document.getElementById('edit-categories-modal');
+        const addCategoryModal = document.getElementById('add-category-modal');
+        const closeEditCategoriesBtn = document.getElementById('close-edit-categories-btn');
+        const addCategoryForm = document.getElementById('add-category-form');
+        const cancelAddCategoryBtn = document.getElementById('cancel-add-category-btn');
+
+        // Data cache
+        let categories = [];
+        let tasks = [];
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                appContainer.classList.remove('hidden');
+                welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
+                loadData();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => signOut(auth));
+        
+        async function loadData() {
+            await seedInitialData(); // Run once if needed
+
+            onSnapshot(collection(db, 'checklistCategories'), (snapshot) => {
+                categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name));
+                updateCategorySelect();
+                renderChecklists();
+            });
+
+            onSnapshot(collection(db, 'checklistItems'), (snapshot) => {
+                tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderChecklists();
+            });
+        }
+
+        function renderChecklists() {
+            if (!categories.length || !tasks.length) return;
+            checklistContainer.innerHTML = '';
+
+            categories.forEach(category => {
+                const categoryTasks = tasks
+                    .filter(task => task.category === category.name)
+                    .sort((a, b) => a.urgency - b.urgency);
+
+                if (categoryTasks.length > 0) {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.innerHTML = `<h2 class="text-3xl font-bold text-gold mb-4 border-b-2 border-gold/30 pb-2">${category.name}</h2>`;
+                    const tasksGrid = document.createElement('div');
+                    tasksGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
+                    categoryTasks.forEach(task => {
+                        tasksGrid.appendChild(createTaskElement(task));
+                    });
+                    categoryDiv.appendChild(tasksGrid);
+                    checklistContainer.appendChild(categoryDiv);
+                }
+            });
+        }
+
+        function getStatusInfo(status) {
+            switch (status) {
+                case 'done': return { text: 'בוצע', color: 'bg-green-600/80 border-green-400', icon: 'fa-check-circle' };
+                case 'progress': return { text: 'בתהליך', color: 'bg-cyan-600/80 border-cyan-400', icon: 'fa-tasks' };
+                default: return { text: 'לא בוצע', color: '', icon: 'fa-clock' }; // Color will be urgency-based
+            }
+        }
+        
+        function getUrgencyColor(urgency, status) {
+             if (status === 'done' || status === 'progress') return '';
+            switch (parseInt(urgency)) {
+                case 1: return 'bg-red-700/80 border-red-500';
+                case 2: return 'bg-orange-600/80 border-orange-400';
+                case 3: return 'bg-yellow-600/80 border-yellow-400';
+                case 4: return 'bg-blue-600/80 border-blue-400';
+                case 5: return 'bg-gray-700/80 border-gray-500';
+                default: return 'bg-gray-700/80 border-gray-500';
+            }
+        }
+
+        function createTaskElement(task) {
+            const el = document.createElement('div');
+            const statusInfo = getStatusInfo(task.status);
+            const urgencyColor = getUrgencyColor(task.urgency, task.status);
+            
+            el.className = `task-item p-4 rounded-lg border-2 cursor-pointer flex flex-col justify-between ${statusInfo.color || urgencyColor}`;
+            el.dataset.id = task.id;
+
+            el.innerHTML = `
+                <div>
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-bold mb-2">${task.name}</h3>
+                        <span class="text-xs font-bold py-1 px-2 rounded-full ${urgencyColor}">${task.urgency}</span>
+                    </div>
+                    ${task.deadline ? `<p class="text-sm text-gray-300 mb-2"><i class="fas fa-calendar-alt mr-2"></i>${task.deadline}</p>` : ''}
+                    ${task.assignedTo ? `<p class="text-sm text-gray-200 font-semibold mb-2"><i class="fas fa-user-check mr-2"></i>${task.assignedTo}</p>`: ''}
+                </div>
+                <div class="flex justify-start items-center gap-2 text-sm mt-3 pt-3 border-t border-white/20">
+                    <i class="fas ${statusInfo.icon}"></i>
+                    <span>${statusInfo.text}</span>
+                </div>
+            `;
+
+            el.addEventListener('click', () => openUpdateStatusModal(task.id));
+            return el;
+        }
+
+        function openUpdateStatusModal(id) {
+            currentTaskIdForStatusUpdate = id;
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+
+            updateModalTitle.textContent = task.name;
+            document.getElementById('update-assigned-to').value = task.assignedTo || '';
+            document.getElementById('update-details').value = task.updateDetails || '';
+
+            updateStatusModal.classList.remove('hidden');
+            updateStatusModal.classList.add('flex');
+        }
+
+        ['done', 'progress', 'not-done'].forEach(status => {
+            document.getElementById(`status-${status}`).addEventListener('click', async () => {
+                if (!currentTaskIdForStatusUpdate) return;
+                const assignedTo = document.getElementById('update-assigned-to').value;
+                const updateDetails = document.getElementById('update-details').value;
+                
+                const taskRef = doc(db, 'checklistItems', currentTaskIdForStatusUpdate);
+                await updateDoc(taskRef, {
+                    status: status,
+                    assignedTo: assignedTo,
+                    updateDetails: updateDetails
+                });
+                closeUpdateStatusModal();
+            });
+        });
+
+        // Task Modal Logic
+        addTaskBtn.addEventListener('click', () => {
+            taskForm.reset();
+            document.getElementById('task-id').value = '';
+            taskModalTitle.textContent = 'הוספת משימה חדשה';
+            taskModal.classList.add('flex');
+            taskModal.classList.remove('hidden');
+        });
+
+        taskForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('task-id').value;
+            const taskData = {
+                category: document.getElementById('task-category').value,
+                name: document.getElementById('task-name').value,
+                deadline: document.getElementById('task-deadline').value,
+                urgency: parseInt(document.getElementById('task-urgency').value),
+                contact: document.getElementById('task-contact').value,
+                details: document.getElementById('task-details').value,
+                status: 'not-done', // Default status for new tasks
+                assignedTo: '',
+                updateDetails: ''
+            };
+
+            if (id) {
+                await setDoc(doc(db, 'checklistItems', id), taskData, { merge: true });
+            } else {
+                await addDoc(collection(db, 'checklistItems'), taskData);
+            }
+            closeTaskModal();
+        });
+
+        // Category Management Logic
+        function updateCategorySelect() {
+            taskCategorySelect.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            taskCategorySelect.innerHTML += '<option value="add_new_category" class="text-gold font-bold">-- הוסף קטגוריה חדשה --</option>';
+        }
+
+        taskCategorySelect.addEventListener('change', (e) => {
+            if (e.target.value === 'add_new_category') {
+                e.target.selectedIndex = 0; // Reset selection
+                openAddCategoryModal();
+            }
+        });
+        
+        editCategoriesBtn.addEventListener('click', () => {
+            const categoryList = document.getElementById('category-list');
+            categoryList.innerHTML = categories
+                .map(c => `<div class="flex justify-between items-center p-2 bg-gray-700 rounded-md"><span>${c.name}</span><button data-id="${c.id}" class="delete-category-btn text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button></div>`)
+                .join('');
+            
+            document.querySelectorAll('.delete-category-btn').forEach(btn => {
+                btn.addEventListener('click', async e => {
+                    const id = e.currentTarget.dataset.id;
+                    if(confirm('מחיקת קטגוריה תמחק גם את כל המשימות המשויכות אליה. להמשיך?')) {
+                        const categoryToDelete = categories.find(c => c.id === id);
+                        // Batch delete all tasks in this category
+                        const tasksToDelete = tasks.filter(t => t.category === categoryToDelete.name);
+                        const batch = writeBatch(db);
+                        tasksToDelete.forEach(task => batch.delete(doc(db, 'checklistItems', task.id)));
+                        // Delete category itself
+                        batch.delete(doc(db, 'checklistCategories', id));
+                        await batch.commit();
+                    }
+                });
+            });
+            openEditCategoriesModal();
+        });
+
+        addCategoryForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const newName = document.getElementById('new-category-name').value.trim();
+            if (newName && !categories.some(c => c.name === newName)) {
+                await addDoc(collection(db, 'checklistCategories'), { name: newName });
+            }
+            closeAddCategoryModal();
+        });
+        
+        // Modal Closing functions
+        function closeTaskModal() { taskModal.classList.add('hidden'); taskModal.classList.remove('flex'); }
+        function closeUpdateStatusModal() { updateStatusModal.classList.add('hidden'); updateStatusModal.classList.remove('flex'); }
+        function openEditCategoriesModal() { editCategoriesModal.classList.add('flex'); editCategoriesModal.classList.remove('hidden'); }
+        function closeEditCategoriesModal() { editCategoriesModal.classList.add('hidden'); editCategoriesModal.classList.remove('flex'); }
+        function openAddCategoryModal() { addCategoryModal.classList.add('flex'); addCategoryModal.classList.remove('hidden'); }
+        function closeAddCategoryModal() { addCategoryModal.classList.add('hidden'); addCategoryModal.classList.remove('flex'); }
+
+        cancelTaskBtn.addEventListener('click', closeTaskModal);
+        cancelUpdateBtn.addEventListener('click', closeUpdateStatusModal);
+        closeEditCategoriesBtn.addEventListener('click', closeEditCategoriesModal);
+        cancelAddCategoryBtn.addEventListener('click', closeAddCategoryModal);
+        
+        // Sidebar Logic
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }
+        const closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); }
+        hamburgerBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+        
+        // Data Seeding
+        async function seedInitialData() {
+            const categoriesRef = collection(db, 'checklistCategories');
+            const snapshot = await getDocs(categoriesRef);
+            if (snapshot.empty) {
+                console.log("No categories found, seeding initial data...");
+                const initialCategories = ["רישיונות וביטוחים", "חירום וביטחון", "לוגיסטיקה ותשתיות", "חשמל", "במה והפקה", "מזון ושתייה", "שיווק ומיתוג", "צוותים ושירותים", "מיקום", "VIP", "אומנים", "מתנות", "משרדים", "רו״ח", "בלת״ם"];
+                const initialTasks = [
+                    { category: "רישיונות וביטוחים", name: "השגת רישיון עסק זמני", urgency: 1 },
+                    { category: "רישיונות וביטוחים", name: "קבלת אישור משטרה", urgency: 1 },
+                    { category: "רישיונות וביטוחים", name: "קבלת אישור כיבוי אש", urgency: 1 },
+                    { category: "רישיונות וביטוחים", name: "הכנת תוכנית בטיחות עם יועץ", urgency: 1 },
+                    { category: "רישיונות וביטוחים", name: "סגירת פוליסות ביטוח", urgency: 2 },
+                    { category: "חירום וביטחון", name: "תיאום עם מד\"א", urgency: 1 },
+                    { category: "חירום וביטחון", name: "תיאום אבטחה משטרתית", urgency: 1 },
+                    { category: "חירום וביטחון", name: "סגירת חוזה עם חברת אבטחה", urgency: 2 },
+                    { category: "לוגיסטיקה ותשתיות", name: "הזמנת ציוד קשר", urgency: 3 },
+                    { category: "לוגיסטיקה ותשתיות", name: "הזמנת גדרות ומחסומים", urgency: 2 },
+                    { category: "לוגיסטיקה ותשתיות", name: "הזמנת שירותים כימיים", urgency: 3 },
+                    { category: "במה והפקה", name: "סגירת חוזה לבמה", urgency: 2 },
+                    { category: "במה והפקה", name: "סגירת חוזה למערכת סאונד", urgency: 2 },
+                    { category: "במה והפקה", name: "סגירת חוזה לתאורה ומסכים", urgency: 2 },
+                    { category: "אומנים", name: "סגירת חוזים עם האומנים הראשיים", urgency: 1 },
+                    { category: "שיווק ומיתוג", name: "עיצוב ובניית קמפיין דיגיטלי", urgency: 2 },
+                ];
+                
+                const batch = writeBatch(db);
+                initialCategories.forEach(name => {
+                    const docRef = doc(collection(db, 'checklistCategories'));
+                    batch.set(docRef, { name });
+                });
+                initialTasks.forEach(task => {
+                    const docRef = doc(collection(db, 'checklistItems'));
+                    batch.set(docRef, { ...task, status: 'not-done', deadline: '', assignedTo: '', details: '' });
+                });
+                await batch.commit();
+                console.log("Initial data seeded successfully.");
+            }
+        }
+    </script>
+</body>
+</html>
+
