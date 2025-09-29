@@ -120,9 +120,10 @@
         }
 
         /* Page load animations */
-        .fade-in { animation: fadeIn 0.8s ease-in-out forwards; }
-        .fade-in-delay-1 { animation: fadeIn 0.8s 0.2s ease-in-out forwards; }
-        .fade-in-delay-2 { animation: fadeIn 0.8s 0.4s ease-in-out forwards; }
+        .fade-in { animation: fadeIn 0.8s ease-in-out forwards; opacity: 0; }
+        .fade-in-delay-1 { animation: fadeIn 0.8s 0.2s ease-in-out forwards; opacity: 0; }
+        .fade-in-delay-2 { animation: fadeIn 0.8s 0.4s ease-in-out forwards; opacity: 0; }
+        .fade-in-delay-3 { animation: fadeIn 0.8s 0.6s ease-in-out forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -161,18 +162,23 @@
     <div id="main-view" class="hidden bg-black">
         <!-- Header -->
         <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10 border-b border-gold/20">
-            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center gap-3">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center relative h-16">
+                <!-- Left Section: Logout -->
+                <div id="user-info" class="flex items-center gap-4">
+                     <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
+                     <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1.5 px-4 rounded-md text-sm hover:bg-gold hover:text-black transition-colors flex items-center gap-2">
+                         <i class="fas fa-sign-out-alt"></i>
+                         <span>התנתקות</span>
+                     </button>
+                 </div>
+
+                <!-- Center Section: Logo -->
+                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3">
                     <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
                     <span class="text-2xl font-bold text-gold hidden sm:block">SAYORA</span>
                 </div>
-                <div id="user-info" class="flex items-center gap-4">
-                    <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
-                    <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1.5 px-4 rounded-md text-sm hover:bg-gold hover:text-black transition-colors flex items-center gap-2">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>התנתקות</span>
-                    </button>
-                </div>
+
+                <!-- Right Section: Hamburger -->
                 <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -239,26 +245,26 @@
                     <div class="mb-12 fade-in-delay-2">
                         <h2 class="text-2xl font-semibold text-gold mb-4">פעולות מהירות</h2>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <a href="#" class="content-card p-4 rounded-lg flex flex-col items-center justify-center text-center hover:border-gold">
+                            <a href="suppliers.html" class="content-card p-4 rounded-lg flex flex-col items-center justify-center text-center hover:border-gold">
                                 <i class="fas fa-plus-circle text-3xl text-gold mb-2"></i>
                                 <span class="font-semibold">הוסף ספק</span>
                             </a>
-                            <a href="#" class="content-card p-4 rounded-lg flex flex-col items-center justify-center text-center hover:border-gold">
-                                <i class="fas fa-edit text-3xl text-gold mb-2"></i>
-                                <span class="font-semibold">ערוך מפה</span>
+                            <a href="map.html" class="content-card p-4 rounded-lg flex flex-col items-center justify-center text-center hover:border-gold">
+                                <i class="fas fa-map-marked-alt text-3xl text-gold mb-2"></i>
+                                <span class="font-semibold">צפייה במפה</span>
                             </a>
-                            <a href="#" class="content-card p-4 rounded-lg flex flex-col items-center justify-center text-center hover:border-gold">
+                            <a href="costs.html" class="content-card p-4 rounded-lg flex flex-col items-center justify-center text-center hover:border-gold">
                                 <i class="fas fa-chart-bar text-3xl text-gold mb-2"></i>
-                                <span class="font-semibold">צפה בדוחות</span>
+                                <span class="font-semibold">צפייה בדוחות</span>
                             </a>
-                            <a href="#" class="content-card p-4 rounded-lg flex flex-col items-center justify-center text-center hover:border-gold">
-                                <i class="fas fa-bullhorn text-3xl text-gold mb-2"></i>
-                                <span class="font-semibold">שלח עדכון</span>
+                            <a href="tickets.html" class="content-card p-4 rounded-lg flex flex-col items-center justify-center text-center hover:border-gold">
+                                <i class="fas fa-ticket-alt text-3xl text-gold mb-2"></i>
+                                <span class="font-semibold">צפייה בכרטיסים</span>
                             </a>
                         </div>
                     </div>
 
-                    <div class="content-card p-6 sm:p-8 rounded-lg shadow-xl space-y-8 fade-in-delay-2">
+                    <div class="content-card p-6 sm:p-8 rounded-lg shadow-xl space-y-8 fade-in-delay-3">
                         <div>
                             <h2 class="text-3xl font-semibold text-gold mb-3 flex items-center gap-3"><i class="fas fa-heart"></i> חזון הפסטיבל</h2>
                             <p class="text-gray-300 leading-relaxed">
@@ -272,11 +278,31 @@
                             </p>
                         </div>
                     </div>
+
+                    <!-- Message Board -->
+                    <div class="mt-12 fade-in-delay-3">
+                        <h2 class="text-3xl font-semibold text-gold mb-6 flex items-center gap-3"><i class="fas fa-comments"></i> פורום הודעות הצוות</h2>
+                        <div class="content-card p-6 rounded-lg shadow-xl">
+                            <!-- Message Display -->
+                            <div id="messages-container" class="space-y-4 max-h-96 overflow-y-auto pr-2 mb-6">
+                                <!-- Messages will be loaded here -->
+                            </div>
+                            <!-- New Message Form -->
+                            <form id="message-form" class="flex flex-col sm:flex-row gap-3">
+                                <textarea id="message-input" class="w-full p-3 rounded-lg bg-[#2a2a2a] border border-[#444] text-[#E0E0E0] focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/50 transition" placeholder="כתוב הודעה חדשה..." rows="2" required></textarea>
+                                <button type="submit" class="font-bold py-3 px-6 rounded-lg btn-gold text-base whitespace-nowrap">
+                                    <i class="fas fa-paper-plane mr-2"></i>שלח
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Footer -->
                 <footer class="text-center mt-12 text-sm text-gray-500">
-                    <p>&copy; 2025 SAYORA Festival | נבנה על ידי דורון נקש</p>
+                    <p>&copy; 2025 SAYORA Festival | מפיק ראשי: רועי חנוני</p>
+                    <p>בונה האתר: דורון נקש</p>
                 </footer>
             </main>
         </div>
@@ -297,10 +323,12 @@
         // Import Firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         // DOM Elements
         const preloader = document.getElementById('preloader');
@@ -319,6 +347,13 @@
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
 
+        // Message Board elements
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const messagesContainer = document.getElementById('messages-container');
+        
+        let currentUserName = 'אורח';
+
         // --- UI Logic ---
         
         // Number counting animation
@@ -332,11 +367,11 @@
                         const counter = entry.target;
                         const updateCount = () => {
                             const target = +counter.getAttribute('data-target');
-                            const count = +counter.innerText;
+                            const count = +counter.innerText.replace(/,/g, '');
                             const inc = target / speed;
 
                             if (count < target) {
-                                counter.innerText = Math.ceil(count + inc);
+                                counter.innerText = Math.ceil(count + inc).toLocaleString();
                                 setTimeout(updateCount, 15);
                             } else {
                                 counter.innerText = target.toLocaleString();
@@ -353,20 +388,31 @@
         
         // --- Authentication Logic ---
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             preloader.style.opacity = '0';
-            setTimeout(() => {
+            setTimeout(async () => {
                 preloader.style.display = 'none';
                 if (user) {
+                    // Fetch user's full name from Firestore
+                    const userDocRef = doc(db, 'users', user.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        currentUserName = userDoc.data().fullName;
+                    } else {
+                        currentUserName = user.email.split('@')[0]; // Fallback
+                    }
+
                     loginView.classList.add('hidden');
                     mainView.classList.remove('hidden');
-                    welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
+                    welcomeMsg.textContent = `ברוך הבא, ${currentUserName}`;
                     animateCounters();
+                    loadMessages(); // Load messages after user is logged in
                 } else {
                     mainView.classList.add('hidden');
                     loginView.classList.remove('hidden');
                     emailInput.value = '';
                     passwordInput.value = '';
+                    currentUserName = 'אורח';
                 }
             }, 500); // Wait for fade out transition
         });
@@ -393,6 +439,65 @@
         logoutBtn.addEventListener('click', () => {
             signOut(auth).catch(error => console.error("Logout Error:", error));
         });
+
+        // --- Message Board Logic ---
+
+        function loadMessages() {
+            const q = query(collection(db, "messages"));
+            onSnapshot(q, (snapshot) => {
+                let messages = [];
+                snapshot.forEach((doc) => {
+                    messages.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort messages by timestamp client-side
+                messages.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
+                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
+                    return dateA - dateB;
+                });
+                
+                messagesContainer.innerHTML = '';
+                messages.forEach(msg => {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('bg-black/20', 'p-3', 'rounded-lg', 'border-r-2', 'border-gold');
+                    
+                    const timestamp = msg.createdAt ? msg.createdAt.toDate().toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : 'לפני רגע';
+
+                    messageElement.innerHTML = `
+                        <div class="flex justify-between items-center text-sm mb-1">
+                            <strong class="text-gold">${msg.name}</strong>
+                            <span class="text-gray-400">${timestamp}</span>
+                        </div>
+                        <p class="text-gray-200 whitespace-pre-wrap">${msg.text}</p>
+                    `;
+                    messagesContainer.appendChild(messageElement);
+                });
+                // Scroll to the bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageText = messageInput.value.trim();
+
+            if (messageText && auth.currentUser) {
+                try {
+                    await addDoc(collection(db, "messages"), {
+                        text: messageText,
+                        name: currentUserName,
+                        uid: auth.currentUser.uid,
+                        createdAt: serverTimestamp()
+                    });
+                    messageInput.value = '';
+                } catch (error) {
+                    console.error("Error sending message: ", error);
+                    alert("שגיאה בשליחת ההודעה.");
+                }
+            }
+        });
+
 
         // --- Sidebar Logic ---
         const openSidebar = () => {
