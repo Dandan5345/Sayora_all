@@ -44,6 +44,7 @@
             transition: transform 0.3s ease, opacity 0.3s ease;
             transform: scale(0.95);
             opacity: 0;
+            width: 95%; /* Responsive width */
         }
         .modal-backdrop.flex {
             opacity: 1;
@@ -87,8 +88,8 @@
         }
         .supplier-card:hover {
             border-color: #FFD700;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255, 215, 0, 0.3);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 20px rgba(255, 215, 0, 0.4);
         }
         .status-not-contacted { background-color: #1f2937; } /* Default dark blueish gray */
         .status-in-progress { background: linear-gradient(to top right, #3a3a3a, #4a3a00); } /* Dark gold/yellow tint */
@@ -118,6 +119,11 @@
         .toast {
             animation: slideInRight 0.3s ease forwards, fadeOut 0.5s ease 3s forwards;
         }
+        
+        /* Help Modal Prose styles for better readability */
+        .prose-custom ul { padding-right: 1.5rem; }
+        .prose-custom h3, .prose-custom h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; }
+
     </style>
 </head>
 <body class="bg-black">
@@ -171,17 +177,39 @@
 
             <main class="flex-1 p-4 sm:p-6 lg:p-8 min-h-screen">
                 <div class="max-w-7xl mx-auto">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-                        <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול ספקים</h1>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div class="flex items-center gap-4">
+                            <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול ספקים</h1>
+                            <button id="help-btn" class="text-gold text-xl w-9 h-9 border border-gold/50 rounded-full flex items-center justify-center hover:bg-gold/10 hover:border-gold transition-colors flex-shrink-0">
+                                <i class="fas fa-question"></i>
+                            </button>
+                        </div>
                         <div class="flex flex-wrap justify-end gap-2 sm:gap-4">
-                            <button id="add-quote-btn" class="bg-transparent border border-gold text-gold font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gold hover:text-black transition-all duration-300">
+                            <button id="add-quote-btn" class="bg-transparent border border-gold text-gold font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gold hover:text-black transition-all duration-300 text-sm sm:text-base">
                                 <i class="fas fa-file-invoice-dollar"></i>
                                 <span>הוסף הצעת מחיר</span>
                             </button>
-                            <button id="add-supplier-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2">
+                            <button id="add-supplier-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2 text-sm sm:text-base">
                                 <i class="fas fa-plus-circle"></i>
                                 <span>הוספת ספק</span>
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Color Legend -->
+                    <div id="color-legend" class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 p-3 bg-black/30 rounded-lg border border-gray-800 animate-fade-in">
+                        <span class="text-sm font-bold text-gray-200">מקרא סטטוסים:</span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full status-not-contacted border border-gray-600"></span>
+                            <span class="text-sm text-gray-400">טרם נוצר קשר</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full status-in-progress border border-gray-600"></span>
+                            <span class="text-sm text-gray-400">בטיפול</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full status-finalized border border-gray-600"></span>
+                            <span class="text-sm text-gray-400">סגור</span>
                         </div>
                     </div>
 
@@ -212,8 +240,8 @@
 
     <!-- Add/Edit Supplier/Quote Modal -->
     <div id="form-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
-            <form id="main-form" class="p-8">
+        <div class="modal-content max-w-lg rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <form id="main-form" class="p-6 sm:p-8">
                 <h2 id="modal-title" class="text-3xl font-bold text-gold mb-6 text-center"></h2>
                 <input type="hidden" id="form-id">
                 <input type="hidden" id="form-type"> <!-- 'supplier' or 'quote' -->
@@ -310,12 +338,12 @@
                 </div>
 
                 <!-- Buttons -->
-                <div class="flex justify-between items-center gap-4 pt-8 mt-4 border-t border-gray-700">
-                    <button type="button" id="cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
-                    <div class="flex gap-4">
-                         <button type="button" id="prev-btn" class="hidden bg-transparent border border-gold text-gold font-bold py-2 px-6 rounded-lg hover:bg-gold hover:text-black transition-colors">הקודם</button>
-                         <button type="button" id="next-btn" class="btn-gold font-bold py-2 px-6 rounded-lg">הבא</button>
-                         <button type="submit" id="submit-btn" class="hidden btn-gold font-bold py-2 px-6 rounded-lg">שמור שינויים</button>
+                <div class="flex flex-col-reverse sm:flex-row sm:justify-between items-center gap-4 pt-6 mt-6 border-t border-gray-700">
+                    <button type="button" id="cancel-btn" class="w-full sm:w-auto bg-gray-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
+                    <div class="flex w-full sm:w-auto justify-end gap-3">
+                         <button type="button" id="prev-btn" class="hidden w-full sm:w-auto bg-transparent border border-gold text-gold font-bold py-2.5 px-6 rounded-lg hover:bg-gold hover:text-black transition-colors">הקודם</button>
+                         <button type="button" id="next-btn" class="w-full sm:w-auto btn-gold font-bold py-2.5 px-6 rounded-lg">הבא</button>
+                         <button type="submit" id="submit-btn" class="hidden w-full sm:w-auto btn-gold font-bold py-2.5 px-6 rounded-lg">שמור שינויים</button>
                     </div>
                 </div>
             </form>
@@ -324,11 +352,11 @@
 
     <!-- View Supplier Modal -->
     <div id="view-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto p-8">
+        <div class="modal-content max-w-lg rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto p-6 sm:p-8">
             <div id="view-modal-content"></div>
-             <div class="flex justify-between items-center gap-4 pt-6 mt-6 border-t border-gray-700">
-                <button type="button" id="view-close-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">סגור</button>
-                <div id="view-actions" class="flex gap-4">
+             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 mt-6 border-t border-gray-700">
+                <button type="button" id="view-close-btn" class="w-full sm:w-auto bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors order-2 sm:order-1">סגור</button>
+                <div id="view-actions" class="w-full sm:w-auto flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
                     <!-- Action buttons like Edit, Delete, Convert will be injected here -->
                 </div>
             </div>
@@ -337,7 +365,7 @@
     
     <!-- Category Management Modals -->
     <div id="category-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20">
+        <div class="modal-content max-w-sm rounded-lg shadow-2xl shadow-gold/20">
             <form id="category-form" class="p-8 space-y-4">
                 <h2 class="text-2xl font-bold text-gold text-center">ניהול קטגוריות</h2>
                 <div id="category-list" class="space-y-2 max-h-60 overflow-y-auto p-2 bg-black/20 rounded-md">
@@ -354,6 +382,51 @@
                     <button type="button" id="category-close-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500">סגור</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 sm:p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <h2 class="text-3xl font-bold text-gold flex items-center gap-3"><i class="fas fa-question-circle"></i> מרכז עזרה</h2>
+                    <button id="help-close-btn" class="text-gray-400 hover:text-white text-4xl leading-none">&times;</button>
+                </div>
+                <div class="space-y-6 text-gray-300 prose-custom">
+                    <h3 class="text-xl font-semibold text-gold border-b border-gold/20 pb-2">ברוכים הבאים לדף ניהול הספקים!</h3>
+                    <p>כאן תוכלו לנהל את כל הספקים, הספונסרים והצעות המחיר לפסטיבל בצורה מסודרת ויעילה.</p>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold text-gold">מה ההבדל בין "ספק" ל"הצעת מחיר"?</h4>
+                        <ul class="list-disc space-y-2 mt-2">
+                            <li><strong>הצעת מחיר:</strong> זהו השלב הראשוני. קיבלתם המלצה או מצאתם ספק פוטנציאלי? הוסיפו אותו כ"הצעת מחיר". זהו המקום לרכז את כל האפשרויות לפני שיצרתם קשר רשמי.</li>
+                            <li><strong>ספק:</strong> ברגע שיצרתם קשר עם מישהו מתוך הצעות המחיר והתחלתם תהליך עבודה מולו, יש להפוך אותו ל"ספק". ניתן לעשות זאת על ידי לחיצה על הכרטיסייה שלו ובחירת "הפוך לספק". המערכת תעביר את כל הפרטים ותמחק את הצעת המחיר המקורית.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gold">מקרא צבעים (סטטוס ספקים):</h4>
+                        <ul class="list-none space-y-3 mt-2">
+                            <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full status-not-contacted border border-gray-600 flex-shrink-0"></span> <div><strong class="text-white">אפור-כחלחל:</strong> טרם נוצר קשר עם הספק.</div></li>
+                            <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full status-in-progress border border-gray-600 flex-shrink-0"></span> <div><strong class="text-white">זהב-אפרפר:</strong> נוצר קשר והעניינים בתהליך עבודה.</div></li>
+                            <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full status-finalized border border-gray-600 flex-shrink-0"></span> <div><strong class="text-white">ירוק-אפרפר:</strong> הכל סגור! החוזה חתום והתשלום סוכם.</div></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gold">טיפים לשימוש יעיל:</h4>
+                        <ul class="list-disc space-y-2 mt-2">
+                            <li><strong>ניהול קטגוריות:</strong> השתמשו בכפתור העיפרון ליד שדה ה"קטגוריה" בטופס כדי להוסיף, למחוק או לערוך קטגוריות. זה יעזור לכם לשמור על סדר.</li>
+                            <li><strong>קישור להסכם:</strong> כשספק מסומן כ"סגור", תוכלו להוסיף קישור להסכם החתום (למשל, מ-Google Drive). זה מבטיח שכל המסמכים החשובים נגישים.</li>
+                            <li><strong>מעקב אחר מה שפתוח:</strong> אם ספק נמצא "בטיפול" אבל עדיין יש דברים פתוחים, ציינו אותם בשדה "מה עדיין לא סגור?" כדי שכולם יהיו מעודכנים.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                     <button id="help-close-btn-bottom" class="btn-gold font-bold py-2 px-8 rounded-lg">הבנתי, תודה!</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -390,7 +463,6 @@
 
     <script type="module">
         // --- Firebase Config ---
-        // It's recommended to use environment variables for Firebase config in a real project.
         const firebaseConfig = {
             apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
             authDomain: "sayora-all.firebaseapp.com",
@@ -483,6 +555,12 @@
         const confirmMessage = document.getElementById('confirm-message');
         const confirmOkBtn = document.getElementById('confirm-ok-btn');
         const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+        
+        // Help Modal
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const helpCloseBtn = document.getElementById('help-close-btn');
+        const helpCloseBtnBottom = document.getElementById('help-close-btn-bottom');
 
         // --- Global State ---
         let suppliersUnsubscribe = null;
@@ -533,6 +611,7 @@
 
                 const closeAndResolve = (value) => {
                     modal.classList.add('hidden');
+                    modal.classList.remove('flex');
                     form.removeEventListener('submit', handleSubmit);
                     cancelBtn.removeEventListener('click', handleCancel);
                     resolve(value);
@@ -576,7 +655,7 @@
             const categoriesRef = collection(db, 'supplier_categories');
             categoriesUnsubscribe = onSnapshot(query(categoriesRef), (snapshot) => {
                 allCategories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                allCategories.sort((a,b) => a.name.localeCompare(b.name));
+                allCategories.sort((a,b) => a.name.localeCompare(b.name, 'he'));
                 renderCategories();
             });
         }
@@ -585,7 +664,7 @@
             const suppliersRef = collection(db, 'suppliers');
             suppliersUnsubscribe = onSnapshot(query(suppliersRef), (snapshot) => {
                 allSuppliers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                allSuppliers.sort((a,b) => a.name.localeCompare(b.name));
+                allSuppliers.sort((a,b) => a.name.localeCompare(b.name, 'he'));
                 renderItems(allSuppliers, suppliersGridContainer, 'supplier');
             });
         }
@@ -594,7 +673,7 @@
             const quotesRef = collection(db, 'quotes');
             quotesUnsubscribe = onSnapshot(query(quotesRef), (snapshot) => {
                 allQuotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                allQuotes.sort((a,b) => a.name.localeCompare(b.name));
+                allQuotes.sort((a,b) => a.name.localeCompare(b.name, 'he'));
                 renderItems(allQuotes, quotesGridContainer, 'quote');
             });
         }
@@ -619,7 +698,7 @@
             const sortedCategories = Object.keys(groupedItems).sort((a, b) => {
                 if (a === 'ללא קטגוריה') return 1;
                 if (b === 'ללא קטגוריה') return -1;
-                return a.localeCompare(b);
+                return a.localeCompare(b, 'he');
             });
 
             sortedCategories.forEach(category => {
@@ -700,7 +779,7 @@
                 <div class="flex-grow">
                     <div class="flex justify-between items-start">
                         <h3 class="text-2xl font-bold text-white">${data.name}</h3>
-                        <span class="text-xs font-semibold ${data.type === 'sponsor' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'} py-1 px-3 rounded-full">${data.type === 'sponsor' ? 'ספונסר' : 'ספק רגיל'}</span>
+                        <span class="text-xs font-semibold ${data.type === 'sponsor' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'} py-1 px-3 rounded-full flex-shrink-0">${data.type === 'sponsor' ? 'ספונסר' : 'ספק רגיל'}</span>
                     </div>
                     <p class="text-gold font-semibold mt-1 mb-3">${data.provides || ''}</p>
                     <div class="border-t border-gray-700 my-3"></div>
@@ -798,7 +877,7 @@
             let contentHTML = `
                 <div class="flex justify-between items-start mb-4">
                     <h2 class="text-3xl font-bold text-gold">${data.name}</h2>
-                    <span class="text-sm font-semibold ${data.type === 'sponsor' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'} py-1 px-3 rounded-full">${data.type === 'sponsor' ? 'ספונסר' : 'ספק רגיל'}</span>
+                    <span class="text-sm font-semibold ${data.type === 'sponsor' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'} py-1 px-3 rounded-full flex-shrink-0">${data.type === 'sponsor' ? 'ספונסר' : 'ספק רגיל'}</span>
                 </div>
                 <p class="text-lg text-gray-300 mb-6">${data.category ? data.category + ' - ' : ''}${data.provides || ''}</p>
                 <div class="space-y-3 text-gray-200 border-t border-gray-700 pt-6">
@@ -818,7 +897,7 @@
             viewActions.innerHTML = '';
             if (type === 'quote') {
                 const convertBtn = document.createElement('button');
-                convertBtn.className = 'btn-gold font-bold py-2 px-4 rounded-lg flex items-center gap-2';
+                convertBtn.className = 'w-full sm:w-auto btn-gold font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2';
                 convertBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> הפוך לספק';
                 convertBtn.onclick = () => {
                     closeModal(viewModal);
@@ -829,13 +908,13 @@
             }
             
             const editBtn = document.createElement('button');
-            editBtn.className = 'bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 flex items-center gap-2';
+            editBtn.className = 'w-full sm:w-auto bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 flex items-center justify-center gap-2';
             editBtn.innerHTML = '<i class="fas fa-edit"></i> עריכה';
             editBtn.onclick = () => { closeModal(viewModal); openFormModal(type, id, data); };
             viewActions.appendChild(editBtn);
             
             const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-500 flex items-center gap-2';
+            deleteBtn.className = 'w-full sm:w-auto bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-500 flex items-center justify-center gap-2';
             deleteBtn.innerHTML = '<i class="fas fa-trash"></i> מחיקה';
             deleteBtn.onclick = () => deleteItem(id, data.name, type);
             viewActions.appendChild(deleteBtn);
@@ -990,6 +1069,16 @@
         // --- Add Buttons Logic ---
         addSupplierBtn.addEventListener('click', () => openFormModal('supplier'));
         addQuoteBtn.addEventListener('click', () => openFormModal('quote'));
+        
+        // --- Help Modal Logic ---
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.remove('hidden');
+            helpModal.classList.add('flex');
+        });
+        const closeHelpModal = () => closeModal(helpModal);
+        helpCloseBtn.addEventListener('click', closeHelpModal);
+        helpCloseBtnBottom.addEventListener('click', closeHelpModal);
+        helpModal.addEventListener('click', e => { if (e.target === helpModal) closeHelpModal(); });
 
     </script>
 </body>
