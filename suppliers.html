@@ -132,14 +132,21 @@
         <!-- Header -->
         <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
+                <!-- Left Group -->
                 <div class="flex items-center gap-3">
+                    <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
                     <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
                     <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
                 </div>
-                <div id="user-info" class="flex items-center gap-3">
-                    <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
-                    <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1 px-3 rounded-md text-sm hover:bg-gold hover:text-black transition-colors">התנתקות</button>
+                <!-- Right Group -->
+                <div class="flex items-center gap-4">
+                    <button id="help-btn" class="text-gold text-xl w-9 h-9 border border-gold/50 rounded-full flex items-center justify-center hover:bg-gold/10 hover:border-gold transition-colors flex-shrink-0">
+                        <i class="fas fa-question"></i>
+                    </button>
+                    <div id="user-info" class="flex items-center gap-3">
+                        <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
+                        <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1 px-3 rounded-md text-sm hover:bg-gold hover:text-black transition-colors">התנתקות</button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -180,9 +187,6 @@
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <div class="flex items-center gap-4">
                             <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול ספקים</h1>
-                            <button id="help-btn" class="text-gold text-xl w-9 h-9 border border-gold/50 rounded-full flex items-center justify-center hover:bg-gold/10 hover:border-gold transition-colors flex-shrink-0">
-                                <i class="fas fa-question"></i>
-                            </button>
                         </div>
                         <div class="flex flex-wrap justify-end gap-2 sm:gap-4">
                             <button id="add-quote-btn" class="bg-transparent border border-gold text-gold font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gold hover:text-black transition-all duration-300 text-sm sm:text-base">
@@ -249,6 +253,10 @@
                 <!-- Step 1 -->
                 <div id="step-1" class="space-y-6">
                     <h3 class="text-lg text-gray-400 font-semibold border-b border-gray-600 pb-2">שלב 1: פרטים בסיסיים</h3>
+                    <div>
+                        <label for="managing-user-name" class="block text-sm font-medium text-gray-300 mb-1">שם מנהל מטפל</label>
+                        <input type="text" id="managing-user-name" class="input-field" required>
+                    </div>
                     <div>
                         <label for="supplier-name" class="block text-sm font-medium text-gray-300 mb-1">שם הספק/הצעה</label>
                         <input type="text" id="supplier-name" class="input-field" required>
@@ -424,7 +432,7 @@
                     </div>
                 </div>
                 <div class="mt-8 text-center">
-                     <button id="help-close-btn-bottom" class="btn-gold font-bold py-2 px-8 rounded-lg">הבנתי, תודה!</button>
+                   <button id="help-close-btn-bottom" class="btn-gold font-bold py-2 px-8 rounded-lg">הבנתי, תודה!</button>
                 </div>
             </div>
         </div>
@@ -517,6 +525,7 @@
         const cancelBtn = document.getElementById('cancel-btn');
         
         // Form Fields
+        const managingUserNameInput = document.getElementById('managing-user-name');
         const supplierNameInput = document.getElementById('supplier-name');
         const categorySelect = document.getElementById('category-select');
         const supplierPhoneInput = document.getElementById('supplier-phone');
@@ -570,6 +579,7 @@
         let allSuppliers = [];
         let allQuotes = [];
         let currentStep = 1;
+        let currentUserEmail = null; // To store logged-in user's email
 
         // --- Utility Functions (Modals & Toasts) ---
         function showToast(message, isError = false) {
@@ -629,6 +639,7 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 appContainer.classList.remove('hidden');
+                currentUserEmail = user.email; // Store user email
                 welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
                 loadAllData();
             } else {
@@ -784,13 +795,15 @@
                     <p class="text-gold font-semibold mt-1 mb-3">${data.provides || ''}</p>
                     <div class="border-t border-gray-700 my-3"></div>
                     <div class="space-y-2 text-sm text-gray-300">
+                        <p><i class="fas fa-user-tie fa-fw ml-2 text-gray-500"></i> <strong>מנהל מטפל:</strong> ${data.managingUserName || 'לא הוזן'}</p>
                         <p><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i> ${data.phone || 'לא הוזן'}</p>
                         ${data.type === 'regular' && data.price ? `<p><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i> <strong>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>` : ''}
                         <p><i class="fas fa-info-circle fa-fw ml-2 text-gray-500"></i> <strong>סטטוס:</strong> <span class="${statusColor}">${statusText}</span></p>
                         ${(type === 'supplier' && !data.isFinalized && data.pendingDetails) ? `<p><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i> <strong>פתוח:</strong> ${data.pendingDetails}</p>` : ''}
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-gray-700 flex justify-end">
+                <div class="mt-4 pt-4 border-t border-gray-700 flex justify-between items-center">
+                    <span class="text-xs text-gray-500">${data.lastEditor ? `עודכן ע"י: ${data.lastEditor.split('@')[0]}` : ''}</span>
                     <span class="text-sm text-gray-500">לחץ לפרטים נוספים...</span>
                 </div>
             `;
@@ -811,6 +824,7 @@
             finalizedSection.style.display = type === 'supplier' ? 'block' : 'none';
             
             if (id || Object.keys(data).length > 0) { // Populate form if editing or converting
+                managingUserNameInput.value = data.managingUserName || '';
                 supplierNameInput.value = data.name || '';
                 categorySelect.value = data.category || '';
                 document.querySelector(`input[name="supplier-type"][value="${data.type || 'regular'}"]`).checked = true;
@@ -847,7 +861,7 @@
         }
 
         nextBtn.addEventListener('click', () => {
-            if(supplierNameInput.reportValidity()){
+            if(managingUserNameInput.reportValidity() && supplierNameInput.reportValidity()){
                 currentStep = 2;
                 updateStepVisibility();
             }
@@ -881,6 +895,7 @@
                 </div>
                 <p class="text-lg text-gray-300 mb-6">${data.category ? data.category + ' - ' : ''}${data.provides || ''}</p>
                 <div class="space-y-3 text-gray-200 border-t border-gray-700 pt-6">
+                    <p><strong><i class="fas fa-user-tie fa-fw ml-2 text-gray-500"></i>מנהל מטפל:</strong> ${data.managingUserName || 'לא הוזן'}</p>
                     <p><strong><i class="fas fa-info-circle fa-fw ml-2 text-gray-500"></i>סטטוס:</strong> <span class="${statusColor}">${statusText}</span></p>
                     <p><strong><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i>טלפון:</strong> ${data.phone ? `<a href="tel:${data.phone}" class="hover:underline">${data.phone}</a>` : 'לא הוזן'}</p>
                     <p><strong><i class="fas fa-user-check fa-fw ml-2 text-gray-500"></i>נוצר קשר:</strong> ${data.contacted ? 'כן' : 'לא'}</p>
@@ -890,6 +905,7 @@
             if (data.type === 'regular' && data.price) contentHTML += `<p><strong><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>`;
             if (type === 'supplier' && !data.isFinalized && data.pendingDetails) contentHTML += `<p><strong><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i>מה שפתוח:</strong> ${data.pendingDetails}</p>`;
             if (type === 'supplier' && data.isFinalized && data.agreementLink) contentHTML += `<p><strong><i class="fas fa-link fa-fw ml-2 text-gray-500"></i>קישור להסכם:</strong> <a href="${data.agreementLink}" target="_blank" class="text-blue-400 hover:underline">פתח קישור</a></p>`;
+            if (data.lastEditor) contentHTML += `<p class="mt-4"><strong><i class="fas fa-user-edit fa-fw ml-2 text-gray-500"></i>עודכן לאחרונה ע"י:</strong> ${data.lastEditor}</p>`;
             
             contentHTML += `</div>`;
             viewModalContent.innerHTML = contentHTML;
@@ -933,6 +949,7 @@
             const collectionName = type === 'supplier' ? 'suppliers' : 'quotes';
 
             const data = {
+                managingUserName: managingUserNameInput.value,
                 name: supplierNameInput.value,
                 category: categorySelect.value === 'add_new' ? '' : categorySelect.value,
                 type: document.querySelector('input[name="supplier-type"]:checked').value,
@@ -941,6 +958,7 @@
                 contacted: document.querySelector('input[name="contacted"]:checked').value === 'yes',
                 contactDetails: contactDetailsInput.value,
                 price: document.querySelector('input[name="supplier-type"]:checked').value === 'regular' ? (parseInt(priceInput.value) || 0) : null,
+                lastEditor: currentUserEmail, // Add last editor email
             };
 
             if (type === 'supplier') {
