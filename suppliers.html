@@ -72,8 +72,6 @@
             outline: none; border-color: #FFD700;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
-        .form-step { display: none; }
-        .form-step.active { display: block; }
         
         .supplier-card {
             border: 1px solid rgba(255, 215, 0, 0.2);
@@ -215,9 +213,10 @@
                 <input type="hidden" id="data-type">
                 <input type="hidden" id="is-conversion">
                 <input type="hidden" id="original-quote-id">
-
-                <!-- Step 1 -->
-                <div id="form-step-1" class="form-step active space-y-6">
+    
+                <!-- Unified Form Container -->
+                <div class="space-y-6">
+                    <!-- General Details -->
                     <div>
                         <label for="data-name" class="block text-sm font-medium text-gray-300 mb-1">שם הספק / הצעת מחיר</label>
                         <input type="text" id="data-name" class="input-field" required>
@@ -244,61 +243,61 @@
                         <label for="data-phone" class="block text-sm font-medium text-gray-300 mb-1">מספר טלפון</label>
                         <input type="tel" id="data-phone" class="input-field">
                     </div>
-                </div>
-
-                <!-- Step 2 -->
-                <div id="form-step-2" class="form-step space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">האם נוצר קשר?</label>
-                        <div class="flex gap-4">
-                            <label class="flex items-center"><input type="radio" name="contacted" value="yes" class="ml-2"> כן</label>
-                            <label class="flex items-center"><input type="radio" name="contacted" value="no" class="ml-2" checked> לא</label>
-                        </div>
-                    </div>
-                    <div id="contacted-yes-fields" class="hidden space-y-6">
+    
+                    <!-- Contact Details -->
+                    <div class="border-t border-gray-700 pt-6 space-y-6">
                         <div>
-                            <label for="contact-details" class="block text-sm font-medium text-gray-300 mb-1">שם איש קשר ופרטי הסיכום</label>
-                            <textarea id="contact-details" rows="3" class="textarea-field"></textarea>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">האם נוצר קשר?</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center"><input type="radio" name="contacted" value="yes" class="ml-2"> כן</label>
+                                <label class="flex items-center"><input type="radio" name="contacted" value="no" class="ml-2" checked> לא</label>
+                            </div>
                         </div>
-                        <div id="price-field">
-                            <label for="price" class="block text-sm font-medium text-gray-300 mb-1">מה המחיר שסגרנו?</label>
-                            <input type="number" id="price" class="input-field">
+                        <div id="contacted-yes-fields" class="hidden space-y-6">
+                            <div>
+                                <label for="contact-details" class="block text-sm font-medium text-gray-300 mb-1">שם איש קשר ופרטי הסיכום</label>
+                                <textarea id="contact-details" rows="3" class="textarea-field"></textarea>
+                            </div>
+                            <div id="price-field">
+                                <label for="price" class="block text-sm font-medium text-gray-300 mb-1">מה המחיר שסגרנו?</label>
+                                <input type="number" id="price" class="input-field">
+                            </div>
                         </div>
                     </div>
-                    <div id="finalized-section">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">האם הכל סגור?</label>
-                        <div class="flex gap-4">
-                            <label class="flex items-center"><input type="radio" name="finalized" value="yes" class="ml-2"> כן</label>
-                            <label class="flex items-center"><input type="radio" name="finalized" value="no" class="ml-2" checked> לא</label>
+                    
+                    <!-- Supplier-only Fields -->
+                    <div id="supplier-only-section" class="hidden space-y-6 border-t border-gray-700 pt-6">
+                         <div id="finalized-section">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">האם הכל סגור?</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center"><input type="radio" name="finalized" value="yes" class="ml-2"> כן</label>
+                                <label class="flex items-center"><input type="radio" name="finalized" value="no" class="ml-2" checked> לא</label>
+                            </div>
                         </div>
-                    </div>
-                    <div id="finalized-no-field" class="hidden">
-                        <label for="pending-details" class="block text-sm font-medium text-gray-300 mb-1">מה לא סגור עדיין?</label>
-                        <textarea id="pending-details" rows="2" class="textarea-field"></textarea>
-                    </div>
-                    <div id="finalized-yes-field" class="hidden">
-                        <label for="agreement-link" class="block text-sm font-medium text-gray-300 mb-1">קישור להסכם (עדיף מ-Google Drive)</label>
-                        <input type="url" id="agreement-link" class="input-field" placeholder="https://docs.google.com/document/d/...">
-                    </div>
-                    <!-- To-Do List Section -->
-                    <div id="todo-section" class="hidden pt-4 border-t border-gray-700">
-                        <h3 class="text-xl font-semibold text-gold mb-3">רשימת משימות</h3>
-                        <div id="todo-list-container" class="space-y-2 max-h-48 overflow-y-auto mb-3 pr-2"></div>
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="new-todo-input" class="input-field flex-grow" placeholder="הוסף משימה חדשה...">
-                            <button type="button" id="add-todo-btn" class="btn-gold font-bold p-3 rounded-lg"><i class="fas fa-plus"></i></button>
+                        <div id="finalized-no-field" class="hidden">
+                            <label for="pending-details" class="block text-sm font-medium text-gray-300 mb-1">מה לא סגור עדיין?</label>
+                            <textarea id="pending-details" rows="2" class="textarea-field"></textarea>
+                        </div>
+                        <div id="finalized-yes-field" class="hidden">
+                            <label for="agreement-link" class="block text-sm font-medium text-gray-300 mb-1">קישור להסכם (עדיף מ-Google Drive)</label>
+                            <input type="url" id="agreement-link" class="input-field" placeholder="https://docs.google.com/document/d/...">
+                        </div>
+                        <!-- To-Do List Section -->
+                        <div id="todo-section" class="pt-4 border-t border-gray-700">
+                            <h3 class="text-xl font-semibold text-gold mb-3">רשימת משימות</h3>
+                            <div id="todo-list-container" class="space-y-2 max-h-48 overflow-y-auto mb-3 pr-2"></div>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="new-todo-input" class="input-field flex-grow" placeholder="הוסף משימה חדשה...">
+                                <button type="button" id="add-todo-btn" class="btn-gold font-bold p-3 rounded-lg"><i class="fas fa-plus"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
-
+    
                 <!-- Buttons -->
                 <div class="flex justify-between gap-4 pt-6 mt-6 border-t border-gray-700">
                     <button type="button" data-action="close-modal" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors btn-active">ביטול</button>
-                    <div>
-                        <button type="button" id="form-back-btn" class="hidden bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors btn-active">אחורה</button>
-                        <button type="button" id="form-next-btn" class="btn-gold font-bold py-2 px-6 rounded-lg">הבא</button>
-                        <button type="submit" id="form-save-btn" class="hidden btn-gold font-bold py-2 px-6 rounded-lg">שמור</button>
-                    </div>
+                    <button type="submit" id="form-save-btn" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור</button>
                 </div>
             </form>
         </div>
@@ -360,11 +359,11 @@
                     <h3 class="text-xl font-semibold text-gold mb-2">ניהול משימות (To-Do List)</h3>
                     <p>לכל ספק או ספונסר ניתן להוסיף רשימת משימות אישית כדי לעקוב אחר התקדמות העבודה מולו. בעת עריכת ספק, תוכלו:</p>
                      <ul class="list-disc list-inside space-y-1">
-                        <li>להוסיף משימות חדשות (למשל: "לשלוח חוזה", "לוודא תשלום מקדמה").</li>
-                        <li>לסמן משימות שהושלמו באמצעות צ'ק-בוקס.</li>
-                        <li>למחוק משימות לא רלוונטיות.</li>
-                    </ul>
-                    <p class="mt-2">התקדמות המשימות תוצג על הכרטיסייה הראשית של הספק.</p>
+                         <li>להוסיף משימות חדשות (למשל: "לשלוח חוזה", "לוודא תשלום מקדמה").</li>
+                         <li>לסמן משימות שהושלמו באמצעות צ'ק-בוקס.</li>
+                         <li>למחוק משימות לא רלוונטיות.</li>
+                     </ul>
+                     <p class="mt-2">התקדמות המשימות תוצג על הכרטיסייה הראשית של הספק.</p>
                 </div>
 
                 <div>
@@ -419,7 +418,6 @@
         let quotes = [];
         let categories = [];
         let dataToViewOrEdit = null;
-        let currentStep = 1;
         let currentTasks = [];
 
         const loader = document.getElementById('loader');
@@ -583,74 +581,49 @@
         // --- Form Modal (Add/Edit) ---
         function openFormModal(id, type, isConversion = false) {
             dataForm.reset();
-            currentStep = 1;
-            updateStepVisibility();
-
-            const sourceDataArray = isConversion ? quotes : (type === 'supplier' ? suppliers : quotes);
+            currentTasks = [];
             
-            // *** BUG FIX ***
-            // The previous logic could result in `itemData` being `undefined`, causing the function to fail.
-            // This new logic ensures `itemData` is always an object, falling back to an empty one if no item is found.
-            const itemData = (id ? sourceDataArray.find(item => item.id === id) : null) || {};
-
-            // If an ID was provided but no item was found in the array, it's an error. Stop execution.
-            if (id && Object.keys(itemData).length === 0) {
-                console.error("EDIT FAILED: Could not find item with ID:", id, "in type:", type);
-                return; // Exit the function to prevent opening an empty/broken modal
-            }
-
-            // Set hidden fields that control the form's state
-            document.getElementById('data-id').value = isConversion ? '' : (id || '');
+            const sourceDataArray = isConversion ? quotes : (type === 'supplier' ? suppliers : quotes);
+            const itemData = id ? sourceDataArray.find(item => item.id === id) || {} : {};
+            
+            document.getElementById('data-id').value = (isConversion) ? '' : (id || '');
             document.getElementById('data-type').value = type;
             document.getElementById('is-conversion').value = isConversion;
             document.getElementById('original-quote-id').value = isConversion ? id : '';
 
-            // Set form title
             let title = '';
-            if (isConversion) {
-                title = 'הפיכת הצעת מחיר לספק';
-            } else if (id) {
-                title = type === 'supplier' ? 'עריכת ספק' : 'עריכת הצעת מחיר';
-            } else {
-                title = type === 'supplier' ? 'הוספת ספק חדש' : 'הוספת הצעת מחיר';
-            }
+            if (!id && !isConversion) title = type === 'supplier' ? 'הוספת ספק חדש' : 'הוספת הצעת מחיר';
+            else if (isConversion) title = 'הפיכת הצעת מחיר לספק';
+            else title = type === 'supplier' ? 'עריכת ספק' : 'עריכת הצעת מחיר';
             document.getElementById('form-modal-title').textContent = title;
 
-            // --- Explicitly pre-fill ALL form fields with data or defaults ---
-            
-            // Step 1 Fields
+            // --- Pre-fill Form ---
             document.getElementById('data-name').value = itemData.name || '';
             document.getElementById('category-select').value = itemData.categoryId || '';
             document.querySelector(`input[name="data-type-radio"][value="${itemData.type || 'regular'}"]`).checked = true;
             document.getElementById('data-provides').value = itemData.provides || '';
             document.getElementById('data-phone').value = itemData.phone || '';
-
-            // Step 2 Fields (Common)
+            
             document.querySelector(`input[name="contacted"][value="${itemData.contacted ? 'yes' : 'no'}"]`).checked = true;
             document.getElementById('contact-details').value = itemData.contactDetails || '';
             document.getElementById('price').value = itemData.price || '';
-
-            // Step 2 Fields (Supplier-specific)
-            const isFinalized = itemData.isFinalized || false;
-            document.querySelector(`input[name="finalized"][value="${isFinalized ? 'yes' : 'no'}"]`).checked = true;
-            document.getElementById('pending-details').value = itemData.pendingDetails || '';
-            document.getElementById('agreement-link').value = itemData.agreementLink || '';
             
-            // Tasks (deep copy to avoid modifying the original state)
-            currentTasks = itemData.tasks ? JSON.parse(JSON.stringify(itemData.tasks)) : [];
-            
-            // After populating all data, render conditional parts and open the modal
+            // --- Pre-fill Supplier-Specific fields ---
+            if (type === 'supplier' || isConversion) {
+                document.querySelector(`input[name="finalized"][value="${itemData.isFinalized ? 'yes' : 'no'}"]`).checked = true;
+                document.getElementById('pending-details').value = itemData.pendingDetails || '';
+                document.getElementById('agreement-link').value = itemData.agreementLink || '';
+                currentTasks = itemData.tasks ? JSON.parse(JSON.stringify(itemData.tasks)) : [];
+            } else {
+                 // Ensure supplier fields are reset to default for quotes
+                document.querySelector('input[name="finalized"][value="no"]').checked = true;
+                document.getElementById('pending-details').value = '';
+                document.getElementById('agreement-link').value = '';
+                currentTasks = [];
+            }
             renderTodoEditor();
-            handleConditionalFormFields(); 
+            handleConditionalFormFields();
             openModal(document.getElementById('form-modal'));
-        }
-
-        function updateStepVisibility() {
-            document.getElementById('form-step-1').classList.toggle('active', currentStep === 1);
-            document.getElementById('form-step-2').classList.toggle('active', currentStep === 2);
-            document.getElementById('form-next-btn').classList.toggle('hidden', currentStep === 2);
-            document.getElementById('form-save-btn').classList.toggle('hidden', currentStep === 1);
-            document.getElementById('form-back-btn').classList.toggle('hidden', currentStep === 1);
         }
         
         function handleConditionalFormFields() {
@@ -658,18 +631,21 @@
             const isConversion = document.getElementById('is-conversion').value === 'true';
             const isSupplier = type === 'supplier' || isConversion;
 
-            document.getElementById('finalized-section').style.display = isSupplier ? 'block' : 'none';
-            document.getElementById('todo-section').style.display = isSupplier ? 'block' : 'none';
+            // Show/hide the entire block of supplier-specific fields
+            document.getElementById('supplier-only-section').classList.toggle('hidden', !isSupplier);
             
+            // Handle contacted fields
             const isContacted = document.querySelector('input[name="contacted"]:checked').value === 'yes';
             document.getElementById('contacted-yes-fields').classList.toggle('hidden', !isContacted);
             
+            // Handle finalized fields (only if it's a supplier)
             if(isSupplier) {
                 const isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
                 document.getElementById('finalized-no-field').classList.toggle('hidden', isFinalized);
                 document.getElementById('finalized-yes-field').classList.toggle('hidden', !isFinalized);
             }
 
+            // Handle price field visibility based on regular/sponsor type
             const supplierType = document.querySelector('input[name="data-type-radio"]:checked').value;
             document.getElementById('price-field').style.display = supplierType === 'regular' ? 'block' : 'none';
             document.getElementById('data-provides-label').textContent = supplierType === 'regular' ? 'מה הספק מספק?' : 'מה הספונסר מספק?';
@@ -794,8 +770,6 @@
                 }
             });
             
-            document.getElementById('form-next-btn').addEventListener('click', () => { currentStep = 2; updateStepVisibility(); });
-            document.getElementById('form-back-btn').addEventListener('click', () => { currentStep = 1; updateStepVisibility(); });
             dataForm.addEventListener('change', handleConditionalFormFields);
             
             document.getElementById('view-modal-edit-btn').addEventListener('click', () => {
@@ -940,4 +914,3 @@
     </script>
 </body>
 </html>
-
