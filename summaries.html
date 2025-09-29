@@ -291,7 +291,7 @@
         const taskDetailsDisplay = document.getElementById('task-details-display');
         const saveUpdateBtn = document.getElementById('save-update-btn');
         const cancelUpdateBtn = document.getElementById('cancel-update-btn');
-        const deleteTaskBtn = document.getElementById('delete-task-btn'); // New delete button
+        const deleteTaskBtn = document.getElementById('delete-task-btn');
         let currentTaskIdForStatusUpdate = null;
         let selectedStatus = '';
 
@@ -340,6 +340,11 @@
                 categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name, 'he'));
                 updateCategorySelect();
                 renderChecklists();
+                
+                // BUG FIX: If the edit categories modal is open, re-render its content
+                if (!editCategoriesModal.classList.contains('hidden')) {
+                    renderCategoryManagementModal();
+                }
             });
 
             onSnapshot(collection(db, 'checklistItems'), (snapshot) => {
@@ -349,7 +354,7 @@
         }
 
         function renderChecklists() {
-            if (!categories.length) return; // Allow rendering even if tasks are empty
+            if (!categories.length) return; 
             checklistContainer.innerHTML = '';
             categories.forEach(category => {
                 const categoryTasks = tasks.filter(task => task.category === category.name).sort((a, b) => a.urgency - b.urgency || a.name.localeCompare(b.name, 'he'));
@@ -513,23 +518,40 @@
             taskPage1.classList.add('hidden');
             taskPage2.classList.remove('hidden');
         });
+
         backTaskPageBtn.addEventListener('click', () => {
             taskPage2.classList.add('hidden');
             taskPage1.classList.remove('hidden');
         });
 
         function updateCategorySelect() {
+            const currentValue = taskCategorySelect.value;
             taskCategorySelect.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
             taskCategorySelect.innerHTML += '<option value="add_new_category" class="text-gold font-bold">-- הוסף קטגוריה --</option>';
+            // Restore previous value if it still exists
+            if (categories.some(c => c.name === currentValue)) {
+                taskCategorySelect.value = currentValue;
+            }
         }
 
         taskCategorySelect.addEventListener('change', (e) => {
             if (e.target.value === 'add_new_category') { e.target.selectedIndex = 0; openAddCategoryModal(); }
         });
-        
-        editCategoriesBtn.addEventListener('click', () => {
+
+        function renderCategoryManagementModal() {
             const categoryList = document.getElementById('category-list');
-            categoryList.innerHTML = categories.map(c => `<div class="flex justify-between items-center p-2 bg-gray-700 rounded-md"><span>${c.name}</span><button data-id="${c.id}" class="delete-category-btn text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button></div>`).join('');
+            if (categories.length === 0) {
+                categoryList.innerHTML = `<p class="text-gray-500 italic p-2">אין קטגוריות להצגה.</p>`;
+                return;
+            }
+            categoryList.innerHTML = categories.map(c => `
+                <div class="flex justify-between items-center p-2 bg-gray-700 rounded-md">
+                    <span>${c.name}</span>
+                    <button data-id="${c.id}" class="delete-category-btn text-red-500 hover:text-red-400 transition-colors">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>`).join('');
+            
             document.querySelectorAll('.delete-category-btn').forEach(btn => btn.addEventListener('click', e => {
                 const id = e.currentTarget.dataset.id;
                 const categoryToDelete = categories.find(c => c.id === id);
@@ -543,6 +565,10 @@
                     await batch.commit();
                 });
             }));
+        }
+        
+        editCategoriesBtn.addEventListener('click', () => {
+            renderCategoryManagementModal();
             openEditCategoriesModal();
         });
 
@@ -555,9 +581,6 @@
             closeAddCategoryModal();
         });
         
-        // --- NEW AND UPDATED FUNCTIONS ---
-
-        // New Delete Task Logic
         deleteTaskBtn.addEventListener('click', () => {
             if (!currentTaskIdForStatusUpdate) return;
             showConfirmModal('האם אתה בטוח שברצונך למחוק את המשימה הזו לצמיתות?', async () => {
@@ -570,14 +593,12 @@
             });
         });
 
-        // New Help Modal Logic
         const openHelpModal = () => { helpModal.classList.add('flex'); helpModal.classList.remove('hidden'); }
         const closeHelpModal = () => { helpModal.classList.add('hidden'); helpModal.classList.remove('flex'); }
         helpBtn.addEventListener('click', openHelpModal);
         closeHelpModalBtn.addEventListener('click', closeHelpModal);
         closeHelpModalBtnBottom.addEventListener('click', closeHelpModal);
 
-        // New Confirm Modal Logic
         const showConfirmModal = (message, onConfirm) => {
             confirmMessage.textContent = message;
             confirmCallback = onConfirm;
@@ -597,7 +618,6 @@
         });
         confirmNoBtn.addEventListener('click', hideConfirmModal);
         
-        // Modal Closing Functions
         function closeTaskModal() { taskModal.classList.add('hidden'); taskModal.classList.remove('flex'); }
         function closeUpdateStatusModal() { updateStatusModal.classList.add('hidden'); updateStatusModal.classList.remove('flex'); }
         function openEditCategoriesModal() { editCategoriesModal.classList.add('flex'); editCategoriesModal.classList.remove('hidden'); }
@@ -662,3 +682,4 @@
     </script>
 </body>
 </html>
+
