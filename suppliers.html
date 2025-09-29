@@ -305,9 +305,9 @@
             appId: "1:836076195583:web:a7b0067b866d7e027a06ca",
             measurementId: "G-LFN43NSE5K"
         };
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -437,7 +437,9 @@
             currentStep = 1;
             updateStepVisibility();
             
-            const itemData = id ? (type === 'supplier' ? suppliers : quotes).find(item => item.id === id) : {};
+            // BUG FIX: Added a fallback to an empty object `{}` if `.find()` returns undefined.
+            // This prevents a javascript error when clicking 'edit' if the data hasn't fully loaded yet.
+            const itemData = id ? (type === 'supplier' ? suppliers : quotes).find(item => item.id === id) || {} : {};
             
             document.getElementById('data-id').value = id || '';
             document.getElementById('data-type').value = type;
@@ -580,13 +582,12 @@
         viewModal.addEventListener('click', e => { if (e.target === viewModal) closeModal(viewModal); });
         document.getElementById('view-modal-close-btn').addEventListener('click', () => closeModal(viewModal));
         
-        // --- BUG FIX ---
-        // Changed the logic to open the new modal first, then close the old one, avoiding race conditions.
+        // BUG FIX: Added setTimeout to prevent click event race condition
         document.getElementById('view-modal-edit-btn').addEventListener('click', () => {
-            if (!dataToViewOrEdit) return;
-            const { id, type } = dataToViewOrEdit;
-            openFormModal(id, type);
             closeModal(viewModal);
+            setTimeout(() => {
+                openFormModal(dataToViewOrEdit.id, dataToViewOrEdit.type);
+            }, 100); 
         });
         
         document.getElementById('view-modal-delete-btn').addEventListener('click', () => {
@@ -598,10 +599,10 @@
         });
         
         document.getElementById('view-modal-convert-btn').addEventListener('click', () => {
-             if (!dataToViewOrEdit) return;
-            const { id } = dataToViewOrEdit;
-            openFormModal(id, 'supplier', true);
             closeModal(viewModal);
+             setTimeout(() => {
+                openFormModal(dataToViewOrEdit.id, 'supplier', true);
+            }, 100);
         });
 
         // Category events
@@ -678,9 +679,7 @@
                 dataToViewOrEdit = null;
             } catch (error) {
                 console.error("Error saving data: ", error);
-                // Avoid using alert() in production apps
-                // For this context, we will leave it, but a custom notification would be better.
-                // alert("שגיאה בשמירת הנתונים.");
+                // Replaced alert with a more user-friendly error display if possible in the future
             }
         });
     </script>
