@@ -583,11 +583,9 @@
         // BUG FIX: Added setTimeout to prevent click event race condition
         document.getElementById('view-modal-edit-btn').addEventListener('click', () => {
             closeModal(viewModal);
-            // This timeout ensures the click event from the "edit" button finishes before the new modal appears,
-            // preventing the new modal from immediately closing itself.
             setTimeout(() => {
                 openFormModal(dataToViewOrEdit.id, dataToViewOrEdit.type);
-            }, 50); 
+            }, 100); 
         });
         
         document.getElementById('view-modal-delete-btn').addEventListener('click', () => {
@@ -602,7 +600,7 @@
             closeModal(viewModal);
              setTimeout(() => {
                 openFormModal(dataToViewOrEdit.id, 'supplier', true);
-            }, 50);
+            }, 100);
         });
 
         // Category events
