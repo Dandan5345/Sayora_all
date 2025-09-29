@@ -312,12 +312,32 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- Global State & Listeners ---
+        // --- Global State & DOM Elements ---
         let suppliers = [];
         let quotes = [];
         let categories = [];
         let dataToViewOrEdit = null;
+        
+        const formModal = document.getElementById('form-modal');
+        const viewModal = document.getElementById('view-modal');
+        const categoryModal = document.getElementById('category-modal');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const dataForm = document.getElementById('data-form');
+        let currentStep = 1;
 
+
+        // --- Modal Helper Functions (FIX) ---
+        function openModal(modal) {
+            modal.classList.add('flex');
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        // --- Authentication & Data Listeners ---
         onAuthStateChanged(auth, user => {
             if (user) {
                 document.getElementById('app-container').classList.remove('hidden');
@@ -412,10 +432,6 @@
         }
 
         // --- Main Form Modal (Add/Edit) ---
-        const formModal = document.getElementById('form-modal');
-        const dataForm = document.getElementById('data-form');
-        let currentStep = 1;
-        
         function openFormModal(id, type, isConversion = false) {
             dataForm.reset();
             currentStep = 1;
@@ -426,14 +442,12 @@
             document.getElementById('data-id').value = id || '';
             document.getElementById('data-type').value = type;
             
-            // Set modal title
             let title = '';
             if (!id) title = type === 'supplier' ? 'הוספת ספק חדש' : 'הוספת הצעת מחיר';
             else title = type === 'supplier' ? 'עריכת ספק' : 'עריכת הצעת מחיר';
             if (isConversion) title = 'הפיכת הצעת מחיר לספק';
             document.getElementById('form-modal-title').textContent = title;
 
-            // Populate fields
             document.getElementById('data-name').value = itemData.name || '';
             document.getElementById('category-select').value = itemData.categoryId || '';
             document.querySelector(`input[name="data-type-radio"][value="${itemData.type || 'regular'}"]`).checked = true;
@@ -450,8 +464,7 @@
             }
 
             handleConditionalFormFields();
-            formModal.classList.add('flex');
-            formModal.classList.remove('hidden');
+            openModal(formModal);
         }
         
         function updateStepVisibility() {
@@ -479,7 +492,6 @@
         }
 
         // --- View Details Modal ---
-        const viewModal = document.getElementById('view-modal');
         function openViewModal(id, type) {
             const data = (type === 'supplier' ? suppliers : quotes).find(item => item.id === id);
             dataToViewOrEdit = { id, type, ...data };
@@ -512,8 +524,7 @@
             content += `</div>`;
             document.getElementById('view-modal-content').innerHTML = content;
             document.getElementById('view-modal-convert-btn').classList.toggle('hidden', type !== 'quote');
-            viewModal.classList.add('flex');
-            viewModal.classList.remove('hidden');
+            openModal(viewModal);
         }
         
         // --- Category Management ---
@@ -544,57 +555,63 @@
         function showConfirmation(message, onConfirm) {
             document.getElementById('confirmation-message').textContent = message;
             const confirmBtn = document.getElementById('confirm-action-btn');
+            
+            // Clone and replace to remove old event listeners
             const newConfirmBtn = confirmBtn.cloneNode(true);
             confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
             
             newConfirmBtn.addEventListener('click', () => {
                 onConfirm();
-                closeConfirmation();
+                closeModal(confirmationModal);
             });
-            document.getElementById('confirmation-modal').classList.add('flex');
-            document.getElementById('confirmation-modal').classList.remove('hidden');
-        }
-        function closeConfirmation() {
-            document.getElementById('confirmation-modal').classList.remove('flex');
-            document.getElementById('confirmation-modal').classList.add('hidden');
+            openModal(confirmationModal);
         }
         
         // --- Event Listeners ---
         document.getElementById('add-supplier-btn').addEventListener('click', () => openFormModal(null, 'supplier'));
         document.getElementById('add-quote-btn').addEventListener('click', () => openFormModal(null, 'quote'));
         
-        document.getElementById('form-cancel-btn').addEventListener('click', () => { formModal.classList.remove('flex'); formModal.classList.add('hidden'); });
+        document.getElementById('form-cancel-btn').addEventListener('click', () => closeModal(formModal));
+        formModal.addEventListener('click', (e) => { if (e.target === formModal) closeModal(formModal); });
+        
         document.getElementById('form-next-btn').addEventListener('click', () => { currentStep = 2; updateStepVisibility(); });
         document.getElementById('form-back-btn').addEventListener('click', () => { currentStep = 1; updateStepVisibility(); });
         dataForm.addEventListener('change', handleConditionalFormFields);
         
-        viewModal.addEventListener('click', e => { if (e.target === viewModal) viewModal.classList.add('hidden'); });
-        document.getElementById('view-modal-close-btn').addEventListener('click', () => viewModal.classList.add('hidden'));
+        viewModal.addEventListener('click', e => { if (e.target === viewModal) closeModal(viewModal); });
+        document.getElementById('view-modal-close-btn').addEventListener('click', () => closeModal(viewModal));
+        
+        // BUG FIX 2: Correctly close view modal and open form modal
         document.getElementById('view-modal-edit-btn').addEventListener('click', () => {
-            viewModal.classList.add('hidden');
+            closeModal(viewModal);
             openFormModal(dataToViewOrEdit.id, dataToViewOrEdit.type);
         });
+        
         document.getElementById('view-modal-delete-btn').addEventListener('click', () => {
              showConfirmation(`האם למחוק את "${dataToViewOrEdit.name}"?`, () => {
                 const collectionName = dataToViewOrEdit.type === 'supplier' ? 'suppliers' : 'priceQuotes';
                 deleteDoc(doc(db, collectionName, dataToViewOrEdit.id));
-                viewModal.classList.add('hidden');
+                closeModal(viewModal);
             });
         });
+        
         document.getElementById('view-modal-convert-btn').addEventListener('click', () => {
-            viewModal.classList.add('hidden');
+            closeModal(viewModal);
             openFormModal(dataToViewOrEdit.id, 'supplier', true);
         });
 
         // Category events
-        document.getElementById('edit-categories-btn').addEventListener('click', () => document.getElementById('category-modal').classList.add('flex').remove('hidden'));
-        document.getElementById('close-category-modal-btn').addEventListener('click', () => document.getElementById('category-modal').classList.remove('flex').add('hidden'));
+        document.getElementById('edit-categories-btn').addEventListener('click', () => openModal(categoryModal));
+        document.getElementById('close-category-modal-btn').addEventListener('click', () => closeModal(categoryModal));
+        
+        // BUG FIX 1: Correctly open category modal from select dropdown
         document.getElementById('category-select').addEventListener('change', e => {
             if (e.target.value === 'add_new') {
-                document.getElementById('category-modal').classList.add('flex');
-                e.target.value = '';
+                openModal(categoryModal);
+                e.target.value = ''; // Reset select
             }
         });
+
         document.getElementById('add-category-btn').addEventListener('click', async () => {
             const input = document.getElementById('new-category-name');
             if (input.value.trim()) {
@@ -615,7 +632,7 @@
             }
         });
         
-        document.getElementById('confirm-cancel-btn').addEventListener('click', closeConfirmation);
+        document.getElementById('confirm-cancel-btn').addEventListener('click', () => closeModal(confirmationModal));
         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
 
@@ -654,8 +671,7 @@
                         await deleteDoc(doc(db, 'priceQuotes', dataToViewOrEdit.id));
                     }
                 }
-                formModal.classList.remove('flex');
-                formModal.classList.add('hidden');
+                closeModal(formModal);
                 dataToViewOrEdit = null;
             } catch (error) {
                 console.error("Error saving data: ", error);
@@ -665,3 +681,4 @@
     </script>
 </body>
 </html>
+
