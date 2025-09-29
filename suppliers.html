@@ -152,13 +152,13 @@
                  <button id="close-sidebar-btn" class="text-gold text-3xl">&times;</button>
              </div>
              <div class="space-y-2">
-                 <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
-                 <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
-                 <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
-                 <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
-                 <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
-                 <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
-                 <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
+                <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
              </div>
         </nav>
         
@@ -584,6 +584,10 @@
         function openFormModal(id, type, isConversion = false) {
             dataForm.reset();
             currentStep = 1;
+            // Set default states for supplier-specific fields immediately after reset
+            document.querySelector('input[name="finalized"][value="no"]').checked = true;
+            document.getElementById('pending-details').value = '';
+            document.getElementById('agreement-link').value = '';
             currentTasks = [];
             updateStepVisibility();
             
@@ -601,31 +605,27 @@
             else title = type === 'supplier' ? 'עריכת ספק' : 'עריכת הצעת מחיר';
             document.getElementById('form-modal-title').textContent = title;
 
-            // --- Pre-fill Step 1 ---
+            // --- Pre-fill Step 1 (common fields) ---
             document.getElementById('data-name').value = itemData.name || '';
             document.getElementById('category-select').value = itemData.categoryId || '';
             document.querySelector(`input[name="data-type-radio"][value="${itemData.type || 'regular'}"]`).checked = true;
             document.getElementById('data-provides').value = itemData.provides || '';
             document.getElementById('data-phone').value = itemData.phone || '';
             
-            // --- Pre-fill Step 2 ---
+            // --- Pre-fill Step 2 (common fields) ---
             document.querySelector(`input[name="contacted"][value="${itemData.contacted ? 'yes' : 'no'}"]`).checked = true;
             document.getElementById('contact-details').value = itemData.contactDetails || '';
             document.getElementById('price').value = itemData.price || '';
             
-            // --- Pre-fill Supplier-Specific fields ---
+            // --- Pre-fill Supplier-Specific fields (if it's a supplier or conversion) ---
             if (type === 'supplier' || isConversion) {
                 document.querySelector(`input[name="finalized"][value="${itemData.isFinalized ? 'yes' : 'no'}"]`).checked = true;
                 document.getElementById('pending-details').value = itemData.pendingDetails || '';
                 document.getElementById('agreement-link').value = itemData.agreementLink || '';
+                // Deep copy of tasks to avoid reference issues
                 currentTasks = itemData.tasks ? JSON.parse(JSON.stringify(itemData.tasks)) : [];
-            } else {
-                 // Ensure supplier fields are reset to default for quotes
-                document.querySelector('input[name="finalized"][value="no"]').checked = true;
-                document.getElementById('pending-details').value = '';
-                document.getElementById('agreement-link').value = '';
-                currentTasks = [];
             }
+            
             renderTodoEditor();
             handleConditionalFormFields();
             openModal(document.getElementById('form-modal'));
@@ -644,10 +644,9 @@
             const isConversion = document.getElementById('is-conversion').value === 'true';
             const isSupplier = type === 'supplier' || isConversion;
 
-            // --- THIS IS THE FIX ---
-            // Use classList.toggle to correctly handle showing/hiding based on Tailwind's 'hidden' class
-            document.getElementById('finalized-section').classList.toggle('hidden', !isSupplier);
-            document.getElementById('todo-section').classList.toggle('hidden', !isSupplier);
+            // Show or hide entire sections based on whether it's a supplier
+            document.getElementById('finalized-section').style.display = isSupplier ? 'block' : 'none';
+            document.getElementById('todo-section').style.display = isSupplier ? 'block' : 'none';
             
             const isContacted = document.querySelector('input[name="contacted"]:checked').value === 'yes';
             document.getElementById('contacted-yes-fields').classList.toggle('hidden', !isContacted);
@@ -928,3 +927,4 @@
     </script>
 </body>
 </html>
+
