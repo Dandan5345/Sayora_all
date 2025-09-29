@@ -119,7 +119,13 @@
                          </div>
                      </div>
 
-                    <div id="checklist-container" class="space-y-10"></div>
+                    <div id="checklist-container" class="space-y-10">
+                        <div id="empty-state" class="hidden text-center py-16">
+                            <i class="fas fa-tasks text-6xl text-gray-600 mb-4"></i>
+                            <h2 class="text-2xl font-bold text-gray-400">אין משימות להצגה</h2>
+                            <p class="text-gray-500 mt-2">התחל על ידי הוספת משימה חדשה או יצירת קטגוריה.</p>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
@@ -261,7 +267,7 @@
         const firebaseConfig = { apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ", authDomain: "sayora-all.firebaseapp.com", projectId: "sayora-all", storageBucket: "sayora-all.appspot.com", messagingSenderId: "836076195583", appId: "1:836076195583:web:a7b0067b866d7e027a06ca", measurementId: "G-LFN43NSE5K" };
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, addDoc, deleteDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -272,6 +278,7 @@
         const welcomeMsg = document.getElementById('welcome-msg');
         const checklistContainer = document.getElementById('checklist-container');
         const addTaskBtn = document.getElementById('add-task-btn');
+        const emptyState = document.getElementById('empty-state');
 
         // Task Modal elements
         const taskModal = document.getElementById('task-modal');
@@ -331,17 +338,12 @@
 
         logoutBtn.addEventListener('click', () => signOut(auth));
         
-        async function loadData() {
-            const categoriesRef = collection(db, 'checklistCategories');
-            const snapshot = await getDocs(categoriesRef);
-            if (snapshot.empty) await seedInitialData();
-
+        function loadData() {
             onSnapshot(collection(db, 'checklistCategories'), (snapshot) => {
                 categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name, 'he'));
                 updateCategorySelect();
                 renderChecklists();
                 
-                // BUG FIX: If the edit categories modal is open, re-render its content
                 if (!editCategoriesModal.classList.contains('hidden')) {
                     renderCategoryManagementModal();
                 }
@@ -354,8 +356,16 @@
         }
 
         function renderChecklists() {
-            if (!categories.length) return; 
-            checklistContainer.innerHTML = '';
+            checklistContainer.innerHTML = ''; // Clear previous content
+            
+            if (categories.length === 0) {
+                 emptyState.classList.remove('hidden');
+                 checklistContainer.appendChild(emptyState);
+                 return;
+            }
+            
+            emptyState.classList.add('hidden');
+
             categories.forEach(category => {
                 const categoryTasks = tasks.filter(task => task.category === category.name).sort((a, b) => a.urgency - b.urgency || a.name.localeCompare(b.name, 'he'));
                 const categoryDiv = document.createElement('div');
@@ -366,7 +376,7 @@
                     categoryTasks.forEach(task => tasksGrid.appendChild(createTaskElement(task)));
                     categoryDiv.appendChild(tasksGrid);
                 } else {
-                    categoryDiv.innerHTML += `<p class="text-gray-500 italic">אין משימות בקטגוריה זו.</p>`;
+                    categoryDiv.innerHTML += `<p class="text-gray-500 italic">אין משימות בקטגוריה זו. לחץ על 'הוספת משימה' כדי להתחיל.</p>`;
                 }
                 checklistContainer.appendChild(categoryDiv);
             });
@@ -471,6 +481,10 @@
         });
 
         function openTaskModal(page = 0) {
+            if (categories.length === 0) {
+                showConfirmModal("יש ליצור קטגוריה לפני שניתן להוסיף משימה. האם תרצה ליצור קטגוריה חדשה?", openAddCategoryModal);
+                return;
+            }
             taskPage1.classList.toggle('hidden', page === 1);
             taskPage2.classList.toggle('hidden', page === 0);
             taskModal.classList.add('flex');
@@ -526,9 +540,13 @@
 
         function updateCategorySelect() {
             const currentValue = taskCategorySelect.value;
-            taskCategorySelect.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            if (categories.length === 0) {
+                 taskCategorySelect.innerHTML = `<option disabled selected>אין קטגוריות זמינות</option>`;
+            } else {
+                taskCategorySelect.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            }
             taskCategorySelect.innerHTML += '<option value="add_new_category" class="text-gold font-bold">-- הוסף קטגוריה --</option>';
-            // Restore previous value if it still exists
+            
             if (categories.some(c => c.name === currentValue)) {
                 taskCategorySelect.value = currentValue;
             }
@@ -578,6 +596,7 @@
             if (newName && !categories.some(c => c.name === newName)) {
                 await addDoc(collection(db, 'checklistCategories'), { name: newName });
             }
+            addCategoryForm.reset();
             closeAddCategoryModal();
         });
         
@@ -635,50 +654,7 @@
         hamburgerBtn.addEventListener('click', openSidebar);
         closeSidebarBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
-        
-        async function seedInitialData() {
-            const initialData = [
-                { category: "רישוי ואישורים", task: "שליחת מייל + מעקב תשובה ואישור עקרוני מרט״ג + מועצה תמר", deadline: "ספטמבר–אוקטובר 2025", contact: "רט״ג: info@parks.org.il מועצה אזורית תמר: אגף תרבות/אירועים" },
-                { category: "רישוי ואישורים", task: "גיוס יועץ בטיחות מוסמך", deadline: "ספטמבר–אוקטובר 2025", contact: "נעם זיו / עדי אוחיון / גבי רפאל" },
-                { category: "רישוי ואישורים", task: "הכנת תיק רישוי (Site Plan, בטיחות, מהנדס, חשמל)", deadline: "אוקטובר 2025", contact: "SafeEvent, EventPro, מהנדס קונסטרוקציה, חשמלאי בודק" },
-                { category: "רישוי ואישורים", task: "פנייה רשמית למשטרה/מד״א/כיבוי – דרישות רשמיות", deadline: "נובמבר 2025", contact: "משטרת ישראל – אגף רישוי אירועים; מד״א ירושלים; תחנת כבאות ים המלח" },
-                { category: "ביטוחים", task: "בחירת ברוקר ביטוח אירועים", deadline: "ספטמבר–אוקטובר 2025", contact: "Betach Toren, Argo Team, Marsh Israel" },
-                { category: "ביטוחים", task: "שליחת נתונים (Site Plan, לו״ז, קהל) לקבלת הצעות", deadline: "נובמבר 2025", contact: "ברוקר ביטוח נבחר" },
-                { category: "ביטוחים", task: "סגירת פוליסות ביטוח (צד ג׳, חבות מעבידים, ציוד, ביטול, רחפנים)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
-                { category: "ביטוחים", task: "קבלת אישור קיום ביטוח (לרשויות)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
-                { category: "שטח ולוגיסטיקה", task: "הכנת Site Plan סופי", deadline: "אוקטובר 2025", contact: "אדריכל אירועים / שרטט CAD" },
-                { category: "שטח ולוגיסטיקה", task: "בחירת ספקים (במה/סאונד/תאורה/מסכים/שירותים/גנרטורים)", deadline: "נובמבר–דצמבר 2025", contact: "ברסלב במה, סינקופה סאונד, סונולייט תאורה" },
-                { category: "שטח ולוגיסטיקה", task: "חתימה על חוזים מול ספקים", deadline: "ינואר 2026", contact: "ספקי ליבה" },
-                { category: "הפקה ותוכן", task: "סגירת אמנים ראשיים (בינלאומיים)", deadline: "ינואר–פברואר 2026", contact: "Solomun Agency, Artists Israel" },
-                { category: "הפקה ותוכן", task: "סגירת ליינאפ מקומי (דיג’יים ישראלים)", deadline: "מרץ 2026", contact: "סוכנויות מקומיות" },
-                { category: "הפקה ותוכן", task: "סגירת רקדנים/תפאורה/שחקנים", deadline: "מרץ–אפריל 2026", contact: "Dancers4U, Crew TLV" },
-                { category: "שיווק ומכירות", task: "הקמת אתר מכירה (טיקטינג)", deadline: "ינואר 2026", contact: "Eventim, GTC, טיקטסיל" },
-                { category: "שיווק ומכירות", task: "פתיחת עמודי פסטיבל (IG, TikTok, FB)", deadline: "ינואר 2026", contact: "צוות SAYORA" },
-                { category: "שיווק ומכירות", task: "קמפיין פתיחה – Early Bird", deadline: "פברואר 2026", contact: "סושיאל + משפיענים" },
-                { category: "שיווק ומכירות", task: "קמפיינים מתגלגלים (Regular, VIP)", deadline: "מרץ–אוגוסט 2026", contact: "צוות שיווק" },
-                { category: "תחבורה ובטיחות", task: "תכנון מערך שאטלים (ת״א/ירושלים)", deadline: "מאי 2026", contact: "אגד תעבורה, מטרופולין" },
-                { category: "תחבורה ובטיחות", task: "סגירת חניונים ושילוט", deadline: "מאי 2026", contact: "מועצה אזורית תמר" },
-                { category: "תחבורה ובטיחות", task: "חוזה עם חברת אבטחה", deadline: "מאי 2026", contact: "מודיעין אזרחי, רמות אבטחה" },
-                { category: "תחבורה ובטיחות", task: "סגירת מד״א (אמבולנס, צוותים)", deadline: "מאי 2026", contact: "מד״א ירושלים" },
-                { category: "תחבורה ובטיחות", task: "סגירת כיבוי אש (צוות/רכב)", deadline: "מאי 2026", contact: "תחנת כבאות ים המלח" },
-                { category: "פיננסים וחוזים", task: "בניית תקציב מלא (הוצאות/הכנסות)", deadline: "ספטמבר–נובמבר 2025", contact: "Excel פנימי" },
-                { category: "פיננסים וחוזים", task: "פתיחת עוסק/עמותה לניהול כספים", deadline: "דצמבר 2025", contact: "רו״ח / יועץ מס" },
-                { category: "פיננסים וחוזים", task: "חיפוש ספונסרים", deadline: "ינואר–מרץ 2026", contact: "RedBull, Absolut, Heineken, מותגי אופנה" },
-                { category: "פיננסים וחוזים", task: "חתימה על חוזים מול אמנים/ספקים", deadline: "ינואר–מרץ 2026", contact: "סוכנויות אמנים / ספקים" },
-                { category: "סגירות אחרונות", task: "לוודא אישורים סופיים מכל הרשויות", deadline: "יוני–יולי 2026", contact: "רט״ג, משטרה, מד״א, כיבוי, מועצה" },
-                { category: "סגירות אחרונות", task: "פגישה לוגיסטית בשטח עם כל הספקים", deadline: "יולי 2026", contact: "כל ספקי הליבה" },
-                { category: "סגירות אחרונות", task: "חזרה גנרלית לאמנים ותוכן", deadline: "אוגוסט 2026", contact: "אמנים ורקדנים" },
-                { category: "אחרי האירוע", task: "פירוק והחזרת ציוד", deadline: "אוגוסט 2026", contact: "ספקי ליבה" },
-                { category: "אחרי האירוע", task: "תשלום לספקים", deadline: "אוגוסט 2026", contact: "הנהלת חשבונות" },
-                { category: "אחרי האירוע", task: "דו״ח סיכום פיננסי + הפקתי", deadline: "ספטמבר 2026", contact: "צוות SAYORA" }
-            ];
-            
-            const uniqueCategories = [...new Set(initialData.map(item => item.category))];
-            const batch = writeBatch(db);
-            uniqueCategories.forEach(name => batch.set(doc(collection(db, 'checklistCategories')), { name }));
-            initialData.forEach(item => batch.set(doc(collection(db, 'checklistItems')), { category: item.category, name: item.task, deadline: item.deadline || '', contact: item.contact || '', urgency: 3, status: '', assignedTo: '', details: '', updateDetails: '' }));
-            await batch.commit();
-        }
+
     </script>
 </body>
 </html>
