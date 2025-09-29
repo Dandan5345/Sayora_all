@@ -8,8 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        body { font-family: 'Assistant', sans-serif; background-color: #0a0a0a; color: #E0E0E0; }
-        .bg-black-gradient { background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%); }
+        body { 
+            font-family: 'Assistant', sans-serif; 
+            background-color: #0a0a0a; 
+            color: #E0E0E0;
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 25px 25px;
+        }
+        .bg-black-gradient { background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%); }
         .text-gold { color: #FFD700; }
         .border-gold { border-color: #FFD700; }
         .btn-gold {
@@ -17,22 +23,42 @@
             transition: all 0.3s ease;
         }
         .btn-gold:hover {
-            background-color: #e6c200; transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            background-color: #e6c200; transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
         #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
         #sidebar.open { transform: translateX(0); }
+        .modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.flex {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #1a1a1a; 
+            border: 1px solid #FFD700;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .modal.flex .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
         .modal-backdrop { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
-        .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
+        
         .input-field, .select-field, .textarea-field {
             background-color: #2a2a2a; border: 1px solid #444; color: #E0E0E0;
-            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem; transition: all 0.2s ease;
         }
         .input-field:focus, .select-field:focus, .textarea-field:focus {
             outline: none; border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
         .task-item { transition: all 0.2s ease-in-out; }
-        .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
+        .task-item:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); border-color: #FFD700; }
         .status-btn.selected {
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             transform: scale(1.05);
@@ -42,6 +68,10 @@
             transition: all 0.2s ease;
              border: 2px solid transparent;
         }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FFD700; }
     </style>
 </head>
 <body class="bg-black">
@@ -52,7 +82,7 @@
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
                  <div class="flex items-center gap-3">
-                    <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
+                    <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border-2 border-gold">
                     <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
                 </div>
                 <div id="user-info" class="flex items-center gap-3">
@@ -72,7 +102,7 @@
                 <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
                 <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
                 <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
-                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md bg-gold/20 text-white font-bold text-lg">סיכומים</a>
                 <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
             </div>
         </nav>
@@ -108,7 +138,7 @@
                         <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-green-600 border border-green-400"></div><span>בוצע</span></div>
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-cyan-600 border border-cyan-400"></div><span>בתהליך</span></div>
-                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-700 border border-red-500"></div><span>קריטי</span></div>
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-700 border border-red-500"></div><span>קריטי (1)</span></div>
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-orange-600 border border-orange-400"></div><span>דחיפות 2</span></div>
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-yellow-600 border border-yellow-400"></div><span>דחיפות 3</span></div>
                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-blue-600 border border-blue-400"></div><span>דחיפות 4</span></div>
@@ -117,13 +147,25 @@
                     </div>
 
                     <div id="checklist-container" class="space-y-10"></div>
+                    
+                    <div id="empty-state" class="hidden text-center py-20">
+                         <div class="bg-gray-800/30 border border-gray-700 rounded-xl p-10 max-w-lg mx-auto">
+                            <i class="fas fa-folder-open text-6xl text-gold/50 mb-6"></i>
+                            <h2 class="text-3xl font-bold text-gray-300 mb-2">הכל מתחיל כאן</h2>
+                            <p class="text-gray-400 mb-6">נראה שעדיין אין קטגוריות או משימות. <br>התחל על ידי הוספת משימה חדשה.</p>
+                            <button id="add-first-task-btn" class="btn-gold font-bold py-3 px-8 rounded-lg flex items-center gap-2 mx-auto">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>הוסף משימה ראשונה</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
     </div>
 
     <!-- Modals -->
-    <div id="task-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+    <div id="task-modal" class="modal fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop">
         <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20">
             <form id="task-form" class="p-6 sm:p-8">
                 <h2 id="task-modal-title" class="text-2xl sm:text-3xl font-bold text-gold mb-6 text-center">הוספת משימה</h2>
@@ -155,7 +197,7 @@
         </div>
     </div>
     
-    <div id="update-status-modal" class="fixed inset-0 z-[51] hidden items-center justify-center p-4 modal-backdrop">
+    <div id="update-status-modal" class="modal fixed inset-0 z-[51] items-center justify-center p-4 modal-backdrop">
         <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
              <div class="p-6 sm:p-8">
                 <h2 id="update-modal-title" class="text-2xl font-bold text-gold mb-4 text-center break-words"></h2>
@@ -183,16 +225,31 @@
     </div>
 
     <!-- Category Management Modals -->
-    <div id="edit-categories-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20"><div class="p-6"><h2 class="text-2xl font-bold text-gold mb-4">ניהול קטגוריות</h2><div id="category-list" class="space-y-2 max-h-60 overflow-y-auto mb-4"></div><button type="button" id="close-edit-categories-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">סגור</button></div></div></div>
-    <div id="add-category-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+    <div id="edit-categories-modal" class="modal fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20"><div class="p-6"><h2 class="text-2xl font-bold text-gold mb-4">ניהול קטגוריות</h2><div id="category-list" class="space-y-2 max-h-60 overflow-y-auto mb-4 p-1"></div><button type="button" id="close-edit-categories-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">סגור</button></div></div></div>
+    <div id="add-category-modal" class="modal fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop">
         <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20"><form id="add-category-form" class="p-6 space-y-4"><h2 class="text-2xl font-bold text-gold">הוסף קטגוריה</h2><input type="text" id="new-category-name" placeholder="שם הקטגוריה" class="input-field" required><div class="flex gap-4"><button type="button" id="cancel-add-category-btn" class="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500">ביטול</button><button type="submit" class="flex-1 btn-gold font-bold py-2 px-4 rounded-lg">שמור</button></div></form></div></div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirm-modal" class="modal fixed inset-0 z-[60] items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-red-500/20 border-red-500">
+            <div class="p-6 text-center">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                <h2 class="text-xl font-bold text-white mb-2">אישור מחיקה</h2>
+                <p class="text-gray-400 mb-6">פעולה זו תמחק גם את כל המשימות המשויכות לקטגוריה. האם להמשיך?</p>
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-delete-btn" class="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500">ביטול</button>
+                    <button type="button" id="confirm-delete-btn" class="flex-1 bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-500">מחק</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         const firebaseConfig = { apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ", authDomain: "sayora-all.firebaseapp.com", projectId: "sayora-all", storageBucket: "sayora-all.appspot.com", messagingSenderId: "836076195583", appId: "1:836076195583:web:a7b0067b866d7e027a06ca", measurementId: "G-LFN43NSE5K" };
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, addDoc, deleteDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -202,9 +259,11 @@
         const logoutBtn = document.getElementById('logout-btn');
         const welcomeMsg = document.getElementById('welcome-msg');
         const checklistContainer = document.getElementById('checklist-container');
+        const emptyState = document.getElementById('empty-state');
         const addTaskBtn = document.getElementById('add-task-btn');
+        const addFirstTaskBtn = document.getElementById('add-first-task-btn');
 
-        // Task Modal elements
+        // Modal elements
         const taskModal = document.getElementById('task-modal');
         const taskForm = document.getElementById('task-form');
         const taskModalTitle = document.getElementById('task-modal-title');
@@ -215,16 +274,13 @@
         const backTaskPageBtn = document.getElementById('back-task-page-btn');
         const cancelTaskBtnPage1 = document.getElementById('cancel-task-btn-page1');
 
-        // Status Modal elements
         const updateStatusModal = document.getElementById('update-status-modal');
         const updateModalTitle = document.getElementById('update-modal-title');
         const editTaskFromStatusBtn = document.getElementById('edit-task-from-status-btn');
         const taskDetailsDisplay = document.getElementById('task-details-display');
         const saveUpdateBtn = document.getElementById('save-update-btn');
         const cancelUpdateBtn = document.getElementById('cancel-update-btn');
-        let currentTaskIdForStatusUpdate = null;
-        let selectedStatus = '';
-
+        
         const editCategoriesBtn = document.getElementById('edit-categories-btn');
         const editCategoriesModal = document.getElementById('edit-categories-modal');
         const addCategoryModal = document.getElementById('add-category-modal');
@@ -232,8 +288,15 @@
         const addCategoryForm = document.getElementById('add-category-form');
         const cancelAddCategoryBtn = document.getElementById('cancel-add-category-btn');
 
+        const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+
         let categories = [];
         let tasks = [];
+        let currentTaskIdForStatusUpdate = null;
+        let categoryIdToDelete = null;
+        let selectedStatus = '';
 
         onAuthStateChanged(auth, user => {
             if (user) {
@@ -247,11 +310,7 @@
 
         logoutBtn.addEventListener('click', () => signOut(auth));
         
-        async function loadData() {
-            const categoriesRef = collection(db, 'checklistCategories');
-            const snapshot = await getDocs(categoriesRef);
-            if (snapshot.empty) await seedInitialData();
-
+        function loadData() {
             onSnapshot(collection(db, 'checklistCategories'), (snapshot) => {
                 categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name, 'he'));
                 updateCategorySelect();
@@ -265,7 +324,13 @@
         }
 
         function renderChecklists() {
-            if (!categories.length || !tasks.length) return;
+            if (categories.length === 0) {
+                checklistContainer.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+            
             checklistContainer.innerHTML = '';
             categories.forEach(category => {
                 const categoryTasks = tasks.filter(task => task.category === category.name).sort((a, b) => a.urgency - b.urgency || a.name.localeCompare(b.name, 'he'));
@@ -355,7 +420,6 @@
             selectedStatus = task.status || '';
             updateStatusButtonsUI();
 
-            updateStatusModal.classList.remove('hidden');
             updateStatusModal.classList.add('flex');
         }
         
@@ -385,15 +449,17 @@
             taskPage1.classList.toggle('hidden', page === 1);
             taskPage2.classList.toggle('hidden', page === 0);
             taskModal.classList.add('flex');
-            taskModal.classList.remove('hidden');
         }
-
-        addTaskBtn.addEventListener('click', () => {
+        
+        const handleAddTaskClick = () => {
             taskForm.reset();
             document.getElementById('task-id').value = '';
             taskModalTitle.textContent = 'הוספת משימה חדשה';
             openTaskModal(0);
-        });
+        };
+        
+        addTaskBtn.addEventListener('click', handleAddTaskClick);
+        addFirstTaskBtn.addEventListener('click', handleAddTaskClick);
 
         taskForm.addEventListener('submit', async e => {
             e.preventDefault();
@@ -446,18 +512,27 @@
         editCategoriesBtn.addEventListener('click', () => {
             const categoryList = document.getElementById('category-list');
             categoryList.innerHTML = categories.map(c => `<div class="flex justify-between items-center p-2 bg-gray-700 rounded-md"><span>${c.name}</span><button data-id="${c.id}" class="delete-category-btn text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button></div>`).join('');
-            document.querySelectorAll('.delete-category-btn').forEach(btn => btn.addEventListener('click', async e => {
-                const id = e.currentTarget.dataset.id;
-                if(confirm('מחיקת קטגוריה תמחק גם את כל המשימות המשויכות אליה. להמשיך?')) {
-                    const categoryToDelete = categories.find(c => c.id === id);
-                    const tasksToDelete = tasks.filter(t => t.category === categoryToDelete.name);
-                    const batch = writeBatch(db);
-                    tasksToDelete.forEach(task => batch.delete(doc(db, 'checklistItems', task.id)));
-                    batch.delete(doc(db, 'checklistCategories', id));
-                    await batch.commit();
-                }
+            document.querySelectorAll('.delete-category-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                categoryIdToDelete = e.currentTarget.dataset.id;
+                deleteConfirmModal.classList.add('flex');
             }));
             openEditCategoriesModal();
+        });
+        
+        confirmDeleteBtn.addEventListener('click', async () => {
+            if (!categoryIdToDelete) return;
+
+            const categoryToDelete = categories.find(c => c.id === categoryIdToDelete);
+            if (!categoryToDelete) return;
+
+            const tasksToDelete = tasks.filter(t => t.category === categoryToDelete.name);
+            const batch = writeBatch(db);
+            tasksToDelete.forEach(task => batch.delete(doc(db, 'checklistItems', task.id)));
+            batch.delete(doc(db, 'checklistCategories', categoryIdToDelete));
+            await batch.commit();
+
+            categoryIdToDelete = null;
+            deleteConfirmModal.classList.remove('flex');
         });
 
         addCategoryForm.addEventListener('submit', async e => {
@@ -467,71 +542,29 @@
                 await addDoc(collection(db, 'checklistCategories'), { name: newName });
             }
             closeAddCategoryModal();
+            document.getElementById('new-category-name').value = '';
         });
         
-        function closeTaskModal() { taskModal.classList.add('hidden'); taskModal.classList.remove('flex'); }
-        function closeUpdateStatusModal() { updateStatusModal.classList.add('hidden'); updateStatusModal.classList.remove('flex'); }
-        function openEditCategoriesModal() { editCategoriesModal.classList.add('flex'); editCategoriesModal.classList.remove('hidden'); }
-        function closeEditCategoriesModal() { editCategoriesModal.classList.add('hidden'); editCategoriesModal.classList.remove('flex'); }
-        function openAddCategoryModal() { addCategoryModal.classList.add('flex'); addCategoryModal.classList.remove('hidden'); }
-        function closeAddCategoryModal() { addCategoryModal.classList.add('hidden'); addCategoryModal.classList.remove('flex'); }
+        function closeTaskModal() { taskModal.classList.remove('flex'); }
+        function closeUpdateStatusModal() { updateStatusModal.classList.remove('flex'); }
+        function openEditCategoriesModal() { editCategoriesModal.classList.add('flex'); }
+        function closeEditCategoriesModal() { editCategoriesModal.classList.remove('flex'); }
+        function openAddCategoryModal() { addCategoryModal.classList.add('flex'); }
+        function closeAddCategoryModal() { addCategoryModal.classList.remove('flex'); }
+        function closeDeleteConfirmModal() { deleteConfirmModal.classList.remove('flex'); }
 
         cancelTaskBtnPage1.addEventListener('click', closeTaskModal);
         cancelUpdateBtn.addEventListener('click', closeUpdateStatusModal);
         closeEditCategoriesBtn.addEventListener('click', closeEditCategoriesModal);
         cancelAddCategoryBtn.addEventListener('click', closeAddCategoryModal);
+        cancelDeleteBtn.addEventListener('click', closeDeleteConfirmModal);
         
         const hamburgerBtn = document.getElementById('hamburger-btn'), closeSidebarBtn = document.getElementById('close-sidebar-btn'), sidebar = document.getElementById('sidebar'), sidebarOverlay = document.getElementById('sidebar-overlay');
         const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }, closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); };
         hamburgerBtn.addEventListener('click', openSidebar);
         closeSidebarBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
-        
-        async function seedInitialData() {
-            const initialData = [
-                { category: "רישוי ואישורים", task: "שליחת מייל + מעקב תשובה ואישור עקרוני מרט״ג + מועצה תמר", deadline: "ספטמבר–אוקטובר 2025", contact: "רט״ג: info@parks.org.il מועצה אזורית תמר: אגף תרבות/אירועים" },
-                { category: "רישוי ואישורים", task: "גיוס יועץ בטיחות מוסמך", deadline: "ספטמבר–אוקטובר 2025", contact: "נעם זיו / עדי אוחיון / גבי רפאל" },
-                { category: "רישוי ואישורים", task: "הכנת תיק רישוי (Site Plan, בטיחות, מהנדס, חשמל)", deadline: "אוקטובר 2025", contact: "SafeEvent, EventPro, מהנדס קונסטרוקציה, חשמלאי בודק" },
-                { category: "רישוי ואישורים", task: "פנייה רשמית למשטרה/מד״א/כיבוי – דרישות רשמיות", deadline: "נובמבר 2025", contact: "משטרת ישראל – אגף רישוי אירועים; מד״א ירושלים; תחנת כבאות ים המלח" },
-                { category: "ביטוחים", task: "בחירת ברוקר ביטוח אירועים", deadline: "ספטמבר–אוקטובר 2025", contact: "Betach Toren, Argo Team, Marsh Israel" },
-                { category: "ביטוחים", task: "שליחת נתונים (Site Plan, לו״ז, קהל) לקבלת הצעות", deadline: "נובמבר 2025", contact: "ברוקר ביטוח נבחר" },
-                { category: "ביטוחים", task: "סגירת פוליסות ביטוח (צד ג׳, חבות מעבידים, ציוד, ביטול, רחפנים)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
-                { category: "ביטוחים", task: "קבלת אישור קיום ביטוח (לרשויות)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
-                { category: "שטח ולוגיסטיקה", task: "הכנת Site Plan סופי", deadline: "אוקטובר 2025", contact: "אדריכל אירועים / שרטט CAD" },
-                { category: "שטח ולוגיסטיקה", task: "בחירת ספקים (במה/סאונד/תאורה/מסכים/שירותים/גנרטורים)", deadline: "נובמבר–דצמבר 2025", contact: "ברסלב במה, סינקופה סאונד, סונולייט תאורה" },
-                { category: "שטח ולוגיסטיקה", task: "חתימה על חוזים מול ספקים", deadline: "ינואר 2026", contact: "ספקי ליבה" },
-                { category: "הפקה ותוכן", task: "סגירת אמנים ראשיים (בינלאומיים)", deadline: "ינואר–פברואר 2026", contact: "Solomun Agency, Artists Israel" },
-                { category: "הפקה ותוכן", task: "סגירת ליינאפ מקומי (דיג’יים ישראלים)", deadline: "מרץ 2026", contact: "סוכנויות מקומיות" },
-                { category: "הפקה ותוכן", task: "סגירת רקדנים/תפאורה/שחקנים", deadline: "מרץ–אפריל 2026", contact: "Dancers4U, Crew TLV" },
-                { category: "שיווק ומכירות", task: "הקמת אתר מכירה (טיקטינג)", deadline: "ינואר 2026", contact: "Eventim, GTC, טיקטסיל" },
-                { category: "שיווק ומכירות", task: "פתיחת עמודי פסטיבל (IG, TikTok, FB)", deadline: "ינואר 2026", contact: "צוות SAYORA" },
-                { category: "שיווק ומכירות", task: "קמפיין פתיחה – Early Bird", deadline: "פברואר 2026", contact: "סושיאל + משפיענים" },
-                { category: "שיווק ומכירות", task: "קמפיינים מתגלגלים (Regular, VIP)", deadline: "מרץ–אוגוסט 2026", contact: "צוות שיווק" },
-                { category: "תחבורה ובטיחות", task: "תכנון מערך שאטלים (ת״א/ירושלים)", deadline: "מאי 2026", contact: "אגד תעבורה, מטרופולין" },
-                { category: "תחבורה ובטיחות", task: "סגירת חניונים ושילוט", deadline: "מאי 2026", contact: "מועצה אזורית תמר" },
-                { category: "תחבורה ובטיחות", task: "חוזה עם חברת אבטחה", deadline: "מאי 2026", contact: "מודיעין אזרחי, רמות אבטחה" },
-                { category: "תחבורה ובטיחות", task: "סגירת מד״א (אמבולנס, צוותים)", deadline: "מאי 2026", contact: "מד״א ירושלים" },
-                { category: "תחבורה ובטיחות", task: "סגירת כיבוי אש (צוות/רכב)", deadline: "מאי 2026", contact: "תחנת כבאות ים המלח" },
-                { category: "פיננסים וחוזים", task: "בניית תקציב מלא (הוצאות/הכנסות)", deadline: "ספטמבר–נובמבר 2025", contact: "Excel פנימי" },
-                { category: "פיננסים וחוזים", task: "פתיחת עוסק/עמותה לניהול כספים", deadline: "דצמבר 2025", contact: "רו״ח / יועץ מס" },
-                { category: "פיננסים וחוזים", task: "חיפוש ספונסרים", deadline: "ינואר–מרץ 2026", contact: "RedBull, Absolut, Heineken, מותגי אופנה" },
-                { category: "פיננסים וחוזים", task: "חתימה על חוזים מול אמנים/ספקים", deadline: "ינואר–מרץ 2026", contact: "סוכנויות אמנים / ספקים" },
-                { category: "סגירות אחרונות", task: "לוודא אישורים סופיים מכל הרשויות", deadline: "יוני–יולי 2026", contact: "רט״ג, משטרה, מד״א, כיבוי, מועצה" },
-                { category: "סגירות אחרונות", task: "פגישה לוגיסטית בשטח עם כל הספקים", deadline: "יולי 2026", contact: "כל ספקי הליבה" },
-                { category: "סגירות אחרונות", task: "חזרה גנרלית לאמנים ותוכן", deadline: "אוגוסט 2026", contact: "אמנים ורקדנים" },
-                { category: "אחרי האירוע", task: "פירוק והחזרת ציוד", deadline: "אוגוסט 2026", contact: "ספקי ליבה" },
-                { category: "אחרי האירוע", task: "תשלום לספקים", deadline: "אוגוסט 2026", contact: "הנהלת חשבונות" },
-                { category: "אחרי האירוע", task: "דו״ח סיכום פיננסי + הפקתי", deadline: "ספטמבר 2026", contact: "צוות SAYORA" }
-            ];
-            
-            const uniqueCategories = [...new Set(initialData.map(item => item.category))];
-            const batch = writeBatch(db);
-            uniqueCategories.forEach(name => batch.set(doc(collection(db, 'checklistCategories')), { name }));
-            initialData.forEach(item => batch.set(doc(collection(db, 'checklistItems')), { category: item.category, name: item.task, deadline: item.deadline || '', contact: item.contact || '', urgency: 3, status: '', assignedTo: '', details: '', updateDetails: '' }));
-            await batch.commit();
-        }
     </script>
 </body>
 </html>
-
 
