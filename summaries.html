@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -20,6 +22,8 @@
             background-color: #e6c200; transform: scale(1.05);
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
+        #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        #sidebar.open { transform: translateX(0); }
         .modal-backdrop { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
         .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
         .input-field, .select-field, .textarea-field {
@@ -38,19 +42,20 @@
         }
          .status-btn {
             transition: all 0.2s ease;
-            border: 2px solid transparent;
+             border: 2px solid transparent;
         }
     </style>
 </head>
 <body class="bg-black">
 
-    <div id="app-container" class="hidden bg-black-gradient min-h-screen">
+    <div id="app-container" class="hidden bg-black-gradient">
         <!-- Header -->
         <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
                  <div class="flex items-center gap-3">
                     <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
-                    <a href="#" class="text-2xl font-bold text-gold">SAYORA</a>
+                    <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
                 </div>
                 <div id="user-info" class="flex items-center gap-3">
                     <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
@@ -58,23 +63,65 @@
                 </div>
             </div>
         </header>
+
+        <!-- Sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
+        <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
+            <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
+            <div class="mt-12 space-y-4 text-center">
+                 <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
+            </div>
+        </nav>
         
         <!-- Main Content -->
-        <main class="flex-1 p-4 sm:p-8">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-                    <h1 class="text-3xl text-center sm:text-left sm:text-5xl font-bold text-gold">ניהול משימות</h1>
-                    <button id="add-task-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2 w-full sm:w-auto justify-center">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>הוספת משימה</span>
-                    </button>
+        <div class="flex">
+            <!-- Desktop Sidebar -->
+            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
+                <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
+                <nav class="space-y-2">
+                    <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                    <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                    <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">סיכומים</a>
+                    <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-4 sm:p-8 min-h-screen">
+                <div class="max-w-7xl mx-auto">
+                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+                        <h1 class="text-3xl text-center sm:text-left sm:text-5xl font-bold text-gold">ניהול משימות וסיכומים</h1>
+                        <button id="add-task-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2 w-full sm:w-auto justify-center">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>הוספת משימה</span>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-8 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                        <h3 class="text-lg font-semibold text-gold mb-3">מקרא צבעים</h3>
+                        <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-green-600 border border-green-400"></div><span>בוצע</span></div>
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-cyan-600 border border-cyan-400"></div><span>בתהליך</span></div>
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-700 border border-red-500"></div><span>קריטי</span></div>
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-orange-600 border border-orange-400"></div><span>דחיפות 2</span></div>
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-yellow-600 border border-yellow-400"></div><span>דחיפות 3</span></div>
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-blue-600 border border-blue-400"></div><span>דחיפות 4</span></div>
+                            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-gray-700 border border-gray-500"></div><span>דחיפות 5</span></div>
+                        </div>
+                    </div>
+
+                    <div id="checklist-container" class="space-y-10"></div>
                 </div>
-                
-                <div id="checklist-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Tasks will be rendered here -->
-                </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 
     <!-- Modals -->
@@ -86,20 +133,11 @@
                 
                 <div id="task-page-1" class="space-y-5">
                     <div>
-                        <label for="task-name" class="block text-sm font-medium text-gray-300 mb-1">שם המשימה</label>
-                        <input type="text" id="task-name" class="input-field" required>
-                        <p id="task-name-error" class="text-red-400 text-sm mt-1 hidden">שדה זה הוא חובה.</p>
+                        <label for="task-category" class="block text-sm font-medium text-gray-300 mb-2">קטגוריה</label>
+                        <div class="flex gap-2"><select id="task-category" class="select-field flex-grow" required></select><button type="button" id="edit-categories-btn" class="p-2 bg-gray-600 rounded-md hover:bg-gray-500" title="עריכת קטגוריות"><i class="fas fa-edit"></i></button></div>
                     </div>
-                    <div>
-                        <label for="task-urgency" class="block text-sm font-medium text-gray-300 mb-1">רמת דחיפות</label>
-                        <select id="task-urgency" class="select-field">
-                            <option value="1">1 - קריטי</option>
-                            <option value="2">2 - גבוהה</option>
-                            <option value="3" selected>3 - רגילה</option>
-                            <option value="4">4 - נמוכה</option>
-                            <option value="5">5 - נמוכה מאוד</option>
-                        </select>
-                    </div>
+                    <div><label for="task-name" class="block text-sm font-medium text-gray-300 mb-1">שם המשימה</label><input type="text" id="task-name" class="input-field" required><p id="task-name-error" class="text-red-400 text-sm mt-1 hidden">שדה זה הוא חובה.</p></div>
+                    <div><label for="task-urgency" class="block text-sm font-medium text-gray-300 mb-1">רמת דחיפות</label><select id="task-urgency" class="select-field"><option value="1">1 - קריטי</option><option value="2">2 - גבוהה</option><option value="3" selected>3 - רגילה</option><option value="4">4 - נמוכה</option><option value="5">5 - נמוכה מאוד</option></select></div>
                     <div class="flex justify-between gap-4 pt-4">
                         <button type="button" id="cancel-task-btn-page1" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 w-1/2">ביטול</button>
                         <button type="button" id="next-task-page-btn" class="btn-gold font-bold py-2 px-6 rounded-lg w-1/2">הבא</button>
@@ -136,22 +174,27 @@
                      <div><label for="update-assigned-to" class="block text-sm font-medium text-gray-400">אחראי</label><input type="text" id="update-assigned-to" class="input-field mt-1"></div>
                      <div><label for="update-details" class="block text-sm font-medium text-gray-400">פירוט עדכון</label><textarea id="update-details" rows="2" class="textarea-field mt-1"></textarea></div>
                 </div>
-                
+                 
                 <div class="space-y-3 mt-6">
                     <button type="button" id="save-update-btn" class="w-full btn-gold font-bold py-2 px-6 rounded-lg flex items-center justify-center gap-2"><i class="fas fa-save"></i><span>שמור שינויים</span></button>
                     <button type="button" id="edit-task-from-status-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-500 flex items-center justify-center gap-2"><i class="fas fa-edit"></i><span>ערוך משימה</span></button>
-                    <button type="button" id="delete-task-btn" class="w-full bg-red-800 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-700 flex items-center justify-center gap-2"><i class="fas fa-trash"></i><span>מחק משימה</span></button>
-                    <button type="button" id="cancel-update-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 mt-4">סגור</button>
+                    <button type="button" id="cancel-update-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500">סגור</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Category Management Modals -->
+    <div id="edit-categories-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20"><div class="p-6"><h2 class="text-2xl font-bold text-gold mb-4">ניהול קטגוריות</h2><div id="category-list" class="space-y-2 max-h-60 overflow-y-auto mb-4"></div><button type="button" id="close-edit-categories-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">סגור</button></div></div></div>
+    <div id="add-category-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20"><form id="add-category-form" class="p-6 space-y-4"><h2 class="text-2xl font-bold text-gold">הוסף קטגוריה</h2><input type="text" id="new-category-name" placeholder="שם הקטגוריה" class="input-field" required><div class="flex gap-4"><button type="button" id="cancel-add-category-btn" class="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500">ביטול</button><button type="submit" class="flex-1 btn-gold font-bold py-2 px-4 rounded-lg">שמור</button></div></form></div></div>
+
     <script type="module">
         const firebaseConfig = { apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ", authDomain: "sayora-all.firebaseapp.com", projectId: "sayora-all", storageBucket: "sayora-all.appspot.com", messagingSenderId: "836076195583", appId: "1:836076195583:web:a7b0067b866d7e027a06ca", measurementId: "G-LFN43NSE5K" };
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, addDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -167,6 +210,7 @@
         const taskModal = document.getElementById('task-modal');
         const taskForm = document.getElementById('task-form');
         const taskModalTitle = document.getElementById('task-modal-title');
+        const taskCategorySelect = document.getElementById('task-category');
         const taskPage1 = document.getElementById('task-page-1');
         const taskPage2 = document.getElementById('task-page-2');
         const nextTaskPageBtn = document.getElementById('next-task-page-btn');
@@ -177,20 +221,27 @@
         const updateStatusModal = document.getElementById('update-status-modal');
         const updateModalTitle = document.getElementById('update-modal-title');
         const editTaskFromStatusBtn = document.getElementById('edit-task-from-status-btn');
-        const deleteTaskBtn = document.getElementById('delete-task-btn');
         const taskDetailsDisplay = document.getElementById('task-details-display');
         const saveUpdateBtn = document.getElementById('save-update-btn');
         const cancelUpdateBtn = document.getElementById('cancel-update-btn');
         let currentTaskIdForStatusUpdate = null;
         let selectedStatus = '';
 
+        const editCategoriesBtn = document.getElementById('edit-categories-btn');
+        const editCategoriesModal = document.getElementById('edit-categories-modal');
+        const addCategoryModal = document.getElementById('add-category-modal');
+        const closeEditCategoriesBtn = document.getElementById('close-edit-categories-btn');
+        const addCategoryForm = document.getElementById('add-category-form');
+        const cancelAddCategoryBtn = document.getElementById('cancel-add-category-btn');
+
+        let categories = [];
         let tasks = [];
 
         onAuthStateChanged(auth, user => {
             if (user) {
                 appContainer.classList.remove('hidden');
                 welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
-                loadTasks();
+                loadData();
             } else {
                 window.location.href = 'index.html';
             }
@@ -198,24 +249,39 @@
 
         logoutBtn.addEventListener('click', () => signOut(auth));
         
-        function loadTasks() {
-            const tasksRef = collection(db, 'checklistItems');
-            onSnapshot(tasksRef, (snapshot) => {
+        async function loadData() {
+            const categoriesRef = collection(db, 'checklistCategories');
+            const snapshot = await getDocs(categoriesRef);
+            if (snapshot.empty) await seedInitialData();
+
+            onSnapshot(collection(db, 'checklistCategories'), (snapshot) => {
+                categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name, 'he'));
+                updateCategorySelect();
+                renderChecklists();
+            });
+
+            onSnapshot(collection(db, 'checklistItems'), (snapshot) => {
                 tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderTasks();
+                renderChecklists();
             });
         }
 
-        function renderTasks() {
+        function renderChecklists() {
+            if (!categories.length || !tasks.length) return;
             checklistContainer.innerHTML = '';
-            if (tasks.length === 0) {
-                 checklistContainer.innerHTML = `<p class="text-gray-500 italic md:col-span-2 lg:col-span-3 text-center">אין משימות להצגה. לחץ על 'הוספת משימה' כדי להתחיל.</p>`;
-                 return;
-            }
-            const sortedTasks = [...tasks].sort((a, b) => a.urgency - b.urgency || a.name.localeCompare(b.name, 'he'));
-            sortedTasks.forEach(task => {
-                const taskElement = createTaskElement(task);
-                checklistContainer.appendChild(taskElement);
+            categories.forEach(category => {
+                const categoryTasks = tasks.filter(task => task.category === category.name).sort((a, b) => a.urgency - b.urgency || a.name.localeCompare(b.name, 'he'));
+                const categoryDiv = document.createElement('div');
+                categoryDiv.innerHTML = `<h2 class="text-2xl sm:text-3xl font-bold text-gold mb-4 border-b-2 border-gold/30 pb-2">${category.name}</h2>`;
+                if(categoryTasks.length > 0) {
+                    const tasksGrid = document.createElement('div');
+                    tasksGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
+                    categoryTasks.forEach(task => tasksGrid.appendChild(createTaskElement(task)));
+                    categoryDiv.appendChild(tasksGrid);
+                } else {
+                    categoryDiv.innerHTML += `<p class="text-gray-500 italic">אין משימות בקטגוריה זו.</p>`;
+                }
+                checklistContainer.appendChild(categoryDiv);
             });
         }
 
@@ -264,6 +330,7 @@
             closeUpdateStatusModal();
             taskForm.reset();
             document.getElementById('task-id').value = task.id;
+            document.getElementById('task-category').value = task.category;
             document.getElementById('task-name').value = task.name;
             document.getElementById('task-deadline').value = task.deadline || '';
             document.getElementById('task-urgency').value = task.urgency;
@@ -277,15 +344,6 @@
             if (currentTaskIdForStatusUpdate) openEditTaskModal(currentTaskIdForStatusUpdate);
         });
 
-        deleteTaskBtn.addEventListener('click', async () => {
-             if (currentTaskIdForStatusUpdate) {
-                // A custom confirmation dialog would be better than window.confirm
-                // For now, we proceed directly.
-                await deleteDoc(doc(db, 'checklistItems', currentTaskIdForStatusUpdate));
-                closeUpdateStatusModal();
-            }
-        });
-
         function openUpdateStatusModal(id) {
             currentTaskIdForStatusUpdate = id;
             const task = tasks.find(t => t.id === id);
@@ -294,7 +352,7 @@
             updateModalTitle.textContent = task.name;
             document.getElementById('update-assigned-to').value = task.assignedTo || '';
             document.getElementById('update-details').value = task.updateDetails || '';
-            taskDetailsDisplay.innerHTML = `<p><strong class="text-gray-300">דדליין:</strong> ${task.deadline || 'לא הוגדר'}</p><p><strong class="text-gray-300">איש קשר:</strong> ${task.contact || 'לא הוגדר'}</p>`;
+            taskDetailsDisplay.innerHTML = `<p><strong class="text-gray-300">קטגוריה:</strong> ${task.category}</p><p><strong class="text-gray-300">דדליין:</strong> ${task.deadline || 'לא הוגדר'}</p><p><strong class="text-gray-300">איש קשר:</strong> ${task.contact || 'לא הוגדר'}</p>`;
             
             selectedStatus = task.status || '';
             updateStatusButtonsUI();
@@ -343,6 +401,7 @@
             e.preventDefault();
             const id = document.getElementById('task-id').value;
             const taskData = {
+                category: document.getElementById('task-category').value,
                 name: document.getElementById('task-name').value,
                 urgency: parseInt(document.getElementById('task-urgency').value),
                 deadline: document.getElementById('task-deadline').value,
@@ -376,12 +435,103 @@
             taskPage2.classList.add('hidden');
             taskPage1.classList.remove('hidden');
         });
+
+        function updateCategorySelect() {
+            taskCategorySelect.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            taskCategorySelect.innerHTML += '<option value="add_new_category" class="text-gold font-bold">-- הוסף קטגוריה --</option>';
+        }
+
+        taskCategorySelect.addEventListener('change', (e) => {
+            if (e.target.value === 'add_new_category') { e.target.selectedIndex = 0; openAddCategoryModal(); }
+        });
+        
+        editCategoriesBtn.addEventListener('click', () => {
+            const categoryList = document.getElementById('category-list');
+            categoryList.innerHTML = categories.map(c => `<div class="flex justify-between items-center p-2 bg-gray-700 rounded-md"><span>${c.name}</span><button data-id="${c.id}" class="delete-category-btn text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button></div>`).join('');
+            document.querySelectorAll('.delete-category-btn').forEach(btn => btn.addEventListener('click', async e => {
+                const id = e.currentTarget.dataset.id;
+                if(confirm('מחיקת קטגוריה תמחק גם את כל המשימות המשויכות אליה. להמשיך?')) {
+                    const categoryToDelete = categories.find(c => c.id === id);
+                    const tasksToDelete = tasks.filter(t => t.category === categoryToDelete.name);
+                    const batch = writeBatch(db);
+                    tasksToDelete.forEach(task => batch.delete(doc(db, 'checklistItems', task.id)));
+                    batch.delete(doc(db, 'checklistCategories', id));
+                    await batch.commit();
+                }
+            }));
+            openEditCategoriesModal();
+        });
+
+        addCategoryForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const newName = document.getElementById('new-category-name').value.trim();
+            if (newName && !categories.some(c => c.name === newName)) {
+                await addDoc(collection(db, 'checklistCategories'), { name: newName });
+            }
+            closeAddCategoryModal();
+        });
         
         function closeTaskModal() { taskModal.classList.add('hidden'); taskModal.classList.remove('flex'); }
         function closeUpdateStatusModal() { updateStatusModal.classList.add('hidden'); updateStatusModal.classList.remove('flex'); }
+        function openEditCategoriesModal() { editCategoriesModal.classList.add('flex'); editCategoriesModal.classList.remove('hidden'); }
+        function closeEditCategoriesModal() { editCategoriesModal.classList.add('hidden'); editCategoriesModal.classList.remove('flex'); }
+        function openAddCategoryModal() { addCategoryModal.classList.add('flex'); addCategoryModal.classList.remove('hidden'); }
+        function closeAddCategoryModal() { addCategoryModal.classList.add('hidden'); addCategoryModal.classList.remove('flex'); }
 
         cancelTaskBtnPage1.addEventListener('click', closeTaskModal);
         cancelUpdateBtn.addEventListener('click', closeUpdateStatusModal);
+        closeEditCategoriesBtn.addEventListener('click', closeEditCategoriesModal);
+        cancelAddCategoryBtn.addEventListener('click', closeAddCategoryModal);
+        
+        const hamburgerBtn = document.getElementById('hamburger-btn'), closeSidebarBtn = document.getElementById('close-sidebar-btn'), sidebar = document.getElementById('sidebar'), sidebarOverlay = document.getElementById('sidebar-overlay');
+        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }, closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); };
+        hamburgerBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+        
+        async function seedInitialData() {
+            const initialData = [
+                { category: "רישוי ואישורים", task: "שליחת מייל + מעקב תשובה ואישור עקרוני מרט״ג + מועצה תמר", deadline: "ספטמבר–אוקטובר 2025", contact: "רט״ג: info@parks.org.il מועצה אזורית תמר: אגף תרבות/אירועים" },
+                { category: "רישוי ואישורים", task: "גיוס יועץ בטיחות מוסמך", deadline: "ספטמבר–אוקטובר 2025", contact: "נעם זיו / עדי אוחיון / גבי רפאל" },
+                { category: "רישוי ואישורים", task: "הכנת תיק רישוי (Site Plan, בטיחות, מהנדס, חשמל)", deadline: "אוקטובר 2025", contact: "SafeEvent, EventPro, מהנדס קונסטרוקציה, חשמלאי בודק" },
+                { category: "רישוי ואישורים", task: "פנייה רשמית למשטרה/מד״א/כיבוי – דרישות רשמיות", deadline: "נובמבר 2025", contact: "משטרת ישראל – אגף רישוי אירועים; מד״א ירושלים; תחנת כבאות ים המלח" },
+                { category: "ביטוחים", task: "בחירת ברוקר ביטוח אירועים", deadline: "ספטמבר–אוקטובר 2025", contact: "Betach Toren, Argo Team, Marsh Israel" },
+                { category: "ביטוחים", task: "שליחת נתונים (Site Plan, לו״ז, קהל) לקבלת הצעות", deadline: "נובמבר 2025", contact: "ברוקר ביטוח נבחר" },
+                { category: "ביטוחים", task: "סגירת פוליסות ביטוח (צד ג׳, חבות מעבידים, ציוד, ביטול, רחפנים)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
+                { category: "ביטוחים", task: "קבלת אישור קיום ביטוח (לרשויות)", deadline: "דצמבר 2025", contact: "ברוקר ביטוח" },
+                { category: "שטח ולוגיסטיקה", task: "הכנת Site Plan סופי", deadline: "אוקטובר 2025", contact: "אדריכל אירועים / שרטט CAD" },
+                { category: "שטח ולוגיסטיקה", task: "בחירת ספקים (במה/סאונד/תאורה/מסכים/שירותים/גנרטורים)", deadline: "נובמבר–דצמבר 2025", contact: "ברסלב במה, סינקופה סאונד, סונולייט תאורה" },
+                { category: "שטח ולוגיסטיקה", task: "חתימה על חוזים מול ספקים", deadline: "ינואר 2026", contact: "ספקי ליבה" },
+                { category: "הפקה ותוכן", task: "סגירת אמנים ראשיים (בינלאומיים)", deadline: "ינואר–פברואר 2026", contact: "Solomun Agency, Artists Israel" },
+                { category: "הפקה ותוכן", task: "סגירת ליינאפ מקומי (דיג’יים ישראלים)", deadline: "מרץ 2026", contact: "סוכנויות מקומיות" },
+                { category: "הפקה ותוכן", task: "סגירת רקדנים/תפאורה/שחקנים", deadline: "מרץ–אפריל 2026", contact: "Dancers4U, Crew TLV" },
+                { category: "שיווק ומכירות", task: "הקמת אתר מכירה (טיקטינג)", deadline: "ינואר 2026", contact: "Eventim, GTC, טיקטסיל" },
+                { category: "שיווק ומכירות", task: "פתיחת עמודי פסטיבל (IG, TikTok, FB)", deadline: "ינואר 2026", contact: "צוות SAYORA" },
+                { category: "שיווק ומכירות", task: "קמפיין פתיחה – Early Bird", deadline: "פברואר 2026", contact: "סושיאל + משפיענים" },
+                { category: "שיווק ומכירות", task: "קמפיינים מתגלגלים (Regular, VIP)", deadline: "מרץ–אוגוסט 2026", contact: "צוות שיווק" },
+                { category: "תחבורה ובטיחות", task: "תכנון מערך שאטלים (ת״א/ירושלים)", deadline: "מאי 2026", contact: "אגד תעבורה, מטרופולין" },
+                { category: "תחבורה ובטיחות", task: "סגירת חניונים ושילוט", deadline: "מאי 2026", contact: "מועצה אזורית תמר" },
+                { category: "תחבורה ובטיחות", task: "חוזה עם חברת אבטחה", deadline: "מאי 2026", contact: "מודיעין אזרחי, רמות אבטחה" },
+                { category: "תחבורה ובטיחות", task: "סגירת מד״א (אמבולנס, צוותים)", deadline: "מאי 2026", contact: "מד״א ירושלים" },
+                { category: "תחבורה ובטיחות", task: "סגירת כיבוי אש (צוות/רכב)", deadline: "מאי 2026", contact: "תחנת כבאות ים המלח" },
+                { category: "פיננסים וחוזים", task: "בניית תקציב מלא (הוצאות/הכנסות)", deadline: "ספטמבר–נובמבר 2025", contact: "Excel פנימי" },
+                { category: "פיננסים וחוזים", task: "פתיחת עוסק/עמותה לניהול כספים", deadline: "דצמבר 2025", contact: "רו״ח / יועץ מס" },
+                { category: "פיננסים וחוזים", task: "חיפוש ספונסרים", deadline: "ינואר–מרץ 2026", contact: "RedBull, Absolut, Heineken, מותגי אופנה" },
+                { category: "פיננסים וחוזים", task: "חתימה על חוזים מול אמנים/ספקים", deadline: "ינואר–מרץ 2026", contact: "סוכנויות אמנים / ספקים" },
+                { category: "סגירות אחרונות", task: "לוודא אישורים סופיים מכל הרשויות", deadline: "יוני–יולי 2026", contact: "רט״ג, משטרה, מד״א, כיבוי, מועצה" },
+                { category: "סגירות אחרונות", task: "פגישה לוגיסטית בשטח עם כל הספקים", deadline: "יולי 2026", contact: "כל ספקי הליבה" },
+                { category: "סגירות אחרונות", task: "חזרה גנרלית לאמנים ותוכן", deadline: "אוגוסט 2026", contact: "אמנים ורקדנים" },
+                { category: "אחרי האירוע", task: "פירוק והחזרת ציוד", deadline: "אוגוסט 2026", contact: "ספקי ליבה" },
+                { category: "אחרי האירוע", task: "תשלום לספקים", deadline: "אוגוסט 2026", contact: "הנהלת חשבונות" },
+                { category: "אחרי האירוע", task: "דו״ח סיכום פיננסי + הפקתי", deadline: "ספטמבר 2026", contact: "צוות SAYORA" }
+            ];
+            
+            const uniqueCategories = [...new Set(initialData.map(item => item.category))];
+            const batch = writeBatch(db);
+            uniqueCategories.forEach(name => batch.set(doc(collection(db, 'checklistCategories')), { name }));
+            initialData.forEach(item => batch.set(doc(collection(db, 'checklistItems')), { category: item.category, name: item.task, deadline: item.deadline || '', contact: item.contact || '', urgency: 3, status: '', assignedTo: '', details: '', updateDetails: '' }));
+            await batch.commit();
+        }
     </script>
 </body>
 </html>
