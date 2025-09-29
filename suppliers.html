@@ -152,13 +152,13 @@
                  <button id="close-sidebar-btn" class="text-gold text-3xl">&times;</button>
              </div>
              <div class="space-y-2">
-                <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
-                <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
-                <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
-                <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
-                <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
-                <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
-                <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                 <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                 <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                 <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
+                 <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                 <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                 <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                 <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
              </div>
         </nav>
         
@@ -581,56 +581,71 @@
         }
 
         // --- Form Modal (Add/Edit) ---
+        /**
+         * UPDATED FUNCTION: This function now handles all cases (add/edit/convert) for both suppliers and quotes.
+         * It explicitly populates every form field from the found data object or sets a default value.
+         * This ensures that when editing, all saved data is correctly displayed in the form.
+         */
         function openFormModal(id, type, isConversion = false) {
             dataForm.reset();
             currentStep = 1;
-            currentTasks = [];
-            updateStepVisibility();
-            
+            updateStepVisibility(); // Reset step visibility first
+
             const sourceDataArray = isConversion ? quotes : (type === 'supplier' ? suppliers : quotes);
-            const itemData = id ? sourceDataArray.find(item => item.id === id) || {} : {};
-            
-            document.getElementById('data-id').value = (isConversion) ? '' : (id || '');
+            const itemData = id ? sourceDataArray.find(item => item.id === id) : {};
+
+            // If itemData is not found for an existing ID, something is wrong. Log an error and exit.
+            if (id && !itemData) {
+                console.error("Could not find item with ID:", id, "in array:", sourceDataArray);
+                return;
+            }
+
+            // Set hidden fields that control the form's state
+            document.getElementById('data-id').value = isConversion ? '' : (id || '');
             document.getElementById('data-type').value = type;
             document.getElementById('is-conversion').value = isConversion;
             document.getElementById('original-quote-id').value = isConversion ? id : '';
 
+            // Set form title
             let title = '';
-            if (!id && !isConversion) title = type === 'supplier' ? 'הוספת ספק חדש' : 'הוספת הצעת מחיר';
-            else if (isConversion) title = 'הפיכת הצעת מחיר לספק';
-            else title = type === 'supplier' ? 'עריכת ספק' : 'עריכת הצעת מחיר';
+            if (isConversion) {
+                title = 'הפיכת הצעת מחיר לספק';
+            } else if (id) {
+                title = type === 'supplier' ? 'עריכת ספק' : 'עריכת הצעת מחיר';
+            } else {
+                title = type === 'supplier' ? 'הוספת ספק חדש' : 'הוספת הצעת מחיר';
+            }
             document.getElementById('form-modal-title').textContent = title;
 
-            // --- Pre-fill Step 1 ---
-            document.getElementById('data-name').value = itemData.name || '';
-            document.getElementById('category-select').value = itemData.categoryId || '';
-            document.querySelector(`input[name="data-type-radio"][value="${itemData.type || 'regular'}"]`).checked = true;
-            document.getElementById('data-provides').value = itemData.provides || '';
-            document.getElementById('data-phone').value = itemData.phone || '';
+            // --- Explicitly pre-fill ALL form fields with data or defaults ---
             
-            // --- Pre-fill Step 2 ---
-            document.querySelector(`input[name="contacted"][value="${itemData.contacted ? 'yes' : 'no'}"]`).checked = true;
-            document.getElementById('contact-details').value = itemData.contactDetails || '';
-            document.getElementById('price').value = itemData.price || '';
+            // Step 1 Fields
+            document.getElementById('data-name').value = itemData?.name || '';
+            document.getElementById('category-select').value = itemData?.categoryId || '';
+            document.querySelector(`input[name="data-type-radio"][value="${itemData?.type || 'regular'}"]`).checked = true;
+            document.getElementById('data-provides').value = itemData?.provides || '';
+            document.getElementById('data-phone').value = itemData?.phone || '';
+
+            // Step 2 Fields (Common)
+            document.querySelector(`input[name="contacted"][value="${itemData?.contacted ? 'yes' : 'no'}"]`).checked = true;
+            document.getElementById('contact-details').value = itemData?.contactDetails || '';
+            document.getElementById('price').value = itemData?.price || '';
+
+            // Step 2 Fields (Supplier-specific)
+            const isFinalized = itemData?.isFinalized || false;
+            document.querySelector(`input[name="finalized"][value="${isFinalized ? 'yes' : 'no'}"]`).checked = true;
+            document.getElementById('pending-details').value = itemData?.pendingDetails || '';
+            document.getElementById('agreement-link').value = itemData?.agreementLink || '';
             
-            // --- Pre-fill Supplier-Specific fields ---
-            if (type === 'supplier' || isConversion) {
-                document.querySelector(`input[name="finalized"][value="${itemData.isFinalized ? 'yes' : 'no'}"]`).checked = true;
-                document.getElementById('pending-details').value = itemData.pendingDetails || '';
-                document.getElementById('agreement-link').value = itemData.agreementLink || '';
-                currentTasks = itemData.tasks ? JSON.parse(JSON.stringify(itemData.tasks)) : [];
-            } else {
-                 // Ensure supplier fields are reset to default for quotes
-                document.querySelector('input[name="finalized"][value="no"]').checked = true;
-                document.getElementById('pending-details').value = '';
-                document.getElementById('agreement-link').value = '';
-                currentTasks = [];
-            }
+            // Tasks (deep copy)
+            currentTasks = itemData?.tasks ? JSON.parse(JSON.stringify(itemData.tasks)) : [];
+            
+            // After populating all data, render conditional parts and open
             renderTodoEditor();
-            handleConditionalFormFields();
+            handleConditionalFormFields(); // Update visibility based on populated data
             openModal(document.getElementById('form-modal'));
         }
-        
+
         function updateStepVisibility() {
             document.getElementById('form-step-1').classList.toggle('active', currentStep === 1);
             document.getElementById('form-step-2').classList.toggle('active', currentStep === 2);
@@ -926,4 +941,3 @@
     </script>
 </body>
 </html>
-
