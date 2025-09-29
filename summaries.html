@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAYORA | סיכומים ומשימות</title>
+    <title>SAYORA | ניהול ספקים</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        body { font-family: 'Assistant', sans-serif; background-color: #0a0a0a; color: #E0E0E0; }
-        .bg-black-gradient { background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%); }
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #0a0a0a;
+            color: #E0E0E0;
+        }
+        .bg-black-gradient {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
         .text-gold { color: #FFD700; }
         .border-gold { border-color: #FFD700; }
         .btn-gold {
@@ -20,28 +26,104 @@
             background-color: #e6c200; transform: scale(1.05);
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
-        #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
         #sidebar.open { transform: translateX(0); }
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
-        .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
+        
+        /* Modal Styles */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            background-color: #1a1a1a;
+            border: 1px solid #FFD700;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: scale(0.95);
+            opacity: 0;
+            width: 95%; /* Responsive width */
+        }
+        .modal-backdrop.flex {
+            opacity: 1;
+        }
+        .modal-backdrop.flex .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Form Fields */
         .input-field, .select-field, .textarea-field {
             background-color: #2a2a2a; border: 1px solid #444; color: #E0E0E0;
-            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem; transition: all 0.2s ease;
         }
         .input-field:focus, .select-field:focus, .textarea-field:focus {
-            outline: none; border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            outline: none; border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
-        .task-item { transition: all 0.2s ease-in-out; }
-        .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
-        .status-btn.selected {
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            transform: scale(1.05);
-            border: 2px solid white;
+        .tooltip {
+            position: relative;
+            display: inline-block;
         }
-         .status-btn {
-            transition: all 0.2s ease;
-             border: 2px solid transparent;
-         }
+        .tooltip .tooltiptext {
+            visibility: hidden; width: 220px; background-color: #2a2a2a;
+            color: #fff; text-align: center; border-radius: 6px;
+            padding: 5px 10px; position: absolute; z-index: 1;
+            bottom: 125%; left: 50%; margin-left: -110px;
+            opacity: 0; transition: opacity 0.3s; font-size: 0.8rem;
+            border: 1px solid #FFD700;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Supplier Card Styles */
+        .supplier-card {
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .supplier-card:hover {
+            border-color: #FFD700;
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        .status-not-contacted { background-color: #1f2937; } /* Default dark blueish gray */
+        .status-in-progress { background: linear-gradient(to top right, #3a3a3a, #4a3a00); } /* Dark gold/yellow tint */
+        .status-finalized { background: linear-gradient(to top right, #3a3a3a, #004a1e); } /* Dark green tint */
+
+        /* Tabs */
+        .tab {
+            transition: all 0.3s ease;
+        }
+        .tab.active {
+            color: #FFD700;
+            border-bottom-color: #FFD700;
+        }
+
+        /* Animations */
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.6s ease-out forwards;
+        }
+
+        /* Toast Notifications */
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.9); visibility: hidden; } }
+        .toast {
+            animation: slideInRight 0.3s ease forwards, fadeOut 0.5s ease 3s forwards;
+        }
+        
+        /* Help Modal Prose styles for better readability */
+        .prose-custom ul { padding-right: 1.5rem; }
+        .prose-custom h3, .prose-custom h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; }
+
     </style>
 </head>
 <body class="bg-black">
@@ -50,29 +132,26 @@
         <!-- Header -->
         <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                 <div class="flex-1 flex justify-start items-center gap-1">
-                    <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
-                    <button id="help-btn" class="text-gold text-2xl p-2" title="עזרה"><i class="fas fa-question-circle"></i></button>
-                </div>
-                <div class="flex-shrink-0 flex items-center gap-3">
+                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">&#9776;</button>
+                <div class="flex items-center gap-3">
                     <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
                     <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
                 </div>
-                <div id="user-info" class="flex-1 flex justify-end items-center gap-3">
+                <div id="user-info" class="flex items-center gap-3">
                     <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
                     <button id="logout-btn" class="bg-transparent border border-gold text-gold py-1 px-3 rounded-md text-sm hover:bg-gold hover:text-black transition-colors">התנתקות</button>
                 </div>
             </div>
         </header>
 
-        <!-- Sidebar -->
+        <!-- Sidebar (Mobile) -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
         <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
             <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
             <div class="mt-12 space-y-4 text-center">
-                 <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
                 <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
-                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md bg-gold/20 text-white font-bold text-lg">ספקים</a>
                 <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
                 <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
                 <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
@@ -83,579 +162,943 @@
         <!-- Main Content -->
         <div class="flex">
             <!-- Desktop Sidebar -->
-            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
+            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-16 shadow-lg shadow-black/50 border-l border-gray-800">
                 <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
                 <nav class="space-y-2">
                     <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
                     <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
-                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
                     <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
                     <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
-                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">סיכומים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
                     <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
                 </nav>
             </aside>
 
-            <main class="flex-1 p-4 sm:p-8 min-h-screen">
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 min-h-screen">
                 <div class="max-w-7xl mx-auto">
-                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-                         <h1 class="text-3xl text-center sm:text-left sm:text-5xl font-bold text-gold">ניהול משימות וסיכומים</h1>
-                         <button id="add-task-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2 w-full sm:w-auto justify-center">
-                             <i class="fas fa-plus-circle"></i>
-                             <span>הוספת משימה</span>
-                         </button>
-                     </div>
-                    
-                     <div class="mb-8 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                         <h3 class="text-lg font-semibold text-gold mb-3">מקרא צבעים</h3>
-                         <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-green-600 border border-green-400"></div><span>בוצע</span></div>
-                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-cyan-600 border border-cyan-400"></div><span>בתהליך</span></div>
-                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-700 border border-red-500"></div><span>קריטי</span></div>
-                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-orange-600 border border-orange-400"></div><span>דחיפות 2</span></div>
-                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-yellow-600 border border-yellow-400"></div><span>דחיפות 3</span></div>
-                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-blue-600 border border-blue-400"></div><span>דחיפות 4</span></div>
-                             <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-gray-700 border border-gray-500"></div><span>דחיפות 5</span></div>
-                         </div>
-                     </div>
-
-                    <div id="checklist-container" class="space-y-10">
-                        <div id="empty-state" class="hidden text-center py-16">
-                            <i class="fas fa-tasks text-6xl text-gray-600 mb-4"></i>
-                            <h2 class="text-2xl font-bold text-gray-400">אין משימות להצגה</h2>
-                            <p class="text-gray-500 mt-2">התחל על ידי הוספת משימה חדשה או יצירת קטגוריה.</p>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div class="flex items-center gap-4">
+                            <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול ספקים</h1>
+                            <button id="help-btn" class="text-gold text-xl w-9 h-9 border border-gold/50 rounded-full flex items-center justify-center hover:bg-gold/10 hover:border-gold transition-colors flex-shrink-0">
+                                <i class="fas fa-question"></i>
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap justify-end gap-2 sm:gap-4">
+                            <button id="add-quote-btn" class="bg-transparent border border-gold text-gold font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gold hover:text-black transition-all duration-300 text-sm sm:text-base">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span>הוסף הצעת מחיר</span>
+                            </button>
+                            <button id="add-supplier-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2 text-sm sm:text-base">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>הוספת ספק</span>
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Color Legend -->
+                    <div id="color-legend" class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 p-3 bg-black/30 rounded-lg border border-gray-800 animate-fade-in">
+                        <span class="text-sm font-bold text-gray-200">מקרא סטטוסים:</span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full status-not-contacted border border-gray-600"></span>
+                            <span class="text-sm text-gray-400">טרם נוצר קשר</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full status-in-progress border border-gray-600"></span>
+                            <span class="text-sm text-gray-400">בטיפול</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full status-finalized border border-gray-600"></span>
+                            <span class="text-sm text-gray-400">סגור</span>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="border-b border-gray-700 mb-6">
+                        <nav class="flex space-x-6" aria-label="Tabs">
+                            <button id="suppliers-tab" class="tab active text-lg font-medium text-gray-400 hover:text-gold py-3 px-1 border-b-2 border-transparent">ספקים</button>
+                            <button id="quotes-tab" class="tab text-lg font-medium text-gray-400 hover:text-gold py-3 px-1 border-b-2 border-transparent">הצעות מחיר</button>
+                        </nav>
+                    </div>
+
+                    <!-- Grids -->
+                    <div id="suppliers-view">
+                        <div id="suppliers-grid-container">
+                            <!-- Supplier category sections will be injected here -->
+                        </div>
+                    </div>
+                    <div id="quotes-view" class="hidden">
+                         <div id="quotes-grid-container">
+                            <!-- Quote category sections will be injected here -->
+                        </div>
+                    </div>
+
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="task-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20">
-            <form id="task-form" class="p-6 sm:p-8">
-                <h2 id="task-modal-title" class="text-2xl sm:text-3xl font-bold text-gold mb-6 text-center">הוספת משימה</h2>
-                <input type="hidden" id="task-id">
-                
-                <div id="task-page-1" class="space-y-5">
+    <!-- Add/Edit Supplier/Quote Modal -->
+    <div id="form-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content max-w-lg rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <form id="main-form" class="p-6 sm:p-8">
+                <h2 id="modal-title" class="text-3xl font-bold text-gold mb-6 text-center"></h2>
+                <input type="hidden" id="form-id">
+                <input type="hidden" id="form-type"> <!-- 'supplier' or 'quote' -->
+
+                <!-- Step 1 -->
+                <div id="step-1" class="space-y-6">
+                    <h3 class="text-lg text-gray-400 font-semibold border-b border-gray-600 pb-2">שלב 1: פרטים בסיסיים</h3>
                     <div>
-                        <label for="task-category" class="block text-sm font-medium text-gray-300 mb-2">קטגוריה</label>
-                        <div class="flex gap-2"><select id="task-category" class="select-field flex-grow" required></select><button type="button" id="edit-categories-btn" class="p-2 bg-gray-600 rounded-md hover:bg-gray-500" title="עריכת קטגוריות"><i class="fas fa-edit"></i></button></div>
+                        <label for="handling-manager" class="block text-sm font-medium text-gray-300 mb-1">שם מנהל מטפל</label>
+                        <input type="text" id="handling-manager" class="input-field" required>
                     </div>
-                    <div><label for="task-name" class="block text-sm font-medium text-gray-300 mb-1">שם המשימה</label><input type="text" id="task-name" class="input-field" required><p id="task-name-error" class="text-red-400 text-sm mt-1 hidden">שדה זה הוא חובה.</p></div>
-                    <div><label for="task-urgency" class="block text-sm font-medium text-gray-300 mb-1">רמת דחיפות</label><select id="task-urgency" class="select-field"><option value="1">1 - קריטי</option><option value="2">2 - גבוהה</option><option value="3" selected>3 - רגילה</option><option value="4">4 - נמוכה</option><option value="5">5 - נמוכה מאוד</option></select></div>
-                    <div class="flex justify-between gap-4 pt-4">
-                        <button type="button" id="cancel-task-btn-page1" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 w-1/2">ביטול</button>
-                        <button type="button" id="next-task-page-btn" class="btn-gold font-bold py-2 px-6 rounded-lg w-1/2">הבא</button>
+                    <div>
+                        <label for="supplier-name" class="block text-sm font-medium text-gray-300 mb-1">שם הספק/הצעה</label>
+                        <input type="text" id="supplier-name" class="input-field" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">קטגוריה</label>
+                        <div class="flex items-center gap-2">
+                            <select id="category-select" class="select-field flex-grow">
+                                <!-- Categories loaded here -->
+                            </select>
+                            <button type="button" id="edit-categories-btn" class="p-2.5 bg-gray-600 rounded-md hover:bg-gray-500"><i class="fas fa-edit"></i></button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">סוג</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center"><input type="radio" name="supplier-type" value="regular" class="ml-2" checked> ספק רגיל</label>
+                            <label class="flex items-center"><input type="radio" name="supplier-type" value="sponsor" class="ml-2"> ספונסר</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="supplier-phone" class="block text-sm font-medium text-gray-300 mb-1">מספר טלפון</label>
+                        <input type="tel" id="supplier-phone" class="input-field">
+                    </div>
+
+                    <div>
+                        <label for="supplier-provides" class="block text-sm font-medium text-gray-300 mb-1" id="supplier-provides-label">מה מספקים?</label>
+                        <input type="text" id="supplier-provides" class="input-field">
                     </div>
                 </div>
 
-                <div id="task-page-2" class="hidden space-y-5">
-                    <div><label for="task-deadline" class="block text-sm font-medium text-gray-300 mb-1">דדליין</label><input type="text" id="task-deadline" class="input-field" placeholder="לדוגמא: ספטמבר 2025"></div>
-                    <div><label for="task-contact" class="block text-sm font-medium text-gray-300 mb-1">איש קשר</label><input type="text" id="task-contact" class="input-field" placeholder="שם וטלפון (אופציונלי)"></div>
-                    <div><label for="task-details" class="block text-sm font-medium text-gray-300 mb-1">פירוט נוסף</label><textarea id="task-details" rows="3" class="textarea-field"></textarea></div>
-                    <div class="flex justify-between gap-4 pt-4">
-                        <button type="button" id="back-task-page-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 w-1/2">חזור</button>
-                        <button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg w-1/2">שמור</button>
+                <!-- Step 2 -->
+                <div id="step-2" class="hidden space-y-6">
+                    <h3 class="text-lg text-gray-400 font-semibold border-b border-gray-600 pb-2">שלב 2: סטאטוס ותיאום</h3>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">האם נוצר קשר?</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center"><input type="radio" name="contacted" value="yes" class="ml-2"> כן</label>
+                            <label class="flex items-center"><input type="radio" name="contacted" value="no" class="ml-2" checked> לא</label>
+                        </div>
+                    </div>
+                    
+                    <div id="contacted-yes-fields" class="hidden space-y-6 pl-4 border-r-2 border-gold/30">
+                        <div>
+                            <label for="contact-details" class="block text-sm font-medium text-gray-300 mb-1">
+                                שם איש קשר ופרטי הסיכום
+                                <div class="tooltip ml-1">
+                                    <i class="fas fa-info-circle text-gray-400"></i>
+                                    <span class="tooltiptext">רשמו כאן את פרטי איש הקשר וסיכום קצר של מה שדובר וסוכם.</span>
+                                </div>
+                            </label>
+                            <textarea id="contact-details" rows="3" class="textarea-field"></textarea>
+                        </div>
+                        <div id="price-field">
+                             <label for="price" class="block text-sm font-medium text-gray-300 mb-1">מה המחיר שסוכם?</label>
+                            <input type="number" id="price" class="input-field">
+                        </div>
+                    </div>
+
+                    <div id="finalized-section">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">האם הכל סגור סופית?</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center"><input type="radio" name="finalized" value="yes" class="ml-2"> כן</label>
+                            <label class="flex items-center"><input type="radio" name="finalized" value="no" class="ml-2" checked> לא</label>
+                        </div>
+                    </div>
+
+                    <div id="finalized-conditional-fields" class="hidden pl-4 border-r-2 border-gold/30 space-y-6">
+                         <div id="finalized-no-field" class="hidden">
+                            <label for="pending-details" class="block text-sm font-medium text-gray-300 mb-1">מה עדיין לא סגור?</label>
+                            <textarea id="pending-details" rows="2" class="textarea-field"></textarea>
+                        </div>
+                        <div id="finalized-yes-field" class="hidden">
+                            <label for="agreement-link" class="block text-sm font-medium text-gray-300 mb-1">
+                                קישור להסכם חתום
+                                <div class="tooltip ml-1">
+                                    <i class="fas fa-info-circle text-gray-400"></i>
+                                    <span class="tooltiptext">מומלץ להעלות את קובץ ההסכם ל-Google Drive ולהדביק כאן את הקישור לשיתוף.</span>
+                                </div>
+                            </label>
+                            <input type="url" id="agreement-link" class="input-field" placeholder="https://docs.google.com/...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex flex-col-reverse sm:flex-row sm:justify-between items-center gap-4 pt-6 mt-6 border-t border-gray-700">
+                    <button type="button" id="cancel-btn" class="w-full sm:w-auto bg-gray-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
+                    <div class="flex w-full sm:w-auto justify-end gap-3">
+                         <button type="button" id="prev-btn" class="hidden w-full sm:w-auto bg-transparent border border-gold text-gold font-bold py-2.5 px-6 rounded-lg hover:bg-gold hover:text-black transition-colors">הקודם</button>
+                         <button type="button" id="next-btn" class="w-full sm:w-auto btn-gold font-bold py-2.5 px-6 rounded-lg">הבא</button>
+                         <button type="submit" id="submit-btn" class="hidden w-full sm:w-auto btn-gold font-bold py-2.5 px-6 rounded-lg">שמור שינויים</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-    
-    <div id="update-status-modal" class="fixed inset-0 z-[51] hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
-             <div class="p-6 sm:p-8">
-                <h2 id="update-modal-title" class="text-2xl font-bold text-gold mb-4 text-center break-words"></h2>
-                <div id="task-details-display" class="mb-4 p-3 bg-gray-800/50 rounded-lg space-y-1 text-xs border border-gray-700"></div>
 
-                <div class="space-y-4 mb-4">
-                    <div><label class="block text-sm font-medium text-gray-400 mb-1">סטטוס</label>
-                        <div class="grid grid-cols-3 gap-2 sm:gap-4">
-                            <button data-status="done" class="status-btn bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-500 flex items-center justify-center gap-2 text-sm"><i class="fas fa-check-circle"></i><span class="hidden sm:inline">בוצע</span></button>
-                            <button data-status="progress" class="status-btn bg-cyan-600 text-white font-bold py-3 rounded-lg hover:bg-cyan-500 flex items-center justify-center gap-2 text-sm"><i class="fas fa-tasks"></i><span class="hidden sm:inline">בתהליך</span></button>
-                            <button data-status="" class="status-btn bg-red-700 text-white font-bold py-3 rounded-lg hover:bg-red-500 flex items-center justify-center gap-2 text-sm"><i class="fas fa-times-circle"></i><span class="hidden sm:inline">לא בוצע</span></button>
-                        </div>
-                    </div>
-                     <div><label for="update-assigned-to" class="block text-sm font-medium text-gray-400">אחראי</label><input type="text" id="update-assigned-to" class="input-field mt-1"></div>
-                     <div><label for="update-details" class="block text-sm font-medium text-gray-400">פירוט עדכון</label><textarea id="update-details" rows="2" class="textarea-field mt-1"></textarea></div>
-                </div>
-                
-                <div class="space-y-3 mt-6">
-                    <button type="button" id="save-update-btn" class="w-full btn-gold font-bold py-2 px-6 rounded-lg flex items-center justify-center gap-2"><i class="fas fa-save"></i><span>שמור שינויים</span></button>
-                    <button type="button" id="edit-task-from-status-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-500 flex items-center justify-center gap-2"><i class="fas fa-edit"></i><span>ערוך משימה</span></button>
-                    <button type="button" id="delete-task-btn" class="w-full bg-red-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2"><i class="fas fa-trash-alt"></i><span>מחק משימה</span></button>
-                    <button type="button" id="cancel-update-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500">סגור</button>
+    <!-- View Supplier Modal -->
+    <div id="view-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content max-w-lg rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto p-6 sm:p-8">
+            <div id="view-modal-content"></div>
+             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 mt-6 border-t border-gray-700">
+                <button type="button" id="view-close-btn" class="w-full sm:w-auto bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors order-2 sm:order-1">סגור</button>
+                <div id="view-actions" class="w-full sm:w-auto flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+                    <!-- Action buttons like Edit, Delete, Convert will be injected here -->
                 </div>
             </div>
         </div>
     </div>
-
+    
     <!-- Category Management Modals -->
-    <div id="edit-categories-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20"><div class="p-6"><h2 class="text-2xl font-bold text-gold mb-4">ניהול קטגוריות</h2><div id="category-list" class="space-y-2 max-h-60 overflow-y-auto mb-4"></div><button type="button" id="close-edit-categories-btn" class="w-full bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">סגור</button></div></div></div>
-    <div id="add-category-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20"><form id="add-category-form" class="p-6 space-y-4"><h2 class="text-2xl font-bold text-gold">הוסף קטגוריה</h2><input type="text" id="new-category-name" placeholder="שם הקטגוריה" class="input-field" required><div class="flex gap-4"><button type="button" id="cancel-add-category-btn" class="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500">ביטול</button><button type="submit" class="flex-1 btn-gold font-bold py-2 px-4 rounded-lg">שמור</button></div></form></div></div>
+    <div id="category-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content max-w-sm rounded-lg shadow-2xl shadow-gold/20">
+            <form id="category-form" class="p-8 space-y-4">
+                <h2 class="text-2xl font-bold text-gold text-center">ניהול קטגוריות</h2>
+                <div id="category-list" class="space-y-2 max-h-60 overflow-y-auto p-2 bg-black/20 rounded-md">
+                    <!-- category items here -->
+                </div>
+                <div>
+                    <label for="new-category-name" class="block text-sm font-medium text-gray-300 mb-1">הוספת קטגוריה חדשה</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="new-category-name" class="input-field" placeholder="שם קטגוריה">
+                        <button type="button" id="add-new-category-btn" class="btn-gold px-4 rounded-lg"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="category-close-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500">סגור</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Help Modal -->
-    <div id="help-modal" class="fixed inset-0 z-[52] hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-lg rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
-             <div class="p-6 sm:p-8">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl sm:text-3xl font-bold text-gold">מדריך למשתמש</h2>
-                    <button id="close-help-modal-btn" class="text-gray-400 hover:text-white text-3xl">&times;</button>
+    <div id="help-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 sm:p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <h2 class="text-3xl font-bold text-gold flex items-center gap-3"><i class="fas fa-question-circle"></i> מרכז עזרה</h2>
+                    <button id="help-close-btn" class="text-gray-400 hover:text-white text-4xl leading-none">&times;</button>
                 </div>
-                <div class="space-y-4 text-gray-300">
-                    <p>ברוכים הבאים לדף ניהול המשימות והסיכומים של SAYORA. דף זה נועד לרכז את כל המשימות הנדרשות להפקת הפסטיבל במקום אחד, ולעקוב אחר הסטטוס שלהן.</p>
+                <div class="space-y-6 text-gray-300 prose-custom">
+                    <h3 class="text-xl font-semibold text-gold border-b border-gold/20 pb-2">ברוכים הבאים לדף ניהול הספקים!</h3>
+                    <p>כאן תוכלו לנהל את כל הספקים, הספונסרים והצעות המחיר לפסטיבל בצורה מסודרת ויעילה.</p>
                     
                     <div>
-                        <h3 class="text-xl font-semibold text-gold mb-2">פעולות עיקריות</h3>
-                        <ul class="list-disc list-inside space-y-2 pr-4">
-                            <li><strong>הוספת משימה:</strong> לחצו על כפתור <span class="font-bold text-gold">'הוספת משימה'</span> בראש הדף. מלאו את הפרטים בשני השלבים ולחצו 'שמור'.</li>
-                            <li><strong>עדכון סטטוס:</strong> לחצו על כל כרטיסיית משימה כדי לפתוח את חלון העדכון. בחלון זה תוכלו:
-                                <ul class="list-['-_'] list-inside space-y-1 pr-6 mt-1">
-                                    <li>לשנות את הסטטוס ל-'בוצע', 'בתהליך' או 'לא בוצע'.</li>
-                                    <li>לשייך אחראי למשימה.</li>
-                                    <li>להוסיף פירוט על העדכון האחרון.</li>
-                                </ul>
-                            </li>
-                             <li><strong>עריכת משימה:</strong> מתוך חלון עדכון הסטטוס, לחצו על כפתור <span class="font-bold text-blue-400">'ערוך משימה'</span> כדי לשנות את כל פרטי המשימה המקוריים (שם, דחיפות, דדליין וכו').</li>
-                            <li><strong>מחיקת משימה:</strong> מתוך חלון עדכון הסטטוס, לחצו על כפתור <span class="font-bold text-red-400">'מחק משימה'</span> כדי להסיר אותה לצמיתות.</li>
+                        <h4 class="text-lg font-semibold text-gold">מה ההבדל בין "ספק" ל"הצעת מחיר"?</h4>
+                        <ul class="list-disc space-y-2 mt-2">
+                            <li><strong>הצעת מחיר:</strong> זהו השלב הראשוני. קיבלתם המלצה או מצאתם ספק פוטנציאלי? הוסיפו אותו כ"הצעת מחיר". זהו המקום לרכז את כל האפשרויות לפני שיצרתם קשר רשמי.</li>
+                            <li><strong>ספק:</strong> ברגע שיצרתם קשר עם מישהו מתוך הצעות המחיר והתחלתם תהליך עבודה מולו, יש להפוך אותו ל"ספק". ניתן לעשות זאת על ידי לחיצה על הכרטיסייה שלו ובחירת "הפוך לספק". המערכת תעביר את כל הפרטים ותמחק את הצעת המחיר המקורית.</li>
                         </ul>
                     </div>
 
                     <div>
-                        <h3 class="text-xl font-semibold text-gold mb-2">מקרא צבעים</h3>
-                        <p>הצבע של כל כרטיסייה מייצג את הסטטוס או רמת הדחיפות שלה:</p>
-                        <ul class="list-disc list-inside space-y-2 pr-4 mt-2">
-                            <li><span class="font-bold text-green-400">ירוק:</span> המשימה בוצעה.</li>
-                            <li><span class="font-bold text-cyan-400">תכלת:</span> המשימה בתהליך.</li>
-                            <li><strong class="text-red-500">אדום:</strong> דחיפות קריטית (1).</li>
-                            <li><strong class="text-orange-400">כתום:</strong> דחיפות גבוהה (2).</li>
-                             <li><strong class="text-yellow-400">צהוב:</strong> דחיפות רגילה (3).</li>
-                            <li><strong class="text-blue-400">כחול:</strong> דחיפות נמוכה (4).</li>
-                            <li><strong class="text-gray-400">אפור:</strong> דחיפות נמוכה מאוד (5).</li>
+                        <h4 class="text-lg font-semibold text-gold">מקרא צבעים (סטטוס ספקים):</h4>
+                        <ul class="list-none space-y-3 mt-2">
+                            <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full status-not-contacted border border-gray-600 flex-shrink-0"></span> <div><strong class="text-white">אפור-כחלחל:</strong> טרם נוצר קשר עם הספק.</div></li>
+                            <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full status-in-progress border border-gray-600 flex-shrink-0"></span> <div><strong class="text-white">זהב-אפרפר:</strong> נוצר קשר והעניינים בתהליך עבודה.</div></li>
+                            <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full status-finalized border border-gray-600 flex-shrink-0"></span> <div><strong class="text-white">ירוק-אפרפר:</strong> הכל סגור! החוזה חתום והתשלום סוכם.</div></li>
                         </ul>
-                        <p class="mt-2 text-sm italic">שימו לב: סטטוס 'בוצע' או 'בתהליך' גובר על צבע הדחיפות.</p>
                     </div>
 
-                    <div class="pt-4 text-center">
-                        <button id="close-help-modal-btn-bottom" class="btn-gold font-bold py-2 px-8 rounded-lg">הבנתי, תודה!</button>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gold">טיפים לשימוש יעיל:</h4>
+                        <ul class="list-disc space-y-2 mt-2">
+                            <li><strong>ניהול קטגוריות:</strong> השתמשו בכפתור העיפרון ליד שדה ה"קטגוריה" בטופס כדי להוסיף, למחוק או לערוך קטגוריות. זה יעזור לכם לשמור על סדר.</li>
+                            <li><strong>קישור להסכם:</strong> כשספק מסומן כ"סגור", תוכלו להוסיף קישור להסכם החתום (למשל, מ-Google Drive). זה מבטיח שכל המסמכים החשובים נגישים.</li>
+                            <li><strong>מעקב אחר מה שפתוח:</strong> אם ספק נמצא "בטיפול" אבל עדיין יש דברים פתוחים, ציינו אותם בשדה "מה עדיין לא סגור?" כדי שכולם יהיו מעודכנים.</li>
+                        </ul>
                     </div>
+                </div>
+                <div class="mt-8 text-center">
+                     <button id="help-close-btn-bottom" class="btn-gold font-bold py-2 px-8 rounded-lg">הבנתי, תודה!</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Custom Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20 p-8 text-center">
+            <h2 id="confirm-title" class="text-2xl font-bold text-gold mb-4">אישור פעולה</h2>
+            <p id="confirm-message" class="text-gray-300 mb-6"></p>
+            <div class="flex justify-center gap-4">
+                <button id="confirm-cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
+                <button id="confirm-ok-btn" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-500 transition-colors">אישור</button>
+            </div>
+        </div>
+    </div>
     
-    <!-- Confirm Modal -->
-    <div id="confirm-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 modal-backdrop">
-        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20">
-             <div class="p-6 text-center">
-                 <div class="text-yellow-400 text-4xl mb-4"><i class="fas fa-exclamation-triangle"></i></div>
-                 <h2 class="text-xl font-bold text-gray-200 mb-2">אישור פעולה</h2>
-                 <p id="confirm-message" class="text-gray-400 mb-6">האם אתה בטוח?</p>
-                 <div class="flex justify-center gap-4">
-                     <button id="confirm-no-btn" class="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-500">ביטול</button>
-                     <button id="confirm-yes-btn" class="flex-1 bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-500">אשר</button>
-                 </div>
-             </div>
+    <!-- Custom Input Modal -->
+    <div id="input-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20 p-8">
+            <form id="input-form">
+                <h2 id="input-title" class="text-2xl font-bold text-gold mb-4 text-center"></h2>
+                <label id="input-label" for="input-field-prompt" class="block text-sm font-medium text-gray-300 mb-2"></label>
+                <input type="text" id="input-field-prompt" class="input-field" required>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" id="input-cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500">ביטול</button>
+                    <button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <script type="module">
-        const firebaseConfig = { apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ", authDomain: "sayora-all.firebaseapp.com", projectId: "sayora-all", storageBucket: "sayora-all.appspot.com", messagingSenderId: "836076195583", appId: "1:836076195583:web:a7b0067b866d7e027a06ca", measurementId: "G-LFN43NSE5K" };
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, addDoc, deleteDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[200] space-y-3"></div>
 
+
+    <script type="module">
+        // --- Firebase Config ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
+            authDomain: "sayora-all.firebaseapp.com",
+            projectId: "sayora-all",
+            storageBucket: "sayora-all.appspot.com",
+            messagingSenderId: "836076195583",
+            appId: "1:836076195583:web:a7b0067b866d7e027a06ca",
+            measurementId: "G-LFN43NSE5K"
+        };
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Initialize Firebase ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- DOM Elements ---
         const appContainer = document.getElementById('app-container');
         const logoutBtn = document.getElementById('logout-btn');
         const welcomeMsg = document.getElementById('welcome-msg');
-        const checklistContainer = document.getElementById('checklist-container');
-        const addTaskBtn = document.getElementById('add-task-btn');
-        const emptyState = document.getElementById('empty-state');
-
-        // Task Modal elements
-        const taskModal = document.getElementById('task-modal');
-        const taskForm = document.getElementById('task-form');
-        const taskModalTitle = document.getElementById('task-modal-title');
-        const taskCategorySelect = document.getElementById('task-category');
-        const taskPage1 = document.getElementById('task-page-1');
-        const taskPage2 = document.getElementById('task-page-2');
-        const nextTaskPageBtn = document.getElementById('next-task-page-btn');
-        const backTaskPageBtn = document.getElementById('back-task-page-btn');
-        const cancelTaskBtnPage1 = document.getElementById('cancel-task-btn-page1');
-
-        // Status Modal elements
-        const updateStatusModal = document.getElementById('update-status-modal');
-        const updateModalTitle = document.getElementById('update-modal-title');
-        const editTaskFromStatusBtn = document.getElementById('edit-task-from-status-btn');
-        const taskDetailsDisplay = document.getElementById('task-details-display');
-        const saveUpdateBtn = document.getElementById('save-update-btn');
-        const cancelUpdateBtn = document.getElementById('cancel-update-btn');
-        const deleteTaskBtn = document.getElementById('delete-task-btn');
-        let currentTaskIdForStatusUpdate = null;
-        let selectedStatus = '';
-
-        // Category Modal elements
-        const editCategoriesBtn = document.getElementById('edit-categories-btn');
-        const editCategoriesModal = document.getElementById('edit-categories-modal');
-        const addCategoryModal = document.getElementById('add-category-modal');
-        const closeEditCategoriesBtn = document.getElementById('close-edit-categories-btn');
-        const addCategoryForm = document.getElementById('add-category-form');
-        const cancelAddCategoryBtn = document.getElementById('cancel-add-category-btn');
         
-        // Help Modal elements
+        // Views & Grids
+        const suppliersView = document.getElementById('suppliers-view');
+        const quotesView = document.getElementById('quotes-view');
+        const suppliersGridContainer = document.getElementById('suppliers-grid-container');
+        const quotesGridContainer = document.getElementById('quotes-grid-container');
+
+        // Tabs
+        const suppliersTab = document.getElementById('suppliers-tab');
+        const quotesTab = document.getElementById('quotes-tab');
+        
+        // Buttons
+        const addSupplierBtn = document.getElementById('add-supplier-btn');
+        const addQuoteBtn = document.getElementById('add-quote-btn');
+        
+        // Main Form Modal
+        const formModal = document.getElementById('form-modal');
+        const mainForm = document.getElementById('main-form');
+        const modalTitle = document.getElementById('modal-title');
+        const formIdInput = document.getElementById('form-id');
+        const formTypeInput = document.getElementById('form-type');
+
+        // Form Steps & Navigation
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        
+        // Form Fields
+        const handlingManagerInput = document.getElementById('handling-manager'); // New field
+        const supplierNameInput = document.getElementById('supplier-name');
+        const categorySelect = document.getElementById('category-select');
+        const supplierPhoneInput = document.getElementById('supplier-phone');
+        const supplierProvidesInput = document.getElementById('supplier-provides');
+        const supplierProvidesLabel = document.getElementById('supplier-provides-label');
+        
+        // Conditional Fields
+        const contactedYesFields = document.getElementById('contacted-yes-fields');
+        const priceField = document.getElementById('price-field');
+        const contactDetailsInput = document.getElementById('contact-details');
+        const priceInput = document.getElementById('price');
+        const finalizedSection = document.getElementById('finalized-section');
+        const finalizedConditionalFields = document.getElementById('finalized-conditional-fields');
+        const finalizedYesField = document.getElementById('finalized-yes-field');
+        const finalizedNoField = document.getElementById('finalized-no-field');
+        const pendingDetailsInput = document.getElementById('pending-details');
+        const agreementLinkInput = document.getElementById('agreement-link');
+
+        // View Modal
+        const viewModal = document.getElementById('view-modal');
+        const viewModalContent = document.getElementById('view-modal-content');
+        const viewActions = document.getElementById('view-actions');
+        const viewCloseBtn = document.getElementById('view-close-btn');
+
+        // Category Modal
+        const categoryModal = document.getElementById('category-modal');
+        const editCategoriesBtn = document.getElementById('edit-categories-btn');
+        const categoryList = document.getElementById('category-list');
+        const newCategoryNameInput = document.getElementById('new-category-name');
+        const addNewCategoryBtn = document.getElementById('add-new-category-btn');
+        const categoryCloseBtn = document.getElementById('category-close-btn');
+
+        // Confirm Modal
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmTitle = document.getElementById('confirm-title');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmOkBtn = document.getElementById('confirm-ok-btn');
+        const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+        
+        // Help Modal
         const helpBtn = document.getElementById('help-btn');
         const helpModal = document.getElementById('help-modal');
-        const closeHelpModalBtn = document.getElementById('close-help-modal-btn');
-        const closeHelpModalBtnBottom = document.getElementById('close-help-modal-btn-bottom');
+        const helpCloseBtn = document.getElementById('help-close-btn');
+        const helpCloseBtnBottom = document.getElementById('help-close-btn-bottom');
 
-        // Confirm Modal elements
-        const confirmModal = document.getElementById('confirm-modal');
-        const confirmMessage = document.getElementById('confirm-message');
-        const confirmYesBtn = document.getElementById('confirm-yes-btn');
-        const confirmNoBtn = document.getElementById('confirm-no-btn');
-        let confirmCallback = null;
+        // --- Global State ---
+        let suppliersUnsubscribe = null;
+        let quotesUnsubscribe = null;
+        let categoriesUnsubscribe = null;
+        let allCategories = [];
+        let allSuppliers = [];
+        let allQuotes = [];
+        let currentStep = 1;
+        let currentUser = null; // To store the logged-in user object
 
-        let categories = [];
-        let tasks = [];
+        // --- Utility Functions (Modals & Toasts) ---
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast p-4 rounded-lg shadow-lg text-white ${isError ? 'bg-red-600' : 'bg-green-600'}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
 
-        onAuthStateChanged(auth, user => {
+        function showConfirmation(title, message) {
+            return new Promise((resolve) => {
+                confirmTitle.textContent = title;
+                confirmMessage.textContent = message;
+                confirmModal.classList.remove('hidden');
+                confirmModal.classList.add('flex');
+
+                confirmOkBtn.onclick = () => { closeModal(confirmModal); resolve(true); };
+                confirmCancelBtn.onclick = () => { closeModal(confirmModal); resolve(false); };
+            });
+        }
+        
+        function showInputPrompt(title, label, initialValue = '') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('input-modal');
+                const titleEl = document.getElementById('input-title');
+                const labelEl = document.getElementById('input-label');
+                const inputEl = document.getElementById('input-field-prompt');
+                const form = document.getElementById('input-form');
+                const cancelBtn = document.getElementById('input-cancel-btn');
+                
+                titleEl.textContent = title;
+                labelEl.textContent = label;
+                inputEl.value = initialValue;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                inputEl.focus();
+
+                const closeAndResolve = (value) => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    form.removeEventListener('submit', handleSubmit);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    resolve(value);
+                };
+
+                const handleSubmit = (e) => { e.preventDefault(); closeAndResolve(inputEl.value); };
+                const handleCancel = () => closeAndResolve(null);
+                
+                form.addEventListener('submit', handleSubmit, { once: true });
+                cancelBtn.addEventListener('click', handleCancel, { once: true });
+            });
+        }
+        
+        // --- Authentication ---
+        onAuthStateChanged(auth, (user) => {
             if (user) {
+                currentUser = user; // Store user object
                 appContainer.classList.remove('hidden');
                 welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
-                loadData();
+                loadAllData();
             } else {
+                currentUser = null;
                 window.location.href = 'index.html';
             }
         });
 
-        logoutBtn.addEventListener('click', () => signOut(auth));
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).catch(error => console.error("Logout Error:", error));
+        });
+
+        function loadAllData() {
+            if (suppliersUnsubscribe) suppliersUnsubscribe();
+            if (quotesUnsubscribe) quotesUnsubscribe();
+            if (categoriesUnsubscribe) categoriesUnsubscribe();
+            
+            loadCategories();
+            loadSuppliers();
+            loadQuotes();
+        }
+
+        // --- Data Loading ---
+        function loadCategories() {
+            const categoriesRef = collection(db, 'supplier_categories');
+            categoriesUnsubscribe = onSnapshot(query(categoriesRef), (snapshot) => {
+                allCategories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allCategories.sort((a,b) => a.name.localeCompare(b.name, 'he'));
+                renderCategories();
+            });
+        }
         
-        function loadData() {
-            onSnapshot(collection(db, 'checklistCategories'), (snapshot) => {
-                categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name, 'he'));
-                updateCategorySelect();
-                renderChecklists();
+        function loadSuppliers() {
+            const suppliersRef = collection(db, 'suppliers');
+            suppliersUnsubscribe = onSnapshot(query(suppliersRef), (snapshot) => {
+                allSuppliers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allSuppliers.sort((a,b) => a.name.localeCompare(b.name, 'he'));
+                renderItems(allSuppliers, suppliersGridContainer, 'supplier');
+            });
+        }
+        
+        function loadQuotes() {
+            const quotesRef = collection(db, 'quotes');
+            quotesUnsubscribe = onSnapshot(query(quotesRef), (snapshot) => {
+                allQuotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allQuotes.sort((a,b) => a.name.localeCompare(b.name, 'he'));
+                renderItems(allQuotes, quotesGridContainer, 'quote');
+            });
+        }
+
+        // --- Rendering Logic ---
+        function renderItems(items, containerElement, type) {
+            containerElement.innerHTML = ''; 
+
+            if (items.length === 0) {
+                const message = type === 'supplier' ? 'אין ספקים להצגה. לחץ על \'הוספת ספק\' כדי להתחיל.' : 'אין הצעות מחיר להצגה. לחץ על \'הוסף הצעת מחיר\' כדי להתחיל.';
+                containerElement.innerHTML = `<p class="text-center text-gray-500 col-span-full mt-10 text-lg">${message}</p>`;
+                return;
+            }
+
+            const groupedItems = items.reduce((acc, item) => {
+                const category = item.category || 'ללא קטגוריה';
+                if (!acc[category]) acc[category] = [];
+                acc[category].push(item);
+                return acc;
+            }, {});
+
+            const sortedCategories = Object.keys(groupedItems).sort((a, b) => {
+                if (a === 'ללא קטגוריה') return 1;
+                if (b === 'ללא קטגוריה') return -1;
+                return a.localeCompare(b, 'he');
+            });
+
+            sortedCategories.forEach(category => {
+                const sectionWrapper = document.createElement('div');
+                sectionWrapper.className = 'category-section mb-12 animate-fade-in';
                 
-                if (!editCategoriesModal.classList.contains('hidden')) {
-                    renderCategoryManagementModal();
-                }
-            });
-
-            onSnapshot(collection(db, 'checklistItems'), (snapshot) => {
-                tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderChecklists();
-            });
-        }
-
-        function renderChecklists() {
-            checklistContainer.innerHTML = ''; // Clear previous content
-            
-            if (categories.length === 0) {
-                 emptyState.classList.remove('hidden');
-                 checklistContainer.appendChild(emptyState);
-                 return;
-            }
-            
-            emptyState.classList.add('hidden');
-
-            categories.forEach(category => {
-                const categoryTasks = tasks.filter(task => task.category === category.name).sort((a, b) => a.urgency - b.urgency || a.name.localeCompare(b.name, 'he'));
-                const categoryDiv = document.createElement('div');
-                categoryDiv.innerHTML = `<h2 class="text-2xl sm:text-3xl font-bold text-gold mb-4 border-b-2 border-gold/30 pb-2">${category.name}</h2>`;
-                if(categoryTasks.length > 0) {
-                    const tasksGrid = document.createElement('div');
-                    tasksGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
-                    categoryTasks.forEach(task => tasksGrid.appendChild(createTaskElement(task)));
-                    categoryDiv.appendChild(tasksGrid);
-                } else {
-                    categoryDiv.innerHTML += `<p class="text-gray-500 italic">אין משימות בקטגוריה זו. לחץ על 'הוספת משימה' כדי להתחיל.</p>`;
-                }
-                checklistContainer.appendChild(categoryDiv);
-            });
-        }
-
-        function getStatusInfo(status) {
-            switch (status) {
-                case 'done': return { text: 'בוצע', color: 'bg-green-600/80 border-green-400', icon: 'fa-check-circle' };
-                case 'progress': return { text: 'בתהליך', color: 'bg-cyan-600/80 border-cyan-400', icon: 'fa-tasks' };
-                default: return { text: 'לא בוצע', color: '', icon: 'fa-clock' };
-            }
-        }
-        
-        function getUrgencyColor(urgency, status) {
-             if (status === 'done' || status === 'progress') return '';
-            switch (parseInt(urgency)) {
-                case 1: return 'bg-red-700/80 border-red-500';
-                case 2: return 'bg-orange-600/80 border-orange-400';
-                case 3: return 'bg-yellow-600/80 border-yellow-400';
-                case 4: return 'bg-blue-600/80 border-blue-400';
-                default: return 'bg-gray-700/80 border-gray-500';
-            }
-        }
-
-        function createTaskElement(task) {
-            const el = document.createElement('div');
-            const statusInfo = getStatusInfo(task.status);
-            const urgencyColor = getUrgencyColor(task.urgency, task.status);
-            el.className = `task-item p-4 rounded-lg border-l-4 cursor-pointer flex flex-col justify-between bg-gray-800/40 ${statusInfo.color || urgencyColor}`;
-            el.dataset.id = task.id;
-            el.innerHTML = `
-                <div>
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-lg sm:text-xl font-bold mb-2 break-words">${task.name}</h3>
-                        <span class="text-xs font-bold py-1 px-2 rounded-full flex-shrink-0 ml-2 ${urgencyColor || 'bg-gray-600'}">${task.urgency}</span>
-                    </div>
-                    ${task.deadline ? `<p class="text-sm text-gray-300 mb-2"><i class="fas fa-calendar-alt fa-fw mr-2"></i>${task.deadline}</p>` : ''}
-                    ${task.assignedTo ? `<p class="text-sm text-gray-200 font-semibold mb-2"><i class="fas fa-user-check fa-fw mr-2"></i>${task.assignedTo}</p>`: ''}
-                </div>
-                <div class="flex justify-start items-center gap-2 text-sm mt-3 pt-3 border-t border-white/20"><i class="fas ${statusInfo.icon} fa-fw"></i><span>${statusInfo.text}</span></div>`;
-            el.addEventListener('click', () => openUpdateStatusModal(task.id));
-            return el;
-        }
-        
-        function openEditTaskModal(id) {
-            const task = tasks.find(t => t.id === id);
-            if (!task) return;
-            closeUpdateStatusModal();
-            taskForm.reset();
-            document.getElementById('task-id').value = task.id;
-            document.getElementById('task-category').value = task.category;
-            document.getElementById('task-name').value = task.name;
-            document.getElementById('task-deadline').value = task.deadline || '';
-            document.getElementById('task-urgency').value = task.urgency;
-            document.getElementById('task-contact').value = task.contact || '';
-            document.getElementById('task-details').value = task.details || '';
-            taskModalTitle.textContent = 'עריכת משימה';
-            openTaskModal(0); 
-        }
-
-        editTaskFromStatusBtn.addEventListener('click', () => {
-            if (currentTaskIdForStatusUpdate) openEditTaskModal(currentTaskIdForStatusUpdate);
-        });
-
-        function openUpdateStatusModal(id) {
-            currentTaskIdForStatusUpdate = id;
-            const task = tasks.find(t => t.id === id);
-            if (!task) return;
-
-            updateModalTitle.textContent = task.name;
-            document.getElementById('update-assigned-to').value = task.assignedTo || '';
-            document.getElementById('update-details').value = task.updateDetails || '';
-            taskDetailsDisplay.innerHTML = `<p><strong class="text-gray-300">קטגוריה:</strong> ${task.category}</p><p><strong class="text-gray-300">דדליין:</strong> ${task.deadline || 'לא הוגדר'}</p><p><strong class="text-gray-300">איש קשר:</strong> ${task.contact || 'לא הוגדר'}</p>`;
-            
-            selectedStatus = task.status || '';
-            updateStatusButtonsUI();
-
-            updateStatusModal.classList.remove('hidden');
-            updateStatusModal.classList.add('flex');
-        }
-        
-        function updateStatusButtonsUI() {
-            document.querySelectorAll('.status-btn').forEach(btn => {
-                btn.classList.toggle('selected', btn.dataset.status === selectedStatus);
-            });
-        }
-
-        updateStatusModal.querySelectorAll('.status-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                selectedStatus = btn.dataset.status;
-                updateStatusButtonsUI();
-            });
-        });
-
-        saveUpdateBtn.addEventListener('click', async () => {
-            if (!currentTaskIdForStatusUpdate) return;
-            const assignedTo = document.getElementById('update-assigned-to').value;
-            const updateDetails = document.getElementById('update-details').value;
-            const taskRef = doc(db, 'checklistItems', currentTaskIdForStatusUpdate);
-            await updateDoc(taskRef, { status: selectedStatus, assignedTo, updateDetails });
-            closeUpdateStatusModal();
-        });
-
-        function openTaskModal(page = 0) {
-            if (categories.length === 0) {
-                showConfirmModal("יש ליצור קטגוריה לפני שניתן להוסיף משימה. האם תרצה ליצור קטגוריה חדשה?", openAddCategoryModal);
-                return;
-            }
-            taskPage1.classList.toggle('hidden', page === 1);
-            taskPage2.classList.toggle('hidden', page === 0);
-            taskModal.classList.add('flex');
-            taskModal.classList.remove('hidden');
-        }
-
-        addTaskBtn.addEventListener('click', () => {
-            taskForm.reset();
-            document.getElementById('task-id').value = '';
-            taskModalTitle.textContent = 'הוספת משימה חדשה';
-            openTaskModal(0);
-        });
-
-        taskForm.addEventListener('submit', async e => {
-            e.preventDefault();
-            const id = document.getElementById('task-id').value;
-            const taskData = {
-                category: document.getElementById('task-category').value,
-                name: document.getElementById('task-name').value,
-                urgency: parseInt(document.getElementById('task-urgency').value),
-                deadline: document.getElementById('task-deadline').value,
-                contact: document.getElementById('task-contact').value,
-                details: document.getElementById('task-details').value,
-            };
-            
-            if (id) {
-                await updateDoc(doc(db, 'checklistItems', id), taskData);
-            } else {
-                taskData.status = ''; taskData.assignedTo = ''; taskData.updateDetails = '';
-                await addDoc(collection(db, 'checklistItems'), taskData);
-            }
-            closeTaskModal();
-        });
-
-        nextTaskPageBtn.addEventListener('click', () => {
-            const taskNameInput = document.getElementById('task-name');
-            const errorEl = document.getElementById('task-name-error');
-            if (taskNameInput.value.trim() === '') {
-                taskNameInput.classList.add('border-red-500');
-                errorEl.classList.remove('hidden');
-                return;
-            }
-            taskNameInput.classList.remove('border-red-500');
-            errorEl.classList.add('hidden');
-            taskPage1.classList.add('hidden');
-            taskPage2.classList.remove('hidden');
-        });
-
-        backTaskPageBtn.addEventListener('click', () => {
-            taskPage2.classList.add('hidden');
-            taskPage1.classList.remove('hidden');
-        });
-
-        function updateCategorySelect() {
-            const currentValue = taskCategorySelect.value;
-            if (categories.length === 0) {
-                 taskCategorySelect.innerHTML = `<option disabled selected>אין קטגוריות זמינות</option>`;
-            } else {
-                taskCategorySelect.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-            }
-            taskCategorySelect.innerHTML += '<option value="add_new_category" class="text-gold font-bold">-- הוסף קטגוריה --</option>';
-            
-            if (categories.some(c => c.name === currentValue)) {
-                taskCategorySelect.value = currentValue;
-            }
-        }
-
-        taskCategorySelect.addEventListener('change', (e) => {
-            if (e.target.value === 'add_new_category') { e.target.selectedIndex = 0; openAddCategoryModal(); }
-        });
-
-        function renderCategoryManagementModal() {
-            const categoryList = document.getElementById('category-list');
-            if (categories.length === 0) {
-                categoryList.innerHTML = `<p class="text-gray-500 italic p-2">אין קטגוריות להצגה.</p>`;
-                return;
-            }
-            categoryList.innerHTML = categories.map(c => `
-                <div class="flex justify-between items-center p-2 bg-gray-700 rounded-md">
-                    <span>${c.name}</span>
-                    <button data-id="${c.id}" class="delete-category-btn text-red-500 hover:text-red-400 transition-colors">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>`).join('');
-            
-            document.querySelectorAll('.delete-category-btn').forEach(btn => btn.addEventListener('click', e => {
-                const id = e.currentTarget.dataset.id;
-                const categoryToDelete = categories.find(c => c.id === id);
-                if (!categoryToDelete) return;
+                const title = document.createElement('h2');
+                title.className = 'text-2xl font-bold text-gold mb-4 pb-2 border-b-2 border-gold/30';
+                title.textContent = category;
+                sectionWrapper.appendChild(title);
                 
-                showConfirmModal(`מחיקת הקטגוריה "${categoryToDelete.name}" תמחק גם את כל המשימות המשויכות אליה. להמשיך?`, async () => {
-                    const tasksToDelete = tasks.filter(t => t.category === categoryToDelete.name);
-                    const batch = writeBatch(db);
-                    tasksToDelete.forEach(task => batch.delete(doc(db, 'checklistItems', task.id)));
-                    batch.delete(doc(db, 'checklistCategories', id));
-                    await batch.commit();
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
+                
+                groupedItems[category].forEach(item => {
+                    const card = createCard(item.id, item, type);
+                    grid.appendChild(card);
                 });
-            }));
-        }
-        
-        editCategoriesBtn.addEventListener('click', () => {
-            renderCategoryManagementModal();
-            openEditCategoriesModal();
-        });
-
-        addCategoryForm.addEventListener('submit', async e => {
-            e.preventDefault();
-            const newName = document.getElementById('new-category-name').value.trim();
-            if (newName && !categories.some(c => c.name === newName)) {
-                await addDoc(collection(db, 'checklistCategories'), { name: newName });
-            }
-            addCategoryForm.reset();
-            closeAddCategoryModal();
-        });
-        
-        deleteTaskBtn.addEventListener('click', () => {
-            if (!currentTaskIdForStatusUpdate) return;
-            showConfirmModal('האם אתה בטוח שברצונך למחוק את המשימה הזו לצמיתות?', async () => {
-                try {
-                    await deleteDoc(doc(db, 'checklistItems', currentTaskIdForStatusUpdate));
-                    closeUpdateStatusModal();
-                } catch (error) {
-                    console.error("Error deleting task:", error);
-                }
+                
+                sectionWrapper.appendChild(grid);
+                containerElement.appendChild(sectionWrapper);
             });
-        });
-
-        const openHelpModal = () => { helpModal.classList.add('flex'); helpModal.classList.remove('hidden'); }
-        const closeHelpModal = () => { helpModal.classList.add('hidden'); helpModal.classList.remove('flex'); }
-        helpBtn.addEventListener('click', openHelpModal);
-        closeHelpModalBtn.addEventListener('click', closeHelpModal);
-        closeHelpModalBtnBottom.addEventListener('click', closeHelpModal);
-
-        const showConfirmModal = (message, onConfirm) => {
-            confirmMessage.textContent = message;
-            confirmCallback = onConfirm;
-            confirmModal.classList.add('flex');
-            confirmModal.classList.remove('hidden');
         }
-        const hideConfirmModal = () => {
-            confirmModal.classList.add('hidden');
-            confirmModal.classList.remove('flex');
-            confirmCallback = null;
-        }
-        confirmYesBtn.addEventListener('click', () => {
-            if (typeof confirmCallback === 'function') {
-                confirmCallback();
+
+        function renderCategories() {
+            categorySelect.innerHTML = '<option value="">בחר קטגוריה</option>';
+            allCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.name;
+                option.textContent = cat.name;
+                categorySelect.appendChild(option);
+            });
+            categorySelect.innerHTML += '<option value="add_new" class="text-gold font-bold">הוסף קטגוריה חדשה...</option>';
+
+            categoryList.innerHTML = '';
+            if (allCategories.length === 0) {
+                categoryList.innerHTML = `<p class="text-center text-gray-500">אין קטגוריות</p>`;
+            } else {
+                allCategories.forEach(cat => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-2 bg-gray-700 rounded';
+                    div.innerHTML = `
+                        <span class="category-name">${cat.name}</span>
+                        <div class="flex gap-2">
+                             <button type="button" class="edit-cat-btn text-blue-400 hover:text-blue-300"><i class="fas fa-edit"></i></button>
+                            <button type="button" class="delete-cat-btn text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                    div.querySelector('.delete-cat-btn').onclick = () => deleteCategory(cat.id, cat.name);
+                    div.querySelector('.edit-cat-btn').onclick = (e) => editCategoryName(e, cat.id, cat.name);
+                    categoryList.appendChild(div);
+                });
             }
-            hideConfirmModal();
-        });
-        confirmNoBtn.addEventListener('click', hideConfirmModal);
+        }
         
-        function closeTaskModal() { taskModal.classList.add('hidden'); taskModal.classList.remove('flex'); }
-        function closeUpdateStatusModal() { updateStatusModal.classList.add('hidden'); updateStatusModal.classList.remove('flex'); }
-        function openEditCategoriesModal() { editCategoriesModal.classList.add('flex'); editCategoriesModal.classList.remove('hidden'); }
-        function closeEditCategoriesModal() { editCategoriesModal.classList.add('hidden'); editCategoriesModal.classList.remove('flex'); }
-        function openAddCategoryModal() { addCategoryModal.classList.add('flex'); addCategoryModal.classList.remove('hidden'); }
-        function closeAddCategoryModal() { addCategoryModal.classList.add('hidden'); addCategoryModal.classList.remove('flex'); }
+        function createCard(id, data, type) {
+            const card = document.createElement('div');
+            
+            let statusClass = 'status-not-contacted';
+            let statusText = 'טרם נוצר קשר';
+            let statusColor = 'text-gray-400';
 
-        cancelTaskBtnPage1.addEventListener('click', closeTaskModal);
-        cancelUpdateBtn.addEventListener('click', closeUpdateStatusModal);
-        closeEditCategoriesBtn.addEventListener('click', closeEditCategoriesModal);
-        cancelAddCategoryBtn.addEventListener('click', closeAddCategoryModal);
+            if (type === 'supplier') {
+                if (data.isFinalized) {
+                    statusClass = 'status-finalized'; statusText = 'סגור'; statusColor = 'text-green-400';
+                } else if (data.contacted) {
+                    statusClass = 'status-in-progress'; statusText = 'בטיפול'; statusColor = 'text-yellow-400';
+                }
+            } else if (data.contacted) { // Quote
+                 statusText = 'נוצר קשר'; statusColor = 'text-blue-400';
+            }
+
+            card.className = `supplier-card p-5 rounded-lg shadow-xl flex flex-col ${statusClass}`;
+            card.dataset.id = id;
+            card.dataset.type = type;
+
+            card.innerHTML = `
+                <div class="flex-grow">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-2xl font-bold text-white">${data.name}</h3>
+                        <span class="text-xs font-semibold ${data.type === 'sponsor' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'} py-1 px-3 rounded-full flex-shrink-0">${data.type === 'sponsor' ? 'ספונסר' : 'ספק רגיל'}</span>
+                    </div>
+                    <p class="text-gold font-semibold mt-1 mb-3">${data.provides || ''}</p>
+                    <div class="border-t border-gray-700 my-3"></div>
+                    <div class="space-y-2 text-sm text-gray-300">
+                        <p><i class="fas fa-user-tie fa-fw ml-2 text-gray-500"></i> <strong>מנהל מטפל:</strong> ${data.handlingManager || 'לא הוזן'}</p>
+                        <p><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i> ${data.phone || 'לא הוזן'}</p>
+                        ${data.type === 'regular' && data.price ? `<p><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i> <strong>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>` : ''}
+                        <p><i class="fas fa-info-circle fa-fw ml-2 text-gray-500"></i> <strong>סטטוס:</strong> <span class="${statusColor}">${statusText}</span></p>
+                        ${(type === 'supplier' && !data.isFinalized && data.pendingDetails) ? `<p><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i> <strong>פתוח:</strong> ${data.pendingDetails}</p>` : ''}
+                        ${data.lastEditedBy ? `<p><i class="fas fa-user-edit fa-fw ml-2 text-gray-500"></i> <strong>עורך אחרון:</strong> ${data.lastEditedBy.split('@')[0]}</p>` : ''}
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-700 flex justify-end">
+                    <span class="text-sm text-gray-500">לחץ לפרטים נוספים...</span>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => openViewModal(id, type));
+            return card;
+        }
+
+
+        // --- Main Form Modal Logic (Multi-step) ---
+        function openFormModal(type, id = null, data = {}) {
+            mainForm.reset();
+            formTypeInput.value = type;
+            formIdInput.value = id || '';
+            delete formIdInput.dataset.quoteIdToDelete; // Clear conversion flag
+            
+            modalTitle.textContent = id ? `עריכת ${type === 'supplier' ? 'ספק' : 'הצעת מחיר'}` : `הוספת ${type === 'supplier' ? 'ספק חדש' : 'הצעת מחיר'}`;
+            finalizedSection.style.display = type === 'supplier' ? 'block' : 'none';
+            
+            if (id || Object.keys(data).length > 0) { // Populate form if editing or converting
+                handlingManagerInput.value = data.handlingManager || '';
+                supplierNameInput.value = data.name || '';
+                categorySelect.value = data.category || '';
+                document.querySelector(`input[name="supplier-type"][value="${data.type || 'regular'}"]`).checked = true;
+                supplierPhoneInput.value = data.phone || '';
+                supplierProvidesInput.value = data.provides || '';
+                document.querySelector(`input[name="contacted"][value="${data.contacted ? 'yes' : 'no'}"]`).checked = true;
+                contactDetailsInput.value = data.contactDetails || '';
+                priceInput.value = data.price || '';
+                if(type === 'supplier') {
+                    document.querySelector(`input[name="finalized"][value="${data.isFinalized ? 'yes' : 'no'}"]`).checked = true;
+                    pendingDetailsInput.value = data.pendingDetails || '';
+                    agreementLinkInput.value = data.agreementLink || '';
+                }
+            }
+
+            currentStep = 1;
+            updateStepVisibility();
+            handleConditionalFields();
+            formModal.classList.remove('hidden');
+            formModal.classList.add('flex');
+        }
+
+        function closeModal(modalElement) {
+            modalElement.classList.add('hidden');
+            modalElement.classList.remove('flex');
+        }
+
+        function updateStepVisibility() {
+            step1.style.display = currentStep === 1 ? 'block' : 'none';
+            step2.style.display = currentStep === 2 ? 'block' : 'none';
+            prevBtn.classList.toggle('hidden', currentStep === 1);
+            nextBtn.classList.toggle('hidden', currentStep === 2);
+            submitBtn.classList.toggle('hidden', currentStep === 1);
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if(handlingManagerInput.reportValidity() && supplierNameInput.reportValidity()){
+                currentStep = 2;
+                updateStepVisibility();
+            }
+        });
+        prevBtn.addEventListener('click', () => {
+            currentStep = 1;
+            updateStepVisibility();
+        });
+        cancelBtn.addEventListener('click', () => closeModal(formModal));
+        formModal.addEventListener('click', (e) => {
+            if (e.target === formModal) closeModal(formModal);
+        });
+
+        // --- View Modal Logic ---
+        function openViewModal(id, type) {
+            const data = type === 'supplier' ? allSuppliers.find(s => s.id === id) : allQuotes.find(q => q.id === id);
+            if (!data) return;
+
+            let statusColor = 'text-gray-400';
+            let statusText = type === 'quote' ? 'הצעת מחיר' : 'טרם נוצר קשר';
+
+            if (type === 'supplier') {
+                if (data.isFinalized) { statusColor = 'text-green-400'; statusText = 'סגור'; }
+                else if (data.contacted) { statusColor = 'text-yellow-400'; statusText = 'בטיפול'; }
+            } else if (data.contacted) { statusColor = 'text-blue-400'; statusText = 'נוצר קשר'; }
+
+            let contentHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-3xl font-bold text-gold">${data.name}</h2>
+                    <span class="text-sm font-semibold ${data.type === 'sponsor' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'} py-1 px-3 rounded-full flex-shrink-0">${data.type === 'sponsor' ? 'ספונסר' : 'ספק רגיל'}</span>
+                </div>
+                <p class="text-lg text-gray-300 mb-6">${data.category ? data.category + ' - ' : ''}${data.provides || ''}</p>
+                <div class="space-y-3 text-gray-200 border-t border-gray-700 pt-6">
+                    <p><strong><i class="fas fa-info-circle fa-fw ml-2 text-gray-500"></i>סטטוס:</strong> <span class="${statusColor}">${statusText}</span></p>
+                    <p><strong><i class="fas fa-user-tie fa-fw ml-2 text-gray-500"></i>מנהל מטפל:</strong> ${data.handlingManager || 'לא הוזן'}</p>
+                    <p><strong><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i>טלפון:</strong> ${data.phone ? `<a href="tel:${data.phone}" class="hover:underline">${data.phone}</a>` : 'לא הוזן'}</p>
+                    <p><strong><i class="fas fa-user-check fa-fw ml-2 text-gray-500"></i>נוצר קשר:</strong> ${data.contacted ? 'כן' : 'לא'}</p>
+            `;
+
+            if (data.contacted) contentHTML += `<p><strong><i class="fas fa-file-alt fa-fw ml-2 text-gray-500"></i>פרטי סיכום:</strong> <span class="whitespace-pre-wrap">${data.contactDetails || 'אין פרטים'}</span></p>`;
+            if (data.type === 'regular' && data.price) contentHTML += `<p><strong><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>`;
+            if (type === 'supplier' && !data.isFinalized && data.pendingDetails) contentHTML += `<p><strong><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i>מה שפתוח:</strong> ${data.pendingDetails}</p>`;
+            if (type === 'supplier' && data.isFinalized && data.agreementLink) contentHTML += `<p><strong><i class="fas fa-link fa-fw ml-2 text-gray-500"></i>קישור להסכם:</strong> <a href="${data.agreementLink}" target="_blank" class="text-blue-400 hover:underline">פתח קישור</a></p>`;
+            if (data.lastEditedBy) contentHTML += `<p><strong><i class="fas fa-user-edit fa-fw ml-2 text-gray-500"></i>עורך אחרון:</strong> ${data.lastEditedBy}</p>`;
+            
+            contentHTML += `</div>`;
+            viewModalContent.innerHTML = contentHTML;
+
+            viewActions.innerHTML = '';
+            if (type === 'quote') {
+                const convertBtn = document.createElement('button');
+                convertBtn.className = 'w-full sm:w-auto btn-gold font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2';
+                convertBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> הפוך לספק';
+                convertBtn.onclick = () => {
+                    closeModal(viewModal);
+                    openFormModal('supplier', null, data);
+                    formIdInput.dataset.quoteIdToDelete = id; 
+                };
+                viewActions.appendChild(convertBtn);
+            }
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'w-full sm:w-auto bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 flex items-center justify-center gap-2';
+            editBtn.innerHTML = '<i class="fas fa-edit"></i> עריכה';
+            editBtn.onclick = () => { closeModal(viewModal); openFormModal(type, id, data); };
+            viewActions.appendChild(editBtn);
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'w-full sm:w-auto bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-500 flex items-center justify-center gap-2';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> מחיקה';
+            deleteBtn.onclick = () => deleteItem(id, data.name, type);
+            viewActions.appendChild(deleteBtn);
+
+            viewModal.classList.remove('hidden');
+            viewModal.classList.add('flex');
+        }
+        viewCloseBtn.addEventListener('click', () => closeModal(viewModal));
+        viewModal.addEventListener('click', e => { if (e.target === viewModal) closeModal(viewModal) });
+
+        // --- CRUD Logic (Create, Read, Update, Delete) ---
+        mainForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = formIdInput.value;
+            const type = formTypeInput.value;
+            const collectionName = type === 'supplier' ? 'suppliers' : 'quotes';
+
+            const data = {
+                handlingManager: handlingManagerInput.value,
+                name: supplierNameInput.value,
+                category: categorySelect.value === 'add_new' ? '' : categorySelect.value,
+                type: document.querySelector('input[name="supplier-type"]:checked').value,
+                phone: supplierPhoneInput.value,
+                provides: supplierProvidesInput.value,
+                contacted: document.querySelector('input[name="contacted"]:checked').value === 'yes',
+                contactDetails: contactDetailsInput.value,
+                price: document.querySelector('input[name="supplier-type"]:checked').value === 'regular' ? (parseInt(priceInput.value) || 0) : null,
+            };
+
+            if (type === 'supplier') {
+                data.isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
+                data.pendingDetails = data.isFinalized ? '' : pendingDetailsInput.value;
+                data.agreementLink = data.isFinalized ? agreementLinkInput.value : '';
+            }
+
+            // Add last editor info
+            if (currentUser) {
+                data.lastEditedBy = currentUser.email;
+            }
+
+            try {
+                if (id) { // Update existing
+                    await setDoc(doc(db, collectionName, id), data, { merge: true });
+                    showToast('השינויים נשמרו בהצלחה!');
+                } else { // Add new
+                    await addDoc(collection(db, collectionName), data);
+                    showToast(`${type === 'supplier' ? 'ספק' : 'הצעה'} נוסף בהצלחה!`);
+                    const quoteIdToDelete = formIdInput.dataset.quoteIdToDelete;
+                    if (quoteIdToDelete) {
+                        await deleteDoc(doc(db, 'quotes', quoteIdToDelete));
+                        showToast('הצעת המחיר המקורית נמחקה.');
+                    }
+                }
+                closeModal(formModal);
+            } catch (error) {
+                console.error("Error saving data: ", error);
+                showToast("שגיאה בשמירת הנתונים.", true);
+            }
+        });
+
+        async function deleteItem(id, name, type) {
+            const collectionName = type === 'supplier' ? 'suppliers' : 'quotes';
+            const typeHebrew = type === 'supplier' ? 'הספק' : 'הצעת המחיר';
+            const confirmed = await showConfirmation('אישור מחיקה', `האם למחוק את ${typeHebrew} "${name}"?`);
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(db, collectionName, id));
+                    closeModal(viewModal);
+                    showToast(`${typeHebrew} נמחק.`);
+                } catch (error) {
+                    console.error("Error deleting item: ", error);
+                    showToast(`שגיאה במחיקת ${typeHebrew}.`, true);
+                }
+            }
+        }
         
-        const hamburgerBtn = document.getElementById('hamburger-btn'), closeSidebarBtn = document.getElementById('close-sidebar-btn'), sidebar = document.getElementById('sidebar'), sidebarOverlay = document.getElementById('sidebar-overlay');
-        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }, closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); };
+        // --- Category Management Logic ---
+        editCategoriesBtn.addEventListener('click', () => {
+            newCategoryNameInput.value = '';
+            categoryModal.classList.add('flex');
+            categoryModal.classList.remove('hidden');
+        });
+
+        categoryCloseBtn.addEventListener('click', () => closeModal(categoryModal));
+        categoryModal.addEventListener('click', (e) => {
+             if (e.target === categoryModal) closeModal(categoryModal);
+        });
+
+        addNewCategoryBtn.addEventListener('click', async () => {
+            const name = newCategoryNameInput.value.trim();
+            if (name) {
+                await addDoc(collection(db, 'supplier_categories'), { name });
+                newCategoryNameInput.value = '';
+                showToast('קטגוריה חדשה נוספה.');
+            }
+        });
+        
+        async function deleteCategory(id, name) {
+            const confirmed = await showConfirmation('אישור מחיקה', `האם למחוק את הקטגוריה "${name}"?`);
+            if (confirmed) {
+                await deleteDoc(doc(db, "supplier_categories", id));
+                showToast('הקטגוריה נמחקה.');
+            }
+        }
+
+        async function editCategoryName(e, id, currentName) {
+            const newName = await showInputPrompt('ערוך שם קטגוריה', 'שם קטגוריה חדש', currentName);
+            if(newName && newName.trim() !== '' && newName !== currentName) {
+                await setDoc(doc(db, 'supplier_categories', id), { name: newName.trim() });
+                showToast('שם הקטגוריה עודכן.');
+            }
+        }
+
+        categorySelect.addEventListener('change', () => {
+            if (categorySelect.value === 'add_new') {
+                categorySelect.value = ''; // Reset select
+                editCategoriesBtn.click();
+            }
+        });
+
+        // --- Conditional Fields Logic ---
+        function handleConditionalFields() {
+            const isContacted = document.querySelector('input[name="contacted"]:checked').value === 'yes';
+            contactedYesFields.classList.toggle('hidden', !isContacted);
+            
+            const isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
+            finalizedConditionalFields.classList.toggle('hidden', !isContacted);
+            finalizedYesField.classList.toggle('hidden', !isFinalized);
+            finalizedNoField.classList.toggle('hidden', isFinalized);
+
+            const supplierType = document.querySelector('input[name="supplier-type"]:checked').value;
+            priceField.classList.toggle('hidden', supplierType !== 'regular');
+            supplierProvidesLabel.textContent = supplierType === 'regular' ? 'מה מספקים?' : 'מה הספונסר מספק?';
+        }
+        mainForm.addEventListener('change', handleConditionalFields);
+
+        // --- Sidebar Logic ---
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }
+        const closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); }
         hamburgerBtn.addEventListener('click', openSidebar);
         closeSidebarBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
 
+        // --- Tab Logic ---
+        function switchTab(activeTab) {
+            suppliersTab.classList.toggle('active', activeTab === 'suppliers');
+            quotesTab.classList.toggle('active', activeTab === 'quotes');
+            suppliersView.classList.toggle('hidden', activeTab !== 'suppliers');
+            quotesView.classList.toggle('hidden', activeTab === 'suppliers');
+        }
+        suppliersTab.addEventListener('click', () => switchTab('suppliers'));
+        quotesTab.addEventListener('click', () => switchTab('quotes'));
+        
+        // --- Add Buttons Logic ---
+        addSupplierBtn.addEventListener('click', () => openFormModal('supplier'));
+        addQuoteBtn.addEventListener('click', () => openFormModal('quote'));
+        
+        // --- Help Modal Logic ---
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.remove('hidden');
+            helpModal.classList.add('flex');
+        });
+        const closeHelpModal = () => closeModal(helpModal);
+        helpCloseBtn.addEventListener('click', closeHelpModal);
+        helpCloseBtnBottom.addEventListener('click', closeHelpModal);
+        helpModal.addEventListener('click', e => { if (e.target === helpModal) closeHelpModal(); });
+
     </script>
 </body>
 </html>
-
