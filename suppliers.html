@@ -326,7 +326,7 @@
         let currentStep = 1;
 
 
-        // --- Modal Helper Functions (FIX) ---
+        // --- Modal Helper Functions ---
         function openModal(modal) {
             modal.classList.add('flex');
             modal.classList.remove('hidden');
@@ -556,7 +556,6 @@
             document.getElementById('confirmation-message').textContent = message;
             const confirmBtn = document.getElementById('confirm-action-btn');
             
-            // Clone and replace to remove old event listeners
             const newConfirmBtn = confirmBtn.cloneNode(true);
             confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
             
@@ -581,10 +580,14 @@
         viewModal.addEventListener('click', e => { if (e.target === viewModal) closeModal(viewModal); });
         document.getElementById('view-modal-close-btn').addEventListener('click', () => closeModal(viewModal));
         
-        // BUG FIX 2: Correctly close view modal and open form modal
+        // BUG FIX: Added setTimeout to prevent click event race condition
         document.getElementById('view-modal-edit-btn').addEventListener('click', () => {
             closeModal(viewModal);
-            openFormModal(dataToViewOrEdit.id, dataToViewOrEdit.type);
+            // This timeout ensures the click event from the "edit" button finishes before the new modal appears,
+            // preventing the new modal from immediately closing itself.
+            setTimeout(() => {
+                openFormModal(dataToViewOrEdit.id, dataToViewOrEdit.type);
+            }, 50); 
         });
         
         document.getElementById('view-modal-delete-btn').addEventListener('click', () => {
@@ -597,18 +600,19 @@
         
         document.getElementById('view-modal-convert-btn').addEventListener('click', () => {
             closeModal(viewModal);
-            openFormModal(dataToViewOrEdit.id, 'supplier', true);
+             setTimeout(() => {
+                openFormModal(dataToViewOrEdit.id, 'supplier', true);
+            }, 50);
         });
 
         // Category events
         document.getElementById('edit-categories-btn').addEventListener('click', () => openModal(categoryModal));
         document.getElementById('close-category-modal-btn').addEventListener('click', () => closeModal(categoryModal));
         
-        // BUG FIX 1: Correctly open category modal from select dropdown
         document.getElementById('category-select').addEventListener('change', e => {
             if (e.target.value === 'add_new') {
                 openModal(categoryModal);
-                e.target.value = ''; // Reset select
+                e.target.value = ''; 
             }
         });
 
