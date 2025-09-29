@@ -26,7 +26,7 @@
         .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
         .input-field {
             background-color: #2a2a2a; border: 1px solid #444; color: #E0E0E0;
-            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem; text-align: center; letter-spacing: 0.5em;
         }
         .input-field:focus {
             outline: none; border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
@@ -57,7 +57,7 @@
         <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
             <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
             <div class="mt-12 space-y-4 text-center">
-                <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                 <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
                 <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
                 <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
                 <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
@@ -85,12 +85,18 @@
 
             <main class="flex-1 p-6 sm:p-8 min-h-screen">
                 <div class="max-w-4xl mx-auto">
-                    <div class="flex justify-between items-center mb-8">
+                    <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
                         <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול משתמשים</h1>
-                        <button id="add-user-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2">
-                            <i class="fas fa-user-plus"></i>
-                            <span>הוספת משתמש חדש</span>
-                        </button>
+                        <div class="flex gap-3">
+                             <button id="edit-code-btn" class="bg-transparent border border-gold/50 text-gold/80 font-bold py-2 px-5 rounded-lg flex items-center gap-2 hover:bg-gold/10 hover:text-gold transition-colors">
+                                <i class="fas fa-lock"></i>
+                                <span>עריכת קוד אימות</span>
+                            </button>
+                            <button id="add-user-btn" class="btn-gold font-bold py-2 px-5 rounded-lg flex items-center gap-2">
+                                <i class="fas fa-user-plus"></i>
+                                <span>הוספת משתמש חדש</span>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="table-container rounded-lg overflow-hidden">
@@ -112,31 +118,66 @@
         </div>
     </div>
 
+    <!-- Modals -->
+    <!-- Verification Code Modal -->
+    <div id="verification-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20">
+            <form id="verification-form" class="p-8">
+                <h2 class="text-3xl font-bold text-gold mb-6 text-center">קוד אימות</h2>
+                <input type="password" id="verification-code-input" class="input-field" maxlength="4" required pattern="\d{4}" inputmode="numeric">
+                <p id="verification-error" class="text-red-400 h-5 text-center mt-2"></p>
+                <button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg w-full mt-6">כניסה</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Setup Verification Code Modal -->
+    <div id="setup-code-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20">
+            <form id="setup-code-form" class="p-8 space-y-4">
+                <h2 id="setup-code-title" class="text-3xl font-bold text-gold mb-4 text-center">הגדרת קוד אימות</h2>
+                <div>
+                    <label for="new-code" class="block text-sm font-medium text-gray-300 mb-1">קוד חדש (4 ספרות)</label>
+                    <input type="password" id="new-code" class="input-field" maxlength="4" required pattern="\d{4}" inputmode="numeric">
+                </div>
+                <div>
+                    <label for="confirm-new-code" class="block text-sm font-medium text-gray-300 mb-1">אימות קוד</label>
+                    <input type="password" id="confirm-new-code" class="input-field" maxlength="4" required pattern="\d{4}" inputmode="numeric">
+                </div>
+                <p id="setup-code-error" class="text-red-400 h-5 text-center pt-2"></p>
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="cancel-setup-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
+                    <button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Add User Modal -->
     <div id="user-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
         <div class="modal-content w-full max-w-md rounded-lg shadow-2xl shadow-gold/20">
             <form id="user-form" class="p-8 space-y-5">
-                <h2 id="modal-title" class="text-3xl font-bold text-gold mb-4 text-center">הוספת משתמש חדש</h2>
+                <h2 class="text-3xl font-bold text-gold mb-4 text-center">הוספת משתמש חדש</h2>
                 <div>
                     <label for="full-name" class="block text-sm font-medium text-gray-300 mb-1">שם מלא</label>
-                    <input type="text" id="full-name" class="input-field" required>
+                    <input type="text" id="full-name" class="input-field" style="letter-spacing: normal;" required>
                 </div>
                 <div>
                     <label for="user-email" class="block text-sm font-medium text-gray-300 mb-1">אימייל</label>
-                    <input type="email" id="user-email" class="input-field" required>
+                    <input type="email" id="user-email" class="input-field" style="letter-spacing: normal;" required>
                 </div>
                 <div>
                     <label for="user-password" class="block text-sm font-medium text-gray-300 mb-1">סיסמה</label>
-                    <input type="password" id="user-password" class="input-field" required autocomplete="new-password">
+                    <input type="password" id="user-password" class="input-field" style="letter-spacing: normal;" required autocomplete="new-password">
                 </div>
                 <div>
                     <label for="confirm-password" class="block text-sm font-medium text-gray-300 mb-1">אימות סיסמה</label>
-                    <input type="password" id="confirm-password" class="input-field" required autocomplete="new-password">
+                    <input type="password" id="confirm-password" class="input-field" style="letter-spacing: normal;" required autocomplete="new-password">
                 </div>
                 <p id="modal-error" class="text-red-400 h-5 text-center"></p>
                 <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" id="cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
-                    <button type="submit" id="submit-btn" class="btn-gold font-bold py-2 px-6 rounded-lg">צור משתמש</button>
+                    <button type="button" id="cancel-user-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">ביטול</button>
+                    <button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">צור משתמש</button>
                 </div>
             </form>
         </div>
@@ -173,55 +214,137 @@
         // Import Firebase functions
         import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // Initialize Firebase
         const mainApp = initializeApp(firebaseConfig);
         const auth = getAuth(mainApp);
         const db = getFirestore(mainApp);
 
-        // DOM Elements
+        // --- DOM Elements ---
         const appContainer = document.getElementById('app-container');
         const logoutBtn = document.getElementById('logout-btn');
         const welcomeMsg = document.getElementById('welcome-msg');
         const usersTableBody = document.getElementById('users-table-body');
-        const addUserBtn = document.getElementById('add-user-btn');
         
-        // Add User Modal elements
+        // Buttons
+        const addUserBtn = document.getElementById('add-user-btn');
+        const editCodeBtn = document.getElementById('edit-code-btn');
+        
+        // Modals
         const userModal = document.getElementById('user-modal');
-        const userForm = document.getElementById('user-form');
-        const cancelBtn = document.getElementById('cancel-btn');
-        const modalError = document.getElementById('modal-error');
-        const submitBtn = document.getElementById('submit-btn');
-
-        // Delete Modal elements
         const deleteModal = document.getElementById('delete-modal');
-        const deleteConfirmText = document.getElementById('delete-confirm-text');
-        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const verificationModal = document.getElementById('verification-modal');
+        const setupCodeModal = document.getElementById('setup-code-modal');
 
-        // --- Authentication & Page Load ---
-        onAuthStateChanged(auth, (user) => {
+        // Forms and Inputs
+        const userForm = document.getElementById('user-form');
+        const verificationForm = document.getElementById('verification-form');
+        const setupCodeForm = document.getElementById('setup-code-form');
+        const verificationCodeInput = document.getElementById('verification-code-input');
+
+        // --- State ---
+        let correctVerificationCode = null;
+
+        // --- Main Logic ---
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                appContainer.classList.remove('hidden');
                 welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
-                loadUsers();
+                await checkVerificationCodeSetup();
             } else {
                 window.location.href = 'index.html';
             }
         });
+        
+        async function checkVerificationCodeSetup() {
+            const settingsRef = doc(db, "settings", "userManagement");
+            try {
+                const docSnap = await getDoc(settingsRef);
+                if (docSnap.exists() && docSnap.data().verificationCode) {
+                    correctVerificationCode = docSnap.data().verificationCode;
+                    openModal(verificationModal);
+                } else {
+                    openModal(setupCodeModal);
+                    // Hide cancel button on first setup
+                    document.getElementById('cancel-setup-btn').classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Error checking verification code:", error);
+            }
+        }
 
+        function showMainContent() {
+            appContainer.classList.remove('hidden');
+            loadUsers();
+        }
+
+        // --- Event Listeners ---
         logoutBtn.addEventListener('click', () => { signOut(auth); });
+
+        // Verification Form
+        verificationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const enteredCode = verificationCodeInput.value;
+            const errorEl = document.getElementById('verification-error');
+            if (enteredCode === correctVerificationCode) {
+                closeModal(verificationModal);
+                showMainContent();
+            } else {
+                errorEl.textContent = 'קוד שגוי.';
+                verificationCodeInput.value = '';
+                setTimeout(() => errorEl.textContent = '', 2000);
+            }
+        });
+
+        // Setup Code Form
+        setupCodeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newCode = document.getElementById('new-code').value;
+            const confirmCode = document.getElementById('confirm-new-code').value;
+            const errorEl = document.getElementById('setup-code-error');
+
+            if (newCode.length !== 4) {
+                errorEl.textContent = 'הקוד חייב להיות בן 4 ספרות.';
+                return;
+            }
+            if (newCode !== confirmCode) {
+                errorEl.textContent = 'הקודים אינם תואמים.';
+                return;
+            }
+
+            try {
+                const settingsRef = doc(db, "settings", "userManagement");
+                await setDoc(settingsRef, { verificationCode: newCode });
+                correctVerificationCode = newCode;
+                closeModal(setupCodeModal);
+                // If the app is hidden, it means this was the first time setup
+                if(appContainer.classList.contains('hidden')){
+                    showMainContent();
+                }
+            } catch (error) {
+                console.error("Error setting verification code:", error);
+                errorEl.textContent = 'שגיאה בשמירת הקוד.';
+            }
+        });
+
+        // Add User Form
+        userForm.addEventListener('submit', handleAddUserSubmit);
+        
+        // Buttons
+        addUserBtn.addEventListener('click', () => openModal(userModal));
+        editCodeBtn.addEventListener('click', () => {
+             document.getElementById('setup-code-title').textContent = 'עריכת קוד אימות';
+             document.getElementById('cancel-setup-btn').classList.remove('hidden');
+             openModal(setupCodeModal)
+        });
+
 
         // --- User Data Logic ---
         function loadUsers() {
-            const usersRef = collection(db, 'users');
-            onSnapshot(usersRef, (snapshot) => {
+            onSnapshot(collection(db, 'users'), (snapshot) => {
                 usersTableBody.innerHTML = '';
                 snapshot.docs.forEach(doc => {
-                    const user = doc.data();
-                    const userRow = createUserRow(doc.id, user);
-                    usersTableBody.appendChild(userRow);
+                    usersTableBody.appendChild(createUserRow(doc.id, doc.data()));
                 });
             });
         }
@@ -229,7 +352,6 @@
         function createUserRow(id, data) {
             const tr = document.createElement('tr');
             tr.className = 'border-b border-gray-800';
-            
             tr.innerHTML = `
                 <td class="p-4 font-semibold text-white">${data.fullName}</td>
                 <td class="p-4 text-gray-300">${data.email}</td>
@@ -237,74 +359,17 @@
                     <button data-id="${id}" data-name="${data.fullName}" class="delete-btn text-red-500 hover:text-red-400 transition-colors">
                         <i class="fas fa-trash"></i> מחיקה
                     </button>
-                </td>
-            `;
-            
+                </td>`;
             tr.querySelector('.delete-btn').addEventListener('click', (e) => {
-                const userId = e.currentTarget.dataset.id;
-                const userName = e.currentTarget.dataset.name;
-                openDeleteModal(userId, userName);
+                openDeleteModal(e.currentTarget.dataset.id, e.currentTarget.dataset.name);
             });
             return tr;
         }
-        
-        async function deleteUser(id) {
-            try {
-                await deleteDoc(doc(db, "users", id));
-                console.log("User record deleted from Firestore");
-            } catch (error) {
-                console.error("Error deleting user record: ", error);
-            }
-        }
 
-        // --- Add User Modal Logic ---
-        function openUserModal() {
-            userForm.reset();
-            modalError.textContent = '';
-            userModal.classList.remove('hidden');
-            userModal.classList.add('flex');
-        }
-
-        function closeUserModal() {
-            userModal.classList.add('hidden');
-            userModal.classList.remove('flex');
-        }
-
-        addUserBtn.addEventListener('click', openUserModal);
-        cancelBtn.addEventListener('click', closeUserModal);
-        userModal.addEventListener('click', (e) => {
-            if (e.target === userModal) closeUserModal();
-        });
-
-        // --- Delete User Modal Logic ---
-        function openDeleteModal(id, name) {
-            deleteConfirmText.textContent = `האם אתה בטוח שברצונך למחוק את "${name}" מהרשימה?`;
-            confirmDeleteBtn.dataset.id = id; // Store the ID on the button
-            deleteModal.classList.remove('hidden');
-            deleteModal.classList.add('flex');
-        }
-
-        function closeDeleteModal() {
-            deleteModal.classList.add('hidden');
-            deleteModal.classList.remove('flex');
-        }
-
-        cancelDeleteBtn.addEventListener('click', closeDeleteModal);
-        deleteModal.addEventListener('click', (e) => {
-            if (e.target === deleteModal) closeDeleteModal();
-        });
-        confirmDeleteBtn.addEventListener('click', (e) => {
-            const userId = e.currentTarget.dataset.id;
-            if (userId) {
-                deleteUser(userId);
-            }
-            closeDeleteModal();
-        });
-
-        // --- Form Logic for User Creation ---
-        userForm.addEventListener('submit', async (e) => {
+        async function handleAddUserSubmit(e) {
             e.preventDefault();
-            modalError.textContent = '';
+            const errorEl = document.getElementById('modal-error');
+            errorEl.textContent = '';
             
             const fullName = document.getElementById('full-name').value;
             const email = document.getElementById('user-email').value;
@@ -312,61 +377,73 @@
             const confirmPassword = document.getElementById('confirm-password').value;
 
             if (password !== confirmPassword) {
-                modalError.textContent = 'הסיסמאות אינן תואמות.';
+                errorEl.textContent = 'הסיסמאות אינן תואמות.';
                 return;
             }
             
+            const submitBtn = document.querySelector('#user-form button[type="submit"]');
             submitBtn.disabled = true;
             submitBtn.textContent = 'יוצר משתמש...';
             
             const tempAppName = 'user-creation-app-' + Date.now();
             const tempApp = initializeApp(firebaseConfig, tempAppName);
-            const tempAuth = getAuth(tempApp);
-
+            
             try {
-                const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
-                const newUser = userCredential.user;
-                
-                await setDoc(doc(db, "users", newUser.uid), {
-                    fullName: fullName,
-                    email: email
-                });
-
-                closeUserModal();
-
+                const userCredential = await createUserWithEmailAndPassword(getAuth(tempApp), email, password);
+                await setDoc(doc(db, "users", userCredential.user.uid), { fullName, email });
+                closeModal(userModal);
             } catch (error) {
-                console.error("User Creation Error:", error);
-                if (error.code === 'auth/email-already-in-use') {
-                    modalError.textContent = 'כתובת האימייל כבר בשימוש.';
-                } else if (error.code === 'auth/weak-password') {
-                    modalError.textContent = 'הסיסמה חלשה מדי (לפחות 6 תווים).';
-                } else if (error.code === 'auth/invalid-email') {
-                    modalError.textContent = 'כתובת האימייל אינה תקינה.';
-                } else {
-                    modalError.textContent = 'אירעה שגיאה ביצירת המשתמש.';
-                }
+                if (error.code === 'auth/email-already-in-use') errorEl.textContent = 'כתובת האימייל כבר בשימוש.';
+                else if (error.code === 'auth/weak-password') errorEl.textContent = 'הסיסמה חלשה מדי (לפחות 6 תווים).';
+                else if (error.code === 'auth/invalid-email') errorEl.textContent = 'כתובת האימייל אינה תקינה.';
+                else errorEl.textContent = 'אירעה שגיאה ביצירת המשתמש.';
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'צור משתמש';
-                try {
-                    await deleteApp(tempApp);
-                } catch (e) {
-                    console.error("Could not delete temp app", e);
-                }
+                await deleteApp(tempApp);
             }
+        }
+
+        // --- Modal Generic Logic ---
+        function openModal(modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal(modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            // Reset forms inside modals when closed
+            const form = modal.querySelector('form');
+            if(form) form.reset();
+        }
+        
+        // Setup modal close buttons
+        document.getElementById('cancel-user-btn').addEventListener('click', () => closeModal(userModal));
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => closeModal(deleteModal));
+        document.getElementById('cancel-setup-btn').addEventListener('click', () => closeModal(setupCodeModal));
+        [userModal, deleteModal, verificationModal, setupCodeModal].forEach(modal => {
+             modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(modal) });
         });
+
+        function openDeleteModal(id, name) {
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            document.getElementById('delete-confirm-text').textContent = `האם אתה בטוח שברצונך למחוק את "${name}" מהרשימה?`;
+            confirmBtn.onclick = () => {
+                deleteDoc(doc(db, "users", id));
+                closeModal(deleteModal);
+            };
+            openModal(deleteModal);
+        }
 
         // Sidebar Logic
         const hamburgerBtn = document.getElementById('hamburger-btn');
         const closeSidebarBtn = document.getElementById('close-sidebar-btn');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const openSidebar = () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }
-        const closeSidebar = () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); }
-        hamburgerBtn.addEventListener('click', openSidebar);
-        closeSidebarBtn.addEventListener('click', closeSidebar);
-        sidebarOverlay.addEventListener('click', closeSidebar);
-
+        hamburgerBtn.addEventListener('click', () => { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); });
+        closeSidebarBtn.addEventListener('click', () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); });
+        sidebarOverlay.addEventListener('click', () => { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); });
     </script>
 </body>
 </html>
