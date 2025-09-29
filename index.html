@@ -9,53 +9,38 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        :root {
-            --gold-color: #FFD700;
-            --dark-bg: #0a0a0a;
-            --light-text: #E0E0E0;
-            --dark-card: #1a1a1a;
-            --dark-input: #2a2a2a;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             font-family: 'Assistant', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--light-text);
-            overflow-x: hidden;
+            background-color: #0a0a0a;
+            color: #E0E0E0;
         }
         .bg-black-gradient {
-            background: linear-gradient(180deg, #121212 0%, #000000 100%);
+            background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
         }
         .text-gold {
-            color: var(--gold-color);
+            color: #FFD700;
         }
         .border-gold {
-            border-color: var(--gold-color);
+            border-color: #FFD700;
         }
         .btn-gold {
-            background-color: var(--gold-color);
+            background-color: #FFD700;
             color: #111111;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
         }
         .btn-gold:hover {
             background-color: #e6c200;
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
         .input-field {
-            background-color: var(--dark-input);
+            background-color: #2a2a2a;
             border: 1px solid #444;
-            color: var(--light-text);
-            transition: all 0.3s ease;
+            color: #E0E0E0;
         }
         .input-field:focus {
             outline: none;
-            border-color: var(--gold-color);
+            border-color: #FFD700;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
         #sidebar {
@@ -69,55 +54,6 @@
             background-color: rgba(26, 26, 26, 0.7);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 215, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .content-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 215, 0, 0.1);
-        }
-
-        /* Design Upgrade: Animated Hamburger Icon */
-        .hamburger-btn {
-            width: 30px;
-            height: 22px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            position: relative;
-            z-index: 100;
-        }
-        .hamburger-btn span {
-            width: 100%;
-            height: 3px;
-            background-color: var(--gold-color);
-            border-radius: 3px;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        .hamburger-btn.active span:nth-child(1) {
-            transform: rotate(45deg) translate(8px, 8px);
-        }
-        .hamburger-btn.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .hamburger-btn.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(6px, -6px);
-        }
-
-        /* Fade-in animation for main content */
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-            opacity: 0;
-        }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
     </style>
 </head>
@@ -130,22 +66,10 @@
             <h1 class="text-4xl font-bold text-gold mb-2" style="letter-spacing: 2px;">SAYORA</h1>
             <p class="text-lg text-gray-300 mb-8">פורטל ניהול והפקה</p>
             
-            <form id="login-form" class="space-y-6">
-                <!-- Fix: Added autocomplete attributes to prevent unwanted text pasting -->
-                <!-- Design: Added icons inside input fields -->
-                <div class="relative">
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <i class="fas fa-envelope"></i>
-                    </span>
-                    <input type="email" id="email" placeholder="אימייל" class="w-full p-3 pr-10 rounded-lg input-field text-right" required autocomplete="email">
-                </div>
-                <div class="relative">
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <i class="fas fa-lock"></i>
-                    </span>
-                    <input type="password" id="password" placeholder="סיסמה" class="w-full p-3 pr-10 rounded-lg input-field text-right" required autocomplete="current-password">
-                </div>
-                <button type="submit" class="w-full font-bold py-3 px-4 rounded-lg btn-gold text-lg">התחברות</button>
+            <form id="login-form" class="space-y-4">
+                <input type="email" id="email" placeholder="אימייל" class="w-full p-3 rounded-lg input-field text-right" required>
+                <input type="password" id="password" placeholder="סיסמה" class="w-full p-3 rounded-lg input-field text-right" required>
+                <button type="submit" class="w-full font-bold py-3 px-4 rounded-lg btn-gold">התחברות</button>
             </form>
             <p id="login-error" class="text-red-400 mt-4 h-5"></p>
         </div>
@@ -156,11 +80,8 @@
         <!-- Header -->
         <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                 <!-- Design: Replaced hamburger character with a custom animated icon -->
-                <button id="hamburger-btn" class="p-2 lg:hidden hamburger-btn">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden">
+                    &#9776;
                 </button>
                 <div class="flex items-center gap-3">
                     <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
@@ -178,36 +99,36 @@
         <!-- Sidebar -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
         <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
-            <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-3xl">&times;</button>
+            <button id="close-sidebar-btn" class="absolute top-4 left-4 text-gray-400 text-2xl">&times;</button>
             <div class="mt-12 space-y-4 text-center">
-                <a href="#festival-info" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg transition-colors">הסבר על הפסטיבל</a>
-                <a href="#costs" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg transition-colors">עלויות</a>
-                <a href="#suppliers" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg transition-colors">ספקים</a>
-                <a href="#map" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg transition-colors">מפת הפסטיבל</a>
-                <a href="#tickets" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg transition-colors">כרטיסים</a>
-                <a href="#summaries" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg transition-colors">סיכומים</a>
-                <a href="#user-management" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg transition-colors">ניהול משתמשים</a>
+                <a href="festival-info.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">הסבר על הפסטיבל</a>
+                <a href="costs.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">עלויות</a>
+                <a href="suppliers.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ספקים</a>
+                <a href="map.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">מפת הפסטיבל</a>
+                <a href="tickets.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">כרטיסים</a>
+                <a href="summaries.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">סיכומים</a>
+                <a href="user-management.html" class="block py-2 px-4 rounded-md hover:bg-gold/10 text-lg">ניהול משתמשים</a>
             </div>
         </nav>
         
         <!-- Main Content -->
         <div class="flex">
             <!-- Desktop Sidebar -->
-            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-16 shadow-lg shadow-black/50 border-l border-gray-800">
+            <aside class="w-64 bg-black p-6 hidden lg:block h-screen sticky top-0 shadow-lg shadow-black/50 border-l border-gray-800">
                 <h2 class="text-xl font-semibold text-gold mb-6 border-b border-gold/20 pb-2">תפריט ניווט</h2>
                 <nav class="space-y-2">
-                    <a href="#festival-info" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
-                    <a href="#costs" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
-                    <a href="#suppliers" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
-                    <a href="#map" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
-                    <a href="#tickets" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
-                    <a href="#summaries" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
-                    <a href="#user-management" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                    <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                    <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ספקים</a>
+                    <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                    <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                    <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                    <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
                 </nav>
             </aside>
 
             <main class="flex-1 p-6 sm:p-8 min-h-screen">
-                <div class="max-w-5xl mx-auto fade-in-up">
+                <div class="max-w-5xl mx-auto">
                     <div class="text-center mb-10">
                         <h1 class="text-4xl sm:text-5xl font-bold text-gold mb-4">פורטל הניהול של SAYORA</h1>
                         <p class="text-lg text-gray-300">המקום המרכזי לכל המידע, התכנון והתיאום של צוות ההפקה.</p>
@@ -231,7 +152,7 @@
                         </div>
                     </div>
 
-                    <div id="festival-info" class="content-card p-6 sm:p-8 rounded-lg shadow-xl space-y-6">
+                    <div class="content-card p-6 sm:p-8 rounded-lg shadow-xl space-y-6">
                         <div>
                             <h2 class="text-3xl font-semibold text-gold mb-3 flex items-center gap-3"><i class="fas fa-heart"></i> חזון הפסטיבל</h2>
                             <p class="text-gray-300 leading-relaxed">
@@ -248,7 +169,7 @@
                 </div>
 
                 <!-- Footer -->
-                <footer class="text-center mt-12 py-6 text-sm text-gray-500 border-t border-gray-800">
+                <footer class="text-center mt-12 text-sm text-gray-500">
                     <p>&copy; 2025 SAYORA Festival | נבנה על ידי דורון נקש</p>
                 </footer>
             </main>
@@ -256,7 +177,7 @@
     </div>
 
     <script type="module">
-        // --- Firebase Configuration ---
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
             authDomain: "sayora-all.firebaseapp.com",
@@ -267,15 +188,15 @@
             measurementId: "G-LFN43NSE5K"
         };
 
-        // --- Firebase Imports (Updated to a more recent version) ---
+        // Import Firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // --- Firebase Initialization ---
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // --- DOM Element Selection ---
+        // DOM Elements
         const loginView = document.getElementById('login-view');
         const mainView = document.getElementById('main-view');
         const loginForm = document.getElementById('login-form');
@@ -292,20 +213,17 @@
         const sidebarOverlay = document.getElementById('sidebar-overlay');
 
         // --- Authentication Logic ---
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in
                 loginView.classList.add('hidden');
                 mainView.classList.remove('hidden');
-                const username = user.email.split('@')[0];
-                welcomeMsg.textContent = `ברוך הבא, ${username}`;
+                welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
             } else {
-                // User is signed out
                 mainView.classList.add('hidden');
                 loginView.classList.remove('hidden');
                 emailInput.value = '';
                 passwordInput.value = '';
-                loginError.textContent = ''; // Clear any previous errors
             }
         });
 
@@ -318,18 +236,12 @@
             signInWithEmailAndPassword(auth, email, password)
                 .catch((error) => {
                     console.error("Login Error:", error.code, error.message);
-                    // Provide user-friendly error messages
-                    switch (error.code) {
-                        case 'auth/invalid-credential':
-                        case 'auth/wrong-password':
-                        case 'auth/user-not-found':
-                            loginError.textContent = 'אימייל או סיסמה שגויים.';
-                            break;
-                        case 'auth/invalid-email':
-                            loginError.textContent = 'פורמט אימייל לא תקין.';
-                            break;
-                        default:
-                            loginError.textContent = 'אירעה שגיאה. נסה שוב מאוחר יותר.';
+                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                        loginError.textContent = 'אימייל או סיסמה שגויים.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        loginError.textContent = 'פורמט אימייל לא תקין.';
+                    } else {
+                        loginError.textContent = 'אירעה שגיאה. נסה שוב מאוחר יותר.';
                     }
                 });
         });
@@ -342,29 +254,15 @@
         const openSidebar = () => {
             sidebar.classList.add('open');
             sidebarOverlay.classList.remove('hidden');
-            hamburgerBtn.classList.add('active'); // Animate hamburger to 'X'
-        };
+        }
         const closeSidebar = () => {
             sidebar.classList.remove('open');
             sidebarOverlay.classList.add('hidden');
-            hamburgerBtn.classList.remove('active'); // Animate 'X' back to hamburger
-        };
+        }
 
-        hamburgerBtn.addEventListener('click', () => {
-            if (sidebar.classList.contains('open')) {
-                closeSidebar();
-            } else {
-                openSidebar();
-            }
-        });
-        
+        hamburgerBtn.addEventListener('click', openSidebar);
         closeSidebarBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
-        
-        // Close sidebar when a navigation link is clicked
-        document.querySelectorAll('#sidebar a').forEach(link => {
-            link.addEventListener('click', closeSidebar);
-        });
 
     </script>
 </body>
