@@ -26,8 +26,8 @@
             background-color: #e6c200; transform: scale(1.05);
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
-        .btn-gold:active, .btn-active:active {
-             transform: scale(0.98);
+        .btn-active:active {
+            transform: scale(0.98);
         }
 
         /* --- Sidebar --- */
@@ -44,6 +44,7 @@
             transition: opacity 0.3s ease-in-out;
             background-color: rgba(0,0,0,0.8);
             backdrop-filter: blur(5px);
+            cursor: pointer;
         }
         .modal-backdrop.is-open {
             opacity: 1;
@@ -55,6 +56,7 @@
             transform: scale(0.95);
             opacity: 0;
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            cursor: default;
         }
         .modal-backdrop.is-open .modal-content {
             transform: scale(1);
@@ -122,7 +124,7 @@
                 <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden btn-active">&#9776;</button>
                 <div class="flex items-center gap-3">
                     <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
-                    <a href="index.html" class="text-2xl font-bold text-gold">SAYORA</a>
+                    <a href="#" class="text-2xl font-bold text-gold">SAYORA</a>
                 </div>
                 <div id="user-info" class="flex items-center gap-3">
                     <span id="welcome-msg" class="text-sm text-gray-300 hidden md:block"></span>
@@ -135,12 +137,12 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
         <nav id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-black-gradient shadow-2xl z-50 p-6 lg:hidden">
              <div class="flex justify-between items-center mb-8">
-                <span class="text-xl font-bold text-gold">תפריט</span>
-                <button id="close-sidebar-btn" class="text-gold text-3xl">&times;</button>
-            </div>
-            <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
-            <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
-            <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
+                 <span class="text-xl font-bold text-gold">תפריט</span>
+                 <button id="close-sidebar-btn" class="text-gold text-3xl">&times;</button>
+             </div>
+             <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+             <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+             <a href="#" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
         </nav>
         
         <!-- Main Content -->
@@ -151,7 +153,7 @@
                 <nav class="space-y-2">
                     <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
                     <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
-                    <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
+                    <a href="#" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
                 </nav>
             </aside>
 
@@ -260,7 +262,7 @@
 
                 <!-- Buttons -->
                 <div class="flex justify-between gap-4 pt-6 mt-6 border-t border-gray-700">
-                    <button type="button" id="form-cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors btn-active">ביטול</button>
+                    <button type="button" data-action="close-modal" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors btn-active">ביטול</button>
                     <div>
                         <button type="button" id="form-back-btn" class="hidden bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors btn-active">אחורה</button>
                         <button type="button" id="form-next-btn" class="btn-gold font-bold py-2 px-6 rounded-lg">הבא</button>
@@ -275,7 +277,7 @@
         <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto p-8">
             <div id="view-modal-content"></div>
             <div class="flex justify-end gap-4 pt-6 mt-6 border-t border-gray-700">
-                <button type="button" id="view-modal-close-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 btn-active">סגור</button>
+                <button type="button" data-action="close-modal" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 btn-active">סגור</button>
                 <button type="button" id="view-modal-convert-btn" class="hidden btn-gold font-bold py-2 px-6 rounded-lg">הפוך לספק</button>
                 <button type="button" id="view-modal-edit-btn" class="btn-gold font-bold py-2 px-6 rounded-lg"><i class="fas fa-edit ml-2"></i>ערוך</button>
                 <button type="button" id="view-modal-delete-btn" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-500 btn-active"><i class="fas fa-trash ml-2"></i>מחק</button>
@@ -292,7 +294,7 @@
                 <button id="add-category-btn" class="btn-gold font-bold p-3 rounded-lg"><i class="fas fa-plus"></i></button>
             </div>
             <div class="flex justify-end mt-6">
-                <button type="button" id="close-category-modal-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 btn-active">סגור</button>
+                <button type="button" data-action="close-modal" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 btn-active">סגור</button>
             </div>
         </div>
     </div>
@@ -301,7 +303,7 @@
         <div class="modal-content w-full max-w-md rounded-lg shadow-2xl p-8 text-center">
             <p id="confirmation-message" class="text-lg mb-6"></p>
             <div class="flex justify-center gap-4">
-                <button id="confirm-cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 btn-active">ביטול</button>
+                <button type="button" data-action="close-modal" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 btn-active">ביטול</button>
                 <button id="confirm-action-btn" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-500 btn-active">אישור</button>
             </div>
         </div>
@@ -309,6 +311,8 @@
 
     <script type="module">
         // --- Firebase Config & Initialization ---
+        // IMPORTANT: The configuration below is for the Canvas environment.
+        // It's recommended not to expose API keys in public client-side code in a real-world scenario.
         const firebaseConfig = {
             apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
             authDomain: "sayora-all.firebaseapp.com",
@@ -321,6 +325,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -330,14 +335,13 @@
         let quotes = [];
         let categories = [];
         let dataToViewOrEdit = null;
-        
+        let currentStep = 1;
+
         const loader = document.getElementById('loader');
         const appContainer = document.getElementById('app-container');
         const allModals = document.querySelectorAll('.modal-backdrop');
         const dataContainer = document.getElementById('data-container');
-        const formModal = document.getElementById('form-modal');
         const dataForm = document.getElementById('data-form');
-        let currentStep = 1;
 
         // --- Modal Helper Functions ---
         function openModal(modal) {
@@ -357,7 +361,7 @@
                 appContainer.classList.remove('hidden');
                 document.getElementById('welcome-msg').textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
                 setupDataListeners();
-                setupEventListeners();
+                setupEventListeners(); // Setup general event listeners only once
             } else {
                 window.location.href = 'index.html';
             }
@@ -373,7 +377,7 @@
                 renderGroupedGrid();
             });
             onSnapshot(collection(db, 'supplierCategories'), snapshot => {
-                categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name));
+                categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name, 'he'));
                 populateCategorySelect();
                 const categoryEditor = document.getElementById('category-modal');
                 if (categoryEditor.classList.contains('is-open')) {
@@ -452,7 +456,7 @@
                     if (b === 'uncategorized') return -1;
                     const nameA = categories.find(c => c.id === a)?.name || '';
                     const nameB = categories.find(c => c.id === b)?.name || '';
-                    return nameA.localeCompare(nameB);
+                    return nameA.localeCompare(nameB, 'he');
                 });
 
                 sortedCategoryIds.forEach(categoryId => {
@@ -484,7 +488,6 @@
             }
         }
 
-
         // --- Main Form Modal (Add/Edit) ---
         function openFormModal(id, type, isConversion = false) {
             dataForm.reset();
@@ -494,7 +497,7 @@
             const sourceDataArray = isConversion ? quotes : (type === 'supplier' ? suppliers : quotes);
             const itemData = id ? sourceDataArray.find(item => item.id === id) || {} : {};
             
-            document.getElementById('data-id').value = id || '';
+            document.getElementById('data-id').value = (isConversion) ? '' : (id || '');
             document.getElementById('data-type').value = type;
             document.getElementById('is-conversion').value = isConversion;
 
@@ -510,11 +513,13 @@
             document.querySelector(`input[name="data-type-radio"][value="${itemData.type || 'regular'}"]`).checked = true;
             document.getElementById('data-provides').value = itemData.provides || '';
             document.getElementById('data-phone').value = itemData.phone || '';
+            
+            // Step 2 fields
             document.querySelector(`input[name="contacted"][value="${itemData.contacted ? 'yes' : 'no'}"]`).checked = true;
             document.getElementById('contact-details').value = itemData.contactDetails || '';
             document.getElementById('price').value = itemData.price || '';
             
-            if (type === 'supplier') {
+            if (type === 'supplier' || isConversion) {
                 document.querySelector(`input[name="finalized"][value="${itemData.isFinalized ? 'yes' : 'no'}"]`).checked = true;
                 document.getElementById('pending-details').value = itemData.pendingDetails || '';
                 document.getElementById('agreement-link').value = itemData.agreementLink || '';
@@ -534,12 +539,13 @@
         
         function handleConditionalFormFields() {
             const type = document.getElementById('data-type').value;
-            document.getElementById('finalized-section').style.display = type === 'supplier' ? 'block' : 'none';
+            const isConversion = document.getElementById('is-conversion').value === 'true';
+            document.getElementById('finalized-section').style.display = (type === 'supplier' || isConversion) ? 'block' : 'none';
             
             const isContacted = document.querySelector('input[name="contacted"]:checked').value === 'yes';
             document.getElementById('contacted-yes-fields').classList.toggle('hidden', !isContacted);
             
-            if(type === 'supplier') {
+            if(type === 'supplier' || isConversion) {
                 const isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
                 document.getElementById('finalized-no-field').classList.toggle('hidden', isFinalized);
                 document.getElementById('finalized-yes-field').classList.toggle('hidden', !isFinalized);
@@ -562,7 +568,7 @@
                     <p><strong>קטגוריה:</strong> ${categoryName}</p>
                     <p><strong>סוג:</strong> ${data.type === 'sponsor' ? 'ספונסר' : 'ספק רגיל'}</p>
                     <p><strong>מספק:</strong> ${data.provides || 'לא צוין'}</p>
-                    <p><strong>טלפון:</strong> ${data.phone || 'לא הוזן'}</p>
+                    <p><strong>טלפון:</strong> ${data.phone ? `<a href="tel:${data.phone}" class="text-blue-400 hover:underline">${data.phone}</a>` : 'לא הוזן'}</p>
                     <div class="border-t border-gray-700 my-3"></div>
                     <p><strong>נוצר קשר:</strong> ${data.contacted ? 'כן' : 'לא'}</p>
             `;
@@ -614,12 +620,14 @@
         function showConfirmation(message, onConfirm) {
             document.getElementById('confirmation-message').textContent = message;
             const confirmBtn = document.getElementById('confirm-action-btn');
+            // Clone and replace to remove old event listeners
             const newConfirmBtn = confirmBtn.cloneNode(true);
             confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            
             newConfirmBtn.addEventListener('click', () => {
                 onConfirm();
                 closeModal(document.getElementById('confirmation-modal'));
-            });
+            }, { once: true }); // Ensure it only fires once
             openModal(document.getElementById('confirmation-modal'));
         }
         
@@ -628,15 +636,36 @@
             document.getElementById('add-supplier-btn').addEventListener('click', () => openFormModal(null, 'supplier'));
             document.getElementById('add-quote-btn').addEventListener('click', () => openFormModal(null, 'quote'));
             
+            // --- Modal Closing Logic ---
             allModals.forEach(modal => {
-                 document.getElementById(modal.id.replace('-modal', '-cancel-btn'))?.addEventListener('click', () => closeModal(modal));
-                 document.getElementById(modal.id.replace('-modal', '-close-btn'))?.addEventListener('click', () => closeModal(modal));
+                modal.addEventListener('click', (event) => {
+                    // Close if backdrop is clicked
+                    if (event.target === modal) {
+                        closeModal(modal);
+                    }
+                    // Close if a button with data-action="close-modal" is clicked
+                    if (event.target.closest('[data-action="close-modal"]')) {
+                        closeModal(modal);
+                    }
+                });
+            });
+             // Close modals with Escape key
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    allModals.forEach(modal => {
+                        if (modal.classList.contains('is-open')) {
+                            closeModal(modal);
+                        }
+                    });
+                }
             });
             
+            // --- Form Navigation ---
             document.getElementById('form-next-btn').addEventListener('click', () => { currentStep = 2; updateStepVisibility(); });
             document.getElementById('form-back-btn').addEventListener('click', () => { currentStep = 1; updateStepVisibility(); });
             dataForm.addEventListener('change', handleConditionalFormFields);
             
+            // --- View Modal Actions ---
             document.getElementById('view-modal-edit-btn').addEventListener('click', () => {
                 if (!dataToViewOrEdit) return;
                 closeModal(document.getElementById('view-modal'));
@@ -646,10 +675,10 @@
             document.getElementById('view-modal-delete-btn').addEventListener('click', () => {
                  if (!dataToViewOrEdit) return;
                  showConfirmation(`האם למחוק את "${dataToViewOrEdit.name}"?`, () => {
-                    const collectionName = dataToViewOrEdit.type === 'supplier' ? 'suppliers' : 'priceQuotes';
-                    deleteDoc(doc(db, collectionName, dataToViewOrEdit.id));
-                    closeModal(document.getElementById('view-modal'));
-                });
+                     const collectionName = dataToViewOrEdit.type === 'supplier' ? 'suppliers' : 'priceQuotes';
+                     deleteDoc(doc(db, collectionName, dataToViewOrEdit.id));
+                     closeModal(document.getElementById('view-modal'));
+                 });
             });
             
             document.getElementById('view-modal-convert-btn').addEventListener('click', () => {
@@ -658,6 +687,7 @@
                  setTimeout(() => openFormModal(dataToViewOrEdit.id, 'supplier', true), 300);
             });
 
+            // --- Category Management ---
             document.getElementById('edit-categories-btn').addEventListener('click', () => {
                 populateCategoryEditor();
                 openModal(document.getElementById('category-modal'));
@@ -679,18 +709,23 @@
                 }
             });
             document.getElementById('category-list').addEventListener('click', e => {
-                if (e.target.closest('.delete-category-btn')) {
-                    const id = e.target.closest('.delete-category-btn').dataset.id;
-                    showConfirmation('האם למחוק קטגוריה זו?', () => deleteDoc(doc(db, 'supplierCategories', id)));
+                const deleteBtn = e.target.closest('.delete-category-btn');
+                if (deleteBtn) {
+                    const id = deleteBtn.dataset.id;
+                    showConfirmation('האם למחוק קטגוריה זו? כל הספקים בקטגוריה זו יופיעו תחת "ללא קטגוריה".', () => deleteDoc(doc(db, 'supplierCategories', id)));
                 }
             });
             document.getElementById('category-list').addEventListener('change', e => {
                 if (e.target.classList.contains('category-name-input')) {
                     const id = e.target.dataset.id;
-                    updateDoc(doc(db, 'supplierCategories', id), { name: e.target.value });
+                    const newName = e.target.value.trim();
+                    if(newName){
+                        updateDoc(doc(db, 'supplierCategories', id), { name: newName });
+                    }
                 }
             });
             
+            // --- General UI ---
             document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
             const sidebar = document.getElementById('sidebar');
@@ -725,7 +760,7 @@
                 price: document.querySelector('input[name="data-type-radio"]:checked').value === 'regular' ? (parseInt(document.getElementById('price').value) || null) : null,
             };
 
-            if (type === 'supplier') {
+            if (type === 'supplier' || isConversion) {
                 formData.isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
                 formData.pendingDetails = formData.isFinalized ? '' : document.getElementById('pending-details').value;
                 formData.agreementLink = formData.isFinalized ? document.getElementById('agreement-link').value : '';
@@ -733,14 +768,18 @@
             
             try {
                 if (isConversion) {
+                    // Create a new supplier and delete the old quote
                     await addDoc(collection(db, 'suppliers'), formData);
-                    if (id) {
-                       await deleteDoc(doc(db, 'priceQuotes', id));
+                    const originalQuoteId = dataToViewOrEdit.id;
+                    if (originalQuoteId) {
+                       await deleteDoc(doc(db, 'priceQuotes', originalQuoteId));
                     }
                 } else if (id) {
+                    // Update existing document
                     const collectionName = type === 'supplier' ? 'suppliers' : 'priceQuotes';
                     await setDoc(doc(db, collectionName, id), formData);
                 } else {
+                    // Create new document
                     const collectionName = type === 'supplier' ? 'suppliers' : 'priceQuotes';
                     await addDoc(collection(db, collectionName), formData);
                 }
@@ -748,9 +787,9 @@
                 dataToViewOrEdit = null;
             } catch (error) {
                 console.error("Error saving data: ", error);
+                alert("אירעה שגיאה בשמירת הנתונים. אנא נסה שוב.");
             }
         });
     </script>
 </body>
 </html>
-
