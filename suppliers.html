@@ -89,8 +89,14 @@
         /* --- Status Colors for Cards --- */
         .status-default { background-color: #1f2937; } /* Default dark blue for suppliers not yet contacted */
         .status-quote { background: linear-gradient(45deg, #1f2937, #1d4ed8); } /* Blue gradient for quotes */
-        .status-in-progress { background: linear-gradient(45deg, #2a2a3a, #4a3a2a); } /* Orange/Yellow gradient for in progress */
+        .status-in-progress { background: linear-gradient(45deg, #372f27, #854d0e); } /* Orange/Yellow gradient for in progress */
         .status-done { background: linear-gradient(45deg, #1f2937, #15803d); } /* Green gradient for done */
+
+        /* --- To-Do List --- */
+        .task-completed .task-text {
+            text-decoration: line-through;
+            color: #a0a0a0;
+        }
 
         /* --- Loader --- */
         #loader {
@@ -123,7 +129,10 @@
         <!-- Header -->
         <header class="bg-black/80 backdrop-blur-sm sticky top-0 z-40 shadow-lg shadow-gold/10">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden btn-active">&#9776;</button>
+                <div class="flex items-center gap-2">
+                    <button id="hamburger-btn" class="text-gold text-3xl p-2 lg:hidden btn-active">&#9776;</button>
+                    <button id="help-btn" class="text-gold text-2xl p-2 btn-active"><i class="fas fa-question-circle"></i></button>
+                </div>
                 <div class="flex items-center gap-3">
                     <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-10 h-10 rounded-full border border-gold">
                     <a href="#" class="text-2xl font-bold text-gold">SAYORA</a>
@@ -261,6 +270,15 @@
                         <label for="agreement-link" class="block text-sm font-medium text-gray-300 mb-1">קישור להסכם (עדיף מ-Google Drive)</label>
                         <input type="url" id="agreement-link" class="input-field" placeholder="https://docs.google.com/document/d/...">
                     </div>
+                    <!-- To-Do List Section -->
+                    <div id="todo-section" class="hidden pt-4 border-t border-gray-700">
+                        <h3 class="text-xl font-semibold text-gold mb-3">רשימת משימות</h3>
+                        <div id="todo-list-container" class="space-y-2 max-h-48 overflow-y-auto mb-3 pr-2"></div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="new-todo-input" class="input-field flex-grow" placeholder="הוסף משימה חדשה...">
+                            <button type="button" id="add-todo-btn" class="btn-gold font-bold p-3 rounded-lg"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Buttons -->
@@ -313,6 +331,60 @@
         </div>
     </div>
 
+    <div id="help-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl p-8 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-3xl font-bold text-gold mb-4">מדריך למשתמש</h2>
+            <div class="space-y-4 text-gray-300">
+                <p>ברוכים הבאים לדף ניהול הספקים. כאן תוכלו לרכז את כל המידע על ספקים, ספונסרים והצעות מחיר לקראת הפסטיבל.</p>
+                
+                <div>
+                    <h3 class="text-xl font-semibold text-gold mb-2">פעולות עיקריות</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>הוספת הצעת מחיר:</strong> השתמשו בכפתור זה כדי להוסיף ספק פוטנציאלי שטרם התחייב. הצעות מחיר יופיעו בחלק נפרד.</li>
+                        <li><strong>הוספת ספק חדש:</strong> השתמשו בכפתור זה כדי להוסיף ספק שכבר יצרתם איתו קשר או שאתם מתכננים לעבוד איתו.</li>
+                        <li><strong>הפיכה לספק:</strong> ניתן להפוך "הצעת מחיר" ל"ספק" רשמי לאחר שנוצר קשר. פשוט לחצו על כרטיסיית הצעת המחיר ובחרו "הפוך לספק".</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-gold mb-2">ניהול משימות (To-Do List)</h3>
+                    <p>לכל ספק או ספונסר ניתן להוסיף רשימת משימות אישית כדי לעקוב אחר התקדמות העבודה מולו. בעת עריכת ספק, תוכלו:</p>
+                     <ul class="list-disc list-inside space-y-1">
+                        <li>להוסיף משימות חדשות (למשל: "לשלוח חוזה", "לוודא תשלום מקדמה").</li>
+                        <li>לסמן משימות שהושלמו באמצעות צ'ק-בוקס.</li>
+                        <li>למחוק משימות לא רלוונטיות.</li>
+                    </ul>
+                    <p class="mt-2">התקדמות המשימות תוצג על הכרטיסייה הראשית של הספק.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-gold mb-2">מקרא צבעים וסטטוסים</h3>
+                    <div class="space-y-3 mt-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded status-quote border border-gray-600"></div>
+                            <span><strong>הצעת מחיר (כחול):</strong> ספק פוטנציאלי, טרם הוחלט לעבוד איתו.</span>
+                        </div>
+                         <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded status-default border border-gray-600"></div>
+                            <span><strong>טרם נוצר קשר (אפור):</strong> ספק שנוסף למערכת אך עדיין לא דיברתם איתו.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded status-in-progress border border-gray-600"></div>
+                            <span><strong>בטיפול (כתום/צהוב):</strong> נוצר קשר עם הספק, אך ישנם עדיין פרטים פתוחים.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded status-done border border-gray-600"></div>
+                            <span><strong>סגור (ירוק):</strong> כל הפרטים מול הספק סגורים, והוא מוכן לפסטיבל.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="flex justify-end mt-8">
+                <button type="button" data-action="close-modal" class="btn-gold font-bold py-2 px-6 rounded-lg">הבנתי, תודה!</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         // --- Firebase Config & Initialization ---
         const firebaseConfig = {
@@ -338,6 +410,7 @@
         let categories = [];
         let dataToViewOrEdit = null;
         let currentStep = 1;
+        let currentTasks = [];
 
         const loader = document.getElementById('loader');
         const appContainer = document.getElementById('app-container');
@@ -408,9 +481,9 @@
                     statusIcon = 'fa-question-circle text-gray-400';
                 }
             } else { // type === 'quote'
-                 statusClass = 'status-quote';
-                 statusText = 'הצעת מחיר';
-                 statusIcon = 'fa-file-invoice-dollar text-cyan-300';
+                statusClass = 'status-quote';
+                statusText = 'הצעת מחיר';
+                statusIcon = 'fa-file-invoice-dollar text-cyan-300';
             }
             
             card.className = `supplier-card ${statusClass} p-5 rounded-lg shadow-xl flex flex-col`;
@@ -420,6 +493,16 @@
 
             const categoryName = categories.find(c => c.id === data.categoryId)?.name || 'ללא קטגוריה';
             
+            let tasksInfo = '';
+            if (type === 'supplier' && data.tasks && data.tasks.length > 0) {
+                const completedCount = data.tasks.filter(t => t.completed).length;
+                tasksInfo = `
+                    <p class="mt-2"><i class="fas fa-tasks fa-fw ml-2 text-gray-400"></i> 
+                    <strong>משימות:</strong> ${completedCount}/${data.tasks.length} הושלמו
+                    </p>
+                `;
+            }
+
             card.innerHTML = `
                 <div class="flex-grow">
                     <div class="flex justify-between items-start gap-2">
@@ -432,7 +515,8 @@
                     <div class="space-y-2 text-sm text-gray-300">
                         <p><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i> ${data.phone || 'לא הוזן'}</p>
                         <p><i class="fas ${statusIcon} fa-fw ml-2"></i> <strong>סטטוס:</strong> <span class="font-bold">${statusText}</span></p>
-                         ${type === 'supplier' && !data.isFinalized && data.pendingDetails ? `<p><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i> <strong>פתוח:</strong> ${data.pendingDetails}</p>` : ''}
+                        ${type === 'supplier' && !data.isFinalized && data.pendingDetails ? `<p><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i> <strong>פתוח:</strong> ${data.pendingDetails}</p>` : ''}
+                        ${tasksInfo}
                     </div>
                 </div>
             `;
@@ -468,7 +552,7 @@
                     categoryWrapper.innerHTML = `<h3 class="text-xl font-semibold text-gray-300 mb-3">${categoryName}</h3>`;
                     const itemsGrid = document.createElement('div');
                     itemsGrid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
-                    categoryItems.forEach(item => itemsGrid.appendChild(createCard(item.id, item, type)));
+                    categoryItems.sort((a, b) => a.name.localeCompare(b.name, 'he')).forEach(item => itemsGrid.appendChild(createCard(item.id, item, type)));
                     categoryWrapper.appendChild(itemsGrid);
                     sectionEl.appendChild(categoryWrapper);
                 });
@@ -490,6 +574,7 @@
         function openFormModal(id, type, isConversion = false) {
             dataForm.reset();
             currentStep = 1;
+            currentTasks = [];
             updateStepVisibility();
             
             const sourceDataArray = isConversion ? quotes : (type === 'supplier' ? suppliers : quotes);
@@ -499,7 +584,6 @@
             document.getElementById('data-type').value = type;
             document.getElementById('is-conversion').value = isConversion;
             document.getElementById('original-quote-id').value = isConversion ? id : '';
-
 
             let title = '';
             if (!id && !isConversion) title = type === 'supplier' ? 'הוספת ספק חדש' : 'הוספת הצעת מחיר';
@@ -524,13 +608,15 @@
                 document.querySelector(`input[name="finalized"][value="${itemData.isFinalized ? 'yes' : 'no'}"]`).checked = true;
                 document.getElementById('pending-details').value = itemData.pendingDetails || '';
                 document.getElementById('agreement-link').value = itemData.agreementLink || '';
+                currentTasks = itemData.tasks ? JSON.parse(JSON.stringify(itemData.tasks)) : [];
             } else {
                  // Ensure supplier fields are reset to default for quotes
-                 document.querySelector('input[name="finalized"][value="no"]').checked = true;
-                 document.getElementById('pending-details').value = '';
-                 document.getElementById('agreement-link').value = '';
+                document.querySelector('input[name="finalized"][value="no"]').checked = true;
+                document.getElementById('pending-details').value = '';
+                document.getElementById('agreement-link').value = '';
+                currentTasks = [];
             }
-
+            renderTodoEditor();
             handleConditionalFormFields();
             openModal(document.getElementById('form-modal'));
         }
@@ -546,12 +632,15 @@
         function handleConditionalFormFields() {
             const type = document.getElementById('data-type').value;
             const isConversion = document.getElementById('is-conversion').value === 'true';
-            document.getElementById('finalized-section').style.display = (type === 'supplier' || isConversion) ? 'block' : 'none';
+            const isSupplier = type === 'supplier' || isConversion;
+
+            document.getElementById('finalized-section').style.display = isSupplier ? 'block' : 'none';
+            document.getElementById('todo-section').style.display = isSupplier ? 'block' : 'none';
             
             const isContacted = document.querySelector('input[name="contacted"]:checked').value === 'yes';
             document.getElementById('contacted-yes-fields').classList.toggle('hidden', !isContacted);
             
-            if(type === 'supplier' || isConversion) {
+            if(isSupplier) {
                 const isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
                 document.getElementById('finalized-no-field').classList.toggle('hidden', isFinalized);
                 document.getElementById('finalized-yes-field').classList.toggle('hidden', !isFinalized);
@@ -591,6 +680,14 @@
                 } else if (!data.isFinalized && data.pendingDetails) {
                     content += `<p><strong>מה נשאר פתוח:</strong> ${data.pendingDetails}</p>`;
                 }
+
+                if (data.tasks && data.tasks.length > 0) {
+                    content += `<div class="border-t border-gray-700 my-3"></div><p class="font-bold">רשימת משימות:</p><ul class="list-disc list-inside space-y-1 text-base">`;
+                    data.tasks.forEach(task => {
+                        content += `<li class="${task.completed ? 'task-completed' : ''}">${task.text}</li>`;
+                    });
+                    content += `</ul>`;
+                }
             }
             content += `</div>`;
             document.getElementById('view-modal-content').innerHTML = content;
@@ -620,6 +717,26 @@
                 list.appendChild(div);
             });
         }
+
+        function renderTodoEditor() {
+            const container = document.getElementById('todo-list-container');
+            container.innerHTML = '';
+            if (currentTasks.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 text-sm">אין עדיין משימות...</p>`;
+            }
+            currentTasks.forEach((task, index) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = `flex items-center justify-between bg-gray-700 p-2 rounded ${task.completed ? 'task-completed' : ''}`;
+                taskEl.innerHTML = `
+                    <label class="flex items-center gap-3 flex-grow cursor-pointer">
+                        <input type="checkbox" data-index="${index}" class="form-checkbox h-5 w-5 rounded bg-gray-800 border-gray-600 text-gold focus:ring-gold" ${task.completed ? 'checked' : ''}>
+                        <span class="task-text">${task.text}</span>
+                    </label>
+                    <button type="button" data-index="${index}" class="text-red-500 hover:text-red-400 p-1 delete-task-btn"><i class="fas fa-trash"></i></button>
+                `;
+                container.appendChild(taskEl);
+            });
+        }
         
         function showConfirmation(message, onConfirm) {
             document.getElementById('confirmation-message').textContent = message;
@@ -636,6 +753,7 @@
         function setupEventListeners() {
             document.getElementById('add-supplier-btn').addEventListener('click', () => openFormModal(null, 'supplier'));
             document.getElementById('add-quote-btn').addEventListener('click', () => openFormModal(null, 'quote'));
+            document.getElementById('help-btn').addEventListener('click', () => openModal(document.getElementById('help-modal')));
             
             allModals.forEach(modal => {
                 modal.addEventListener('click', (event) => {
@@ -663,18 +781,18 @@
             });
             
             document.getElementById('view-modal-delete-btn').addEventListener('click', () => {
-                 if (!dataToViewOrEdit) return;
-                 showConfirmation(`האם למחוק את "${dataToViewOrEdit.name}"?`, () => {
-                     const collectionName = dataToViewOrEdit.type === 'supplier' ? 'suppliers' : 'priceQuotes';
-                     deleteDoc(doc(db, collectionName, dataToViewOrEdit.id));
-                     closeModal(document.getElementById('view-modal'));
-                 });
+                if (!dataToViewOrEdit) return;
+                showConfirmation(`האם למחוק את "${dataToViewOrEdit.name}"?`, () => {
+                    const collectionName = dataToViewOrEdit.type === 'supplier' ? 'suppliers' : 'priceQuotes';
+                    deleteDoc(doc(db, collectionName, dataToViewOrEdit.id));
+                    closeModal(document.getElementById('view-modal'));
+                });
             });
             
             document.getElementById('view-modal-convert-btn').addEventListener('click', () => {
                 if (!dataToViewOrEdit) return;
                 closeModal(document.getElementById('view-modal'));
-                 setTimeout(() => openFormModal(dataToViewOrEdit.id, 'supplier', true), 300);
+                setTimeout(() => openFormModal(dataToViewOrEdit.id, 'supplier', true), 300);
             });
 
             document.getElementById('edit-categories-btn').addEventListener('click', () => {
@@ -709,6 +827,33 @@
                 }
             });
             
+            // --- To-Do List Event Listeners ---
+            document.getElementById('add-todo-btn').addEventListener('click', () => {
+                const input = document.getElementById('new-todo-input');
+                if(input.value.trim()) {
+                    currentTasks.push({ text: input.value.trim(), completed: false });
+                    input.value = '';
+                    renderTodoEditor();
+                }
+            });
+
+            document.getElementById('todo-list-container').addEventListener('click', e => {
+                const checkbox = e.target.closest('input[type="checkbox"]');
+                const deleteBtn = e.target.closest('.delete-task-btn');
+
+                if(checkbox) {
+                    const index = checkbox.dataset.index;
+                    currentTasks[index].completed = checkbox.checked;
+                    renderTodoEditor();
+                }
+
+                if(deleteBtn) {
+                    const index = deleteBtn.dataset.index;
+                    currentTasks.splice(index, 1);
+                    renderTodoEditor();
+                }
+            });
+
             document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
             const sidebar = document.getElementById('sidebar');
@@ -746,6 +891,7 @@
                 formData.isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
                 formData.pendingDetails = formData.isFinalized ? '' : document.getElementById('pending-details').value;
                 formData.agreementLink = formData.isFinalized ? document.getElementById('agreement-link').value : '';
+                formData.tasks = currentTasks;
             }
             
             try {
@@ -770,4 +916,3 @@
     </script>
 </body>
 </html>
-
