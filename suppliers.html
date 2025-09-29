@@ -123,7 +123,32 @@
         /* Help Modal Prose styles for better readability */
         .prose-custom ul { padding-right: 1.5rem; }
         .prose-custom h3, .prose-custom h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; }
-
+        
+        /* Step indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #888;
+            transition: all 0.3s ease;
+        }
+        .step-circle.active {
+            background-color: #FFD700;
+            border-color: #FFD700;
+            color: #111;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body class="bg-black">
@@ -246,7 +271,12 @@
     <div id="form-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
         <div class="modal-content max-w-lg rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
             <form id="main-form" class="p-6 sm:p-8">
-                <h2 id="modal-title" class="text-3xl font-bold text-gold mb-6 text-center"></h2>
+                <h2 id="modal-title" class="text-3xl font-bold text-gold mb-4 text-center"></h2>
+                <div id="step-indicator" class="step-indicator">
+                    <div class="step-circle" data-step="1">1</div>
+                    <div class="step-circle" data-step="2">2</div>
+                    <div class="step-circle" data-step="3">3</div>
+                </div>
                 <input type="hidden" id="form-id">
                 <input type="hidden" id="form-type"> <!-- 'supplier' or 'quote' -->
 
@@ -254,14 +284,15 @@
                 <div id="step-1" class="space-y-6">
                     <h3 class="text-lg text-gray-400 font-semibold border-b border-gray-600 pb-2">שלב 1: פרטים בסיסיים</h3>
                     <div>
-                        <label for="managing-user-name" class="block text-sm font-medium text-gray-300 mb-1">שם מנהל מטפל</label>
-                        <input type="text" id="managing-user-name" class="input-field" required>
+                        <label for="managing-user-select" class="block text-sm font-medium text-gray-300 mb-1">שם מנהל מטפל</label>
+                        <select id="managing-user-select" class="select-field" required>
+                            <!-- Users loaded here -->
+                        </select>
                     </div>
                     <div>
                         <label for="supplier-name" class="block text-sm font-medium text-gray-300 mb-1">שם הספק/הצעה</label>
                         <input type="text" id="supplier-name" class="input-field" required>
                     </div>
-
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-1">קטגוריה</label>
                         <div class="flex items-center gap-2">
@@ -271,7 +302,11 @@
                             <button type="button" id="edit-categories-btn" class="p-2.5 bg-gray-600 rounded-md hover:bg-gray-500"><i class="fas fa-edit"></i></button>
                         </div>
                     </div>
+                </div>
 
+                <!-- Step 2 -->
+                <div id="step-2" class="hidden space-y-6">
+                    <h3 class="text-lg text-gray-400 font-semibold border-b border-gray-600 pb-2">שלב 2: פרטי קשר וסוג</h3>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">סוג</label>
                         <div class="flex gap-4">
@@ -279,21 +314,19 @@
                             <label class="flex items-center"><input type="radio" name="supplier-type" value="sponsor" class="ml-2"> ספונסר</label>
                         </div>
                     </div>
-
                     <div>
                         <label for="supplier-phone" class="block text-sm font-medium text-gray-300 mb-1">מספר טלפון</label>
                         <input type="tel" id="supplier-phone" class="input-field">
                     </div>
-
                     <div>
                         <label for="supplier-provides" class="block text-sm font-medium text-gray-300 mb-1" id="supplier-provides-label">מה מספקים?</label>
                         <input type="text" id="supplier-provides" class="input-field">
                     </div>
                 </div>
 
-                <!-- Step 2 -->
-                <div id="step-2" class="hidden space-y-6">
-                    <h3 class="text-lg text-gray-400 font-semibold border-b border-gray-600 pb-2">שלב 2: סטאטוס ותיאום</h3>
+                <!-- Step 3 -->
+                <div id="step-3" class="hidden space-y-6">
+                    <h3 class="text-lg text-gray-400 font-semibold border-b border-gray-600 pb-2">שלב 3: סטאטוס ותיאום</h3>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">האם נוצר קשר?</label>
                         <div class="flex gap-4">
@@ -519,13 +552,15 @@
         // Form Steps & Navigation
         const step1 = document.getElementById('step-1');
         const step2 = document.getElementById('step-2');
+        const step3 = document.getElementById('step-3');
+        const stepIndicator = document.getElementById('step-indicator');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const submitBtn = document.getElementById('submit-btn');
         const cancelBtn = document.getElementById('cancel-btn');
         
         // Form Fields
-        const managingUserNameInput = document.getElementById('managing-user-name');
+        const managingUserSelect = document.getElementById('managing-user-select');
         const supplierNameInput = document.getElementById('supplier-name');
         const categorySelect = document.getElementById('category-select');
         const supplierPhoneInput = document.getElementById('supplier-phone');
@@ -572,9 +607,11 @@
         const helpCloseBtnBottom = document.getElementById('help-close-btn-bottom');
 
         // --- Global State ---
+        let usersUnsubscribe = null;
         let suppliersUnsubscribe = null;
         let quotesUnsubscribe = null;
         let categoriesUnsubscribe = null;
+        let allUsers = [];
         let allCategories = [];
         let allSuppliers = [];
         let allQuotes = [];
@@ -652,16 +689,27 @@
         });
 
         function loadAllData() {
+            if (usersUnsubscribe) usersUnsubscribe();
             if (suppliersUnsubscribe) suppliersUnsubscribe();
             if (quotesUnsubscribe) quotesUnsubscribe();
             if (categoriesUnsubscribe) categoriesUnsubscribe();
             
+            loadUsers();
             loadCategories();
             loadSuppliers();
             loadQuotes();
         }
 
         // --- Data Loading ---
+        function loadUsers() {
+            const usersRef = collection(db, 'users');
+            usersUnsubscribe = onSnapshot(query(usersRef), (snapshot) => {
+                allUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allUsers.sort((a,b) => a.fullName.localeCompare(b.fullName, 'he'));
+                populateUserSelect();
+            });
+        }
+
         function loadCategories() {
             const categoriesRef = collection(db, 'supplier_categories');
             categoriesUnsubscribe = onSnapshot(query(categoriesRef), (snapshot) => {
@@ -687,6 +735,23 @@
                 allQuotes.sort((a,b) => a.name.localeCompare(b.name, 'he'));
                 renderItems(allQuotes, quotesGridContainer, 'quote');
             });
+        }
+
+        // --- Helper & Population Functions ---
+        function populateUserSelect() {
+            managingUserSelect.innerHTML = '<option value="">בחר מנהל מטפל</option>';
+            allUsers.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.fullName;
+                option.textContent = user.fullName;
+                managingUserSelect.appendChild(option);
+            });
+        }
+
+        function getUserNameByEmail(email) {
+            if (!email) return 'לא ידוע';
+            const user = allUsers.find(u => u.email === email);
+            return user ? user.fullName : email.split('@')[0];
         }
 
         // --- Rendering Logic ---
@@ -786,6 +851,8 @@
             card.dataset.id = id;
             card.dataset.type = type;
 
+            const updatedBy = getUserNameByEmail(data.lastEditor);
+
             card.innerHTML = `
                 <div class="flex-grow">
                     <div class="flex justify-between items-start">
@@ -803,7 +870,7 @@
                     </div>
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-700 flex justify-between items-center">
-                    <span class="text-xs text-gray-500">${data.lastEditor ? `עודכן ע"י: ${data.lastEditor.split('@')[0]}` : ''}</span>
+                    <span class="text-xs text-gray-500">${data.lastEditor ? `עודכן ע"י: ${updatedBy}` : ''}</span>
                     <span class="text-sm text-gray-500">לחץ לפרטים נוספים...</span>
                 </div>
             `;
@@ -824,7 +891,7 @@
             finalizedSection.style.display = type === 'supplier' ? 'block' : 'none';
             
             if (id || Object.keys(data).length > 0) { // Populate form if editing or converting
-                managingUserNameInput.value = data.managingUserName || '';
+                managingUserSelect.value = data.managingUserName || '';
                 supplierNameInput.value = data.name || '';
                 categorySelect.value = data.category || '';
                 document.querySelector(`input[name="supplier-type"][value="${data.type || 'regular'}"]`).checked = true;
@@ -855,20 +922,36 @@
         function updateStepVisibility() {
             step1.style.display = currentStep === 1 ? 'block' : 'none';
             step2.style.display = currentStep === 2 ? 'block' : 'none';
+            step3.style.display = currentStep === 3 ? 'block' : 'none';
+            
             prevBtn.classList.toggle('hidden', currentStep === 1);
-            nextBtn.classList.toggle('hidden', currentStep === 2);
-            submitBtn.classList.toggle('hidden', currentStep === 1);
+            nextBtn.classList.toggle('hidden', currentStep === 3);
+            submitBtn.classList.toggle('hidden', currentStep !== 3);
+
+            // Update step indicator
+            stepIndicator.querySelectorAll('.step-circle').forEach(circle => {
+                circle.classList.toggle('active', parseInt(circle.dataset.step) === currentStep);
+            });
         }
 
         nextBtn.addEventListener('click', () => {
-            if(managingUserNameInput.reportValidity() && supplierNameInput.reportValidity()){
-                currentStep = 2;
+            let isValid = false;
+            if (currentStep === 1) {
+                isValid = managingUserSelect.reportValidity() && supplierNameInput.reportValidity();
+            } else if (currentStep === 2) {
+                isValid = true; // No required fields in step 2
+            }
+            
+            if(isValid && currentStep < 3){
+                currentStep++;
                 updateStepVisibility();
             }
         });
         prevBtn.addEventListener('click', () => {
-            currentStep = 1;
-            updateStepVisibility();
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepVisibility();
+            }
         });
         cancelBtn.addEventListener('click', () => closeModal(formModal));
         formModal.addEventListener('click', (e) => {
@@ -887,6 +970,8 @@
                 if (data.isFinalized) { statusColor = 'text-green-400'; statusText = 'סגור'; }
                 else if (data.contacted) { statusColor = 'text-yellow-400'; statusText = 'בטיפול'; }
             } else if (data.contacted) { statusColor = 'text-blue-400'; statusText = 'נוצר קשר'; }
+            
+            const updatedBy = getUserNameByEmail(data.lastEditor);
 
             let contentHTML = `
                 <div class="flex justify-between items-start mb-4">
@@ -905,7 +990,7 @@
             if (data.type === 'regular' && data.price) contentHTML += `<p><strong><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>`;
             if (type === 'supplier' && !data.isFinalized && data.pendingDetails) contentHTML += `<p><strong><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i>מה שפתוח:</strong> ${data.pendingDetails}</p>`;
             if (type === 'supplier' && data.isFinalized && data.agreementLink) contentHTML += `<p><strong><i class="fas fa-link fa-fw ml-2 text-gray-500"></i>קישור להסכם:</strong> <a href="${data.agreementLink}" target="_blank" class="text-blue-400 hover:underline">פתח קישור</a></p>`;
-            if (data.lastEditor) contentHTML += `<p class="mt-4"><strong><i class="fas fa-user-edit fa-fw ml-2 text-gray-500"></i>עודכן לאחרונה ע"י:</strong> ${data.lastEditor}</p>`;
+            if (data.lastEditor) contentHTML += `<p class="mt-4"><strong><i class="fas fa-user-edit fa-fw ml-2 text-gray-500"></i>עודכן לאחרונה ע"י:</strong> ${updatedBy}</p>`;
             
             contentHTML += `</div>`;
             viewModalContent.innerHTML = contentHTML;
@@ -949,7 +1034,7 @@
             const collectionName = type === 'supplier' ? 'suppliers' : 'quotes';
 
             const data = {
-                managingUserName: managingUserNameInput.value,
+                managingUserName: managingUserSelect.value,
                 name: supplierNameInput.value,
                 category: categorySelect.value === 'add_new' ? '' : categorySelect.value,
                 type: document.querySelector('input[name="supplier-type"]:checked').value,
