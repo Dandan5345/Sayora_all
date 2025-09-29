@@ -152,13 +152,13 @@
                  <button id="close-sidebar-btn" class="text-gold text-3xl">&times;</button>
              </div>
              <div class="space-y-2">
-                <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
-                <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
-                <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
-                <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
-                <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
-                <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
-                <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
+                 <a href="festival-info.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">הסבר על הפסטיבל</a>
+                 <a href="costs.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">עלויות</a>
+                 <a href="suppliers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-gold/20 text-white font-bold">ספקים</a>
+                 <a href="map.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">מפת הפסטיבל</a>
+                 <a href="tickets.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">כרטיסים</a>
+                 <a href="summaries.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">סיכומים</a>
+                 <a href="user-management.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gold/20 text-gray-200">ניהול משתמשים</a>
              </div>
         </nav>
         
@@ -644,8 +644,10 @@
             const isConversion = document.getElementById('is-conversion').value === 'true';
             const isSupplier = type === 'supplier' || isConversion;
 
-            document.getElementById('finalized-section').style.display = isSupplier ? 'block' : 'none';
-            document.getElementById('todo-section').style.display = isSupplier ? 'block' : 'none';
+            // --- THIS IS THE FIX ---
+            // Use classList.toggle to correctly handle showing/hiding based on Tailwind's 'hidden' class
+            document.getElementById('finalized-section').classList.toggle('hidden', !isSupplier);
+            document.getElementById('todo-section').classList.toggle('hidden', !isSupplier);
             
             const isContacted = document.querySelector('input[name="contacted"]:checked').value === 'yes';
             document.getElementById('contacted-yes-fields').classList.toggle('hidden', !isContacted);
