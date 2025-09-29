@@ -67,21 +67,11 @@
             display: inline-block;
         }
         .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 220px;
-            background-color: #2a2a2a;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px 10px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -110px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.8rem;
+            visibility: hidden; width: 220px; background-color: #2a2a2a;
+            color: #fff; text-align: center; border-radius: 6px;
+            padding: 5px 10px; position: absolute; z-index: 1;
+            bottom: 125%; left: 50%; margin-left: -110px;
+            opacity: 0; transition: opacity 0.3s; font-size: 0.8rem;
             border: 1px solid #FFD700;
         }
         .tooltip:hover .tooltiptext {
@@ -98,7 +88,7 @@
         .supplier-card:hover {
             border-color: #FFD700;
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255, 215, 0, 0.3);
         }
         .status-not-contacted { background-color: #1f2937; } /* Default dark blueish gray */
         .status-in-progress { background: linear-gradient(to top right, #3a3a3a, #4a3a00); } /* Dark gold/yellow tint */
@@ -111,6 +101,22 @@
         .tab.active {
             color: #FFD700;
             border-bottom-color: #FFD700;
+        }
+
+        /* Animations */
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.6s ease-out forwards;
+        }
+
+        /* Toast Notifications */
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.9); visibility: hidden; } }
+        .toast {
+            animation: slideInRight 0.3s ease forwards, fadeOut 0.5s ease 3s forwards;
         }
     </style>
 </head>
@@ -167,7 +173,7 @@
                 <div class="max-w-7xl mx-auto">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                         <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול ספקים</h1>
-                        <div class="flex gap-2 sm:gap-4">
+                        <div class="flex flex-wrap justify-end gap-2 sm:gap-4">
                             <button id="add-quote-btn" class="bg-transparent border border-gold text-gold font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gold hover:text-black transition-all duration-300">
                                 <i class="fas fa-file-invoice-dollar"></i>
                                 <span>הוסף הצעת מחיר</span>
@@ -189,13 +195,13 @@
 
                     <!-- Grids -->
                     <div id="suppliers-view">
-                        <div id="suppliers-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            <!-- Supplier cards will be injected here -->
+                        <div id="suppliers-grid-container">
+                            <!-- Supplier category sections will be injected here -->
                         </div>
                     </div>
                     <div id="quotes-view" class="hidden">
-                         <div id="quotes-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            <!-- Quote cards will be injected here -->
+                         <div id="quotes-grid-container">
+                            <!-- Quote category sections will be injected here -->
                         </div>
                     </div>
 
@@ -330,7 +336,7 @@
     </div>
     
     <!-- Category Management Modals -->
-    <div id="category-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+    <div id="category-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 modal-backdrop">
         <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20">
             <form id="category-form" class="p-8 space-y-4">
                 <h2 class="text-2xl font-bold text-gold text-center">ניהול קטגוריות</h2>
@@ -362,10 +368,29 @@
             </div>
         </div>
     </div>
+    
+    <!-- Custom Input Modal -->
+    <div id="input-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20 p-8">
+            <form id="input-form">
+                <h2 id="input-title" class="text-2xl font-bold text-gold mb-4 text-center"></h2>
+                <label id="input-label" for="input-field-prompt" class="block text-sm font-medium text-gray-300 mb-2"></label>
+                <input type="text" id="input-field-prompt" class="input-field" required>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" id="input-cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500">ביטול</button>
+                    <button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg">שמור</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[200] space-y-3"></div>
 
 
     <script type="module">
         // --- Firebase Config ---
+        // It's recommended to use environment variables for Firebase config in a real project.
         const firebaseConfig = {
             apiKey: "AIzaSyBK49YH2eqeTLhrvKgIsbg3r53-Wt4PmpQ",
             authDomain: "sayora-all.firebaseapp.com",
@@ -376,9 +401,9 @@
             measurementId: "G-LFN43NSE5K"
         };
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Initialize Firebase ---
         const app = initializeApp(firebaseConfig);
@@ -393,8 +418,8 @@
         // Views & Grids
         const suppliersView = document.getElementById('suppliers-view');
         const quotesView = document.getElementById('quotes-view');
-        const suppliersGrid = document.getElementById('suppliers-grid');
-        const quotesGrid = document.getElementById('quotes-grid');
+        const suppliersGridContainer = document.getElementById('suppliers-grid-container');
+        const quotesGridContainer = document.getElementById('quotes-grid-container');
 
         // Tabs
         const suppliersTab = document.getElementById('suppliers-tab');
@@ -422,12 +447,9 @@
         // Form Fields
         const supplierNameInput = document.getElementById('supplier-name');
         const categorySelect = document.getElementById('category-select');
-        const supplierTypeRadios = document.querySelectorAll('input[name="supplier-type"]');
         const supplierPhoneInput = document.getElementById('supplier-phone');
         const supplierProvidesInput = document.getElementById('supplier-provides');
         const supplierProvidesLabel = document.getElementById('supplier-provides-label');
-        const contactedRadios = document.querySelectorAll('input[name="contacted"]');
-        const finalizedRadios = document.querySelectorAll('input[name="finalized"]');
         
         // Conditional Fields
         const contactedYesFields = document.getElementById('contacted-yes-fields');
@@ -449,7 +471,6 @@
 
         // Category Modal
         const categoryModal = document.getElementById('category-modal');
-        const categoryForm = document.getElementById('category-form');
         const editCategoriesBtn = document.getElementById('edit-categories-btn');
         const categoryList = document.getElementById('category-list');
         const newCategoryNameInput = document.getElementById('new-category-name');
@@ -464,7 +485,6 @@
         const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
 
         // --- Global State ---
-        let currentUserId = null;
         let suppliersUnsubscribe = null;
         let quotesUnsubscribe = null;
         let categoriesUnsubscribe = null;
@@ -473,7 +493,16 @@
         let allQuotes = [];
         let currentStep = 1;
 
-        // --- Custom Confirmation Modal Logic ---
+        // --- Utility Functions (Modals & Toasts) ---
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast p-4 rounded-lg shadow-lg text-white ${isError ? 'bg-red-600' : 'bg-green-600'}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
         function showConfirmation(title, message) {
             return new Promise((resolve) => {
                 confirmTitle.textContent = title;
@@ -481,23 +510,45 @@
                 confirmModal.classList.remove('hidden');
                 confirmModal.classList.add('flex');
 
-                confirmOkBtn.onclick = () => {
-                    confirmModal.classList.add('hidden');
-                    confirmModal.classList.remove('flex');
-                    resolve(true);
+                confirmOkBtn.onclick = () => { closeModal(confirmModal); resolve(true); };
+                confirmCancelBtn.onclick = () => { closeModal(confirmModal); resolve(false); };
+            });
+        }
+        
+        function showInputPrompt(title, label, initialValue = '') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('input-modal');
+                const titleEl = document.getElementById('input-title');
+                const labelEl = document.getElementById('input-label');
+                const inputEl = document.getElementById('input-field-prompt');
+                const form = document.getElementById('input-form');
+                const cancelBtn = document.getElementById('input-cancel-btn');
+                
+                titleEl.textContent = title;
+                labelEl.textContent = label;
+                inputEl.value = initialValue;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                inputEl.focus();
+
+                const closeAndResolve = (value) => {
+                    modal.classList.add('hidden');
+                    form.removeEventListener('submit', handleSubmit);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    resolve(value);
                 };
-                confirmCancelBtn.onclick = () => {
-                    confirmModal.classList.add('hidden');
-                    confirmModal.classList.remove('flex');
-                    resolve(false);
-                };
+
+                const handleSubmit = (e) => { e.preventDefault(); closeAndResolve(inputEl.value); };
+                const handleCancel = () => closeAndResolve(null);
+                
+                form.addEventListener('submit', handleSubmit, { once: true });
+                cancelBtn.addEventListener('click', handleCancel, { once: true });
             });
         }
         
         // --- Authentication ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                currentUserId = user.uid;
                 appContainer.classList.remove('hidden');
                 welcomeMsg.textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
                 loadAllData();
@@ -520,37 +571,80 @@
             loadQuotes();
         }
 
-        // --- Data Loading (Categories, Suppliers, Quotes) ---
+        // --- Data Loading ---
         function loadCategories() {
             const categoriesRef = collection(db, 'supplier_categories');
-            const q = query(categoriesRef, orderBy("name"));
-            categoriesUnsubscribe = onSnapshot(q, (snapshot) => {
+            categoriesUnsubscribe = onSnapshot(query(categoriesRef), (snapshot) => {
                 allCategories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allCategories.sort((a,b) => a.name.localeCompare(b.name));
                 renderCategories();
             });
         }
         
         function loadSuppliers() {
             const suppliersRef = collection(db, 'suppliers');
-            const q = query(suppliersRef, orderBy("name"));
-            suppliersUnsubscribe = onSnapshot(q, (snapshot) => {
+            suppliersUnsubscribe = onSnapshot(query(suppliersRef), (snapshot) => {
                 allSuppliers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderSuppliers();
+                allSuppliers.sort((a,b) => a.name.localeCompare(b.name));
+                renderItems(allSuppliers, suppliersGridContainer, 'supplier');
             });
         }
         
         function loadQuotes() {
             const quotesRef = collection(db, 'quotes');
-            const q = query(quotesRef, orderBy("name"));
-            quotesUnsubscribe = onSnapshot(q, (snapshot) => {
+            quotesUnsubscribe = onSnapshot(query(quotesRef), (snapshot) => {
                 allQuotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderQuotes();
+                allQuotes.sort((a,b) => a.name.localeCompare(b.name));
+                renderItems(allQuotes, quotesGridContainer, 'quote');
             });
         }
 
         // --- Rendering Logic ---
+        function renderItems(items, containerElement, type) {
+            containerElement.innerHTML = ''; 
+
+            if (items.length === 0) {
+                const message = type === 'supplier' ? 'אין ספקים להצגה. לחץ על \'הוספת ספק\' כדי להתחיל.' : 'אין הצעות מחיר להצגה. לחץ על \'הוסף הצעת מחיר\' כדי להתחיל.';
+                containerElement.innerHTML = `<p class="text-center text-gray-500 col-span-full mt-10 text-lg">${message}</p>`;
+                return;
+            }
+
+            const groupedItems = items.reduce((acc, item) => {
+                const category = item.category || 'ללא קטגוריה';
+                if (!acc[category]) acc[category] = [];
+                acc[category].push(item);
+                return acc;
+            }, {});
+
+            const sortedCategories = Object.keys(groupedItems).sort((a, b) => {
+                if (a === 'ללא קטגוריה') return 1;
+                if (b === 'ללא קטגוריה') return -1;
+                return a.localeCompare(b);
+            });
+
+            sortedCategories.forEach(category => {
+                const sectionWrapper = document.createElement('div');
+                sectionWrapper.className = 'category-section mb-12 animate-fade-in';
+                
+                const title = document.createElement('h2');
+                title.className = 'text-2xl font-bold text-gold mb-4 pb-2 border-b-2 border-gold/30';
+                title.textContent = category;
+                sectionWrapper.appendChild(title);
+                
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
+                
+                groupedItems[category].forEach(item => {
+                    const card = createCard(item.id, item, type);
+                    grid.appendChild(card);
+                });
+                
+                sectionWrapper.appendChild(grid);
+                containerElement.appendChild(sectionWrapper);
+            });
+        }
+
         function renderCategories() {
-            // Populate select dropdown
             categorySelect.innerHTML = '<option value="">בחר קטגוריה</option>';
             allCategories.forEach(cat => {
                 const option = document.createElement('option');
@@ -558,12 +652,8 @@
                 option.textContent = cat.name;
                 categorySelect.appendChild(option);
             });
-            const addOption = document.createElement('option');
-            addOption.value = 'add_new';
-            addOption.textContent = 'הוסף קטגוריה חדשה...';
-            categorySelect.appendChild(addOption);
+            categorySelect.innerHTML += '<option value="add_new" class="text-gold font-bold">הוסף קטגוריה חדשה...</option>';
 
-            // Populate category management list
             categoryList.innerHTML = '';
             if (allCategories.length === 0) {
                 categoryList.innerHTML = `<p class="text-center text-gray-500">אין קטגוריות</p>`;
@@ -585,30 +675,6 @@
             }
         }
         
-        function renderSuppliers() {
-            suppliersGrid.innerHTML = '';
-            if(allSuppliers.length === 0) {
-                 suppliersGrid.innerHTML = `<p class="text-center text-gray-500 col-span-full mt-10">אין ספקים להצגה. לחץ על 'הוספת ספק' כדי להתחיל.</p>`;
-                 return;
-            }
-            allSuppliers.forEach(supplier => {
-                const card = createCard(supplier.id, supplier, 'supplier');
-                suppliersGrid.appendChild(card);
-            });
-        }
-        
-        function renderQuotes() {
-            quotesGrid.innerHTML = '';
-             if(allQuotes.length === 0) {
-                 quotesGrid.innerHTML = `<p class="text-center text-gray-500 col-span-full mt-10">אין הצעות מחיר להצגה. לחץ על 'הוסף הצעת מחיר' כדי להתחיל.</p>`;
-                 return;
-            }
-            allQuotes.forEach(quote => {
-                const card = createCard(quote.id, quote, 'quote');
-                quotesGrid.appendChild(card);
-            });
-        }
-        
         function createCard(id, data, type) {
             const card = document.createElement('div');
             
@@ -618,19 +684,12 @@
 
             if (type === 'supplier') {
                 if (data.isFinalized) {
-                    statusClass = 'status-finalized';
-                    statusText = 'סגור';
-                    statusColor = 'text-green-400';
+                    statusClass = 'status-finalized'; statusText = 'סגור'; statusColor = 'text-green-400';
                 } else if (data.contacted) {
-                    statusClass = 'status-in-progress';
-                    statusText = 'בטיפול';
-                    statusColor = 'text-yellow-400';
+                    statusClass = 'status-in-progress'; statusText = 'בטיפול'; statusColor = 'text-yellow-400';
                 }
-            } else { // Quote
-                 if (data.contacted) {
-                    statusText = 'נוצר קשר';
-                    statusColor = 'text-blue-400';
-                 }
+            } else if (data.contacted) { // Quote
+                 statusText = 'נוצר קשר'; statusColor = 'text-blue-400';
             }
 
             card.className = `supplier-card p-5 rounded-lg shadow-xl flex flex-col ${statusClass}`;
@@ -643,7 +702,7 @@
                         <h3 class="text-2xl font-bold text-white">${data.name}</h3>
                         <span class="text-xs font-semibold ${data.type === 'sponsor' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'} py-1 px-3 rounded-full">${data.type === 'sponsor' ? 'ספונסר' : 'ספק רגיל'}</span>
                     </div>
-                    <p class="text-gold font-semibold mt-1 mb-3">${data.category || ''} - ${data.provides || ''}</p>
+                    <p class="text-gold font-semibold mt-1 mb-3">${data.provides || ''}</p>
                     <div class="border-t border-gray-700 my-3"></div>
                     <div class="space-y-2 text-sm text-gray-300">
                         <p><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i> ${data.phone || 'לא הוזן'}</p>
@@ -667,16 +726,12 @@
             mainForm.reset();
             formTypeInput.value = type;
             formIdInput.value = id || '';
+            delete formIdInput.dataset.quoteIdToDelete; // Clear conversion flag
             
-            if (type === 'supplier') {
-                modalTitle.textContent = id ? 'עריכת פרטי ספק' : 'הוספת ספק חדש';
-                finalizedSection.style.display = 'block';
-            } else { // quote
-                modalTitle.textContent = id ? 'עריכת הצעת מחיר' : 'הוספת הצעת מחיר';
-                finalizedSection.style.display = 'none';
-            }
+            modalTitle.textContent = id ? `עריכת ${type === 'supplier' ? 'ספק' : 'הצעת מחיר'}` : `הוספת ${type === 'supplier' ? 'ספק חדש' : 'הצעת מחיר'}`;
+            finalizedSection.style.display = type === 'supplier' ? 'block' : 'none';
             
-            if (id) { // Populate form if editing
+            if (id || Object.keys(data).length > 0) { // Populate form if editing or converting
                 supplierNameInput.value = data.name || '';
                 categorySelect.value = data.category || '';
                 document.querySelector(`input[name="supplier-type"][value="${data.type || 'regular'}"]`).checked = true;
@@ -705,27 +760,17 @@
         }
 
         function updateStepVisibility() {
-            if (currentStep === 1) {
-                step1.classList.remove('hidden');
-                step2.classList.add('hidden');
-                prevBtn.classList.add('hidden');
-                nextBtn.classList.remove('hidden');
-                submitBtn.classList.add('hidden');
-            } else { // Step 2
-                step1.classList.add('hidden');
-                step2.classList.remove('hidden');
-                prevBtn.classList.remove('hidden');
-                nextBtn.classList.add('hidden');
-                submitBtn.classList.remove('hidden');
-            }
+            step1.style.display = currentStep === 1 ? 'block' : 'none';
+            step2.style.display = currentStep === 2 ? 'block' : 'none';
+            prevBtn.classList.toggle('hidden', currentStep === 1);
+            nextBtn.classList.toggle('hidden', currentStep === 2);
+            submitBtn.classList.toggle('hidden', currentStep === 1);
         }
 
         nextBtn.addEventListener('click', () => {
-            if(supplierNameInput.checkValidity()){
+            if(supplierNameInput.reportValidity()){
                 currentStep = 2;
                 updateStepVisibility();
-            } else {
-                supplierNameInput.reportValidity();
             }
         });
         prevBtn.addEventListener('click', () => {
@@ -758,51 +803,39 @@
                 <p class="text-lg text-gray-300 mb-6">${data.category ? data.category + ' - ' : ''}${data.provides || ''}</p>
                 <div class="space-y-3 text-gray-200 border-t border-gray-700 pt-6">
                     <p><strong><i class="fas fa-info-circle fa-fw ml-2 text-gray-500"></i>סטטוס:</strong> <span class="${statusColor}">${statusText}</span></p>
-                    <p><strong><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i>טלפון:</strong> ${data.phone || 'לא הוזן'}</p>
+                    <p><strong><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i>טלפון:</strong> ${data.phone ? `<a href="tel:${data.phone}" class="hover:underline">${data.phone}</a>` : 'לא הוזן'}</p>
                     <p><strong><i class="fas fa-user-check fa-fw ml-2 text-gray-500"></i>נוצר קשר:</strong> ${data.contacted ? 'כן' : 'לא'}</p>
             `;
 
-            if (data.contacted) {
-                contentHTML += `<p><strong><i class="fas fa-file-alt fa-fw ml-2 text-gray-500"></i>פרטי סיכום:</strong> <span class="whitespace-pre-wrap">${data.contactDetails || 'אין פרטים'}</span></p>`;
-            }
-            if (data.type === 'regular' && data.price) {
-                contentHTML += `<p><strong><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>`;
-            }
-            if (type === 'supplier' && !data.isFinalized && data.pendingDetails) {
-                 contentHTML += `<p><strong><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i>מה שפתוח:</strong> ${data.pendingDetails}</p>`;
-            }
-             if (type === 'supplier' && data.isFinalized && data.agreementLink) {
-                 contentHTML += `<p><strong><i class="fas fa-link fa-fw ml-2 text-gray-500"></i>קישור להסכם:</strong> <a href="${data.agreementLink}" target="_blank" class="text-blue-400 hover:underline">פתח קישור</a></p>`;
-            }
-
+            if (data.contacted) contentHTML += `<p><strong><i class="fas fa-file-alt fa-fw ml-2 text-gray-500"></i>פרטי סיכום:</strong> <span class="whitespace-pre-wrap">${data.contactDetails || 'אין פרטים'}</span></p>`;
+            if (data.type === 'regular' && data.price) contentHTML += `<p><strong><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>`;
+            if (type === 'supplier' && !data.isFinalized && data.pendingDetails) contentHTML += `<p><strong><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i>מה שפתוח:</strong> ${data.pendingDetails}</p>`;
+            if (type === 'supplier' && data.isFinalized && data.agreementLink) contentHTML += `<p><strong><i class="fas fa-link fa-fw ml-2 text-gray-500"></i>קישור להסכם:</strong> <a href="${data.agreementLink}" target="_blank" class="text-blue-400 hover:underline">פתח קישור</a></p>`;
+            
             contentHTML += `</div>`;
             viewModalContent.innerHTML = contentHTML;
 
-            // Actions
             viewActions.innerHTML = '';
             if (type === 'quote') {
                 const convertBtn = document.createElement('button');
-                convertBtn.className = 'btn-gold font-bold py-2 px-4 rounded-lg';
-                convertBtn.innerHTML = 'הפוך לספק';
+                convertBtn.className = 'btn-gold font-bold py-2 px-4 rounded-lg flex items-center gap-2';
+                convertBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> הפוך לספק';
                 convertBtn.onclick = () => {
                     closeModal(viewModal);
-                    openFormModal('supplier', null, data); // Open as new supplier, pre-filled
-                    formIdInput.dataset.quoteIdToDelete = id; // Mark original quote for deletion on save
+                    openFormModal('supplier', null, data);
+                    formIdInput.dataset.quoteIdToDelete = id; 
                 };
                 viewActions.appendChild(convertBtn);
             }
             
             const editBtn = document.createElement('button');
-            editBtn.className = 'bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500';
+            editBtn.className = 'bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 flex items-center gap-2';
             editBtn.innerHTML = '<i class="fas fa-edit"></i> עריכה';
-            editBtn.onclick = () => {
-                closeModal(viewModal);
-                openFormModal(type, id, data);
-            };
+            editBtn.onclick = () => { closeModal(viewModal); openFormModal(type, id, data); };
             viewActions.appendChild(editBtn);
             
             const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-500';
+            deleteBtn.className = 'bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-500 flex items-center gap-2';
             deleteBtn.innerHTML = '<i class="fas fa-trash"></i> מחיקה';
             deleteBtn.onclick = () => deleteItem(id, data.name, type);
             viewActions.appendChild(deleteBtn);
@@ -840,19 +873,20 @@
             try {
                 if (id) { // Update existing
                     await setDoc(doc(db, collectionName, id), data);
+                    showToast('השינויים נשמרו בהצלחה!');
                 } else { // Add new
                     await addDoc(collection(db, collectionName), data);
-                    // Check if we need to delete a quote after conversion
+                    showToast(`${type === 'supplier' ? 'ספק' : 'הצעה'} נוסף בהצלחה!`);
                     const quoteIdToDelete = formIdInput.dataset.quoteIdToDelete;
                     if (quoteIdToDelete) {
                         await deleteDoc(doc(db, 'quotes', quoteIdToDelete));
-                        delete formIdInput.dataset.quoteIdToDelete;
+                        showToast('הצעת המחיר המקורית נמחקה.');
                     }
                 }
                 closeModal(formModal);
             } catch (error) {
                 console.error("Error saving data: ", error);
-                alert("שגיאה בשמירת הנתונים.");
+                showToast("שגיאה בשמירת הנתונים.", true);
             }
         });
 
@@ -864,8 +898,10 @@
                 try {
                     await deleteDoc(doc(db, collectionName, id));
                     closeModal(viewModal);
+                    showToast(`${typeHebrew} נמחק.`);
                 } catch (error) {
                     console.error("Error deleting item: ", error);
+                    showToast(`שגיאה במחיקת ${typeHebrew}.`, true);
                 }
             }
         }
@@ -887,6 +923,7 @@
             if (name) {
                 await addDoc(collection(db, 'supplier_categories'), { name });
                 newCategoryNameInput.value = '';
+                showToast('קטגוריה חדשה נוספה.');
             }
         });
         
@@ -894,16 +931,15 @@
             const confirmed = await showConfirmation('אישור מחיקה', `האם למחוק את הקטגוריה "${name}"?`);
             if (confirmed) {
                 await deleteDoc(doc(db, "supplier_categories", id));
+                showToast('הקטגוריה נמחקה.');
             }
         }
 
         async function editCategoryName(e, id, currentName) {
-            const btn = e.currentTarget;
-            const parent = btn.parentElement.parentElement;
-            const nameSpan = parent.querySelector('.category-name');
-            const newName = prompt('ערוך שם קטגוריה:', currentName);
+            const newName = await showInputPrompt('ערוך שם קטגוריה', 'שם קטגוריה חדש', currentName);
             if(newName && newName.trim() !== '' && newName !== currentName) {
                 await setDoc(doc(db, 'supplier_categories', id), { name: newName.trim() });
+                showToast('שם הקטגוריה עודכן.');
             }
         }
 
@@ -943,17 +979,10 @@
 
         // --- Tab Logic ---
         function switchTab(activeTab) {
-            if (activeTab === 'suppliers') {
-                suppliersTab.classList.add('active');
-                quotesTab.classList.remove('active');
-                suppliersView.classList.remove('hidden');
-                quotesView.classList.add('hidden');
-            } else { // quotes
-                suppliersTab.classList.remove('active');
-                quotesTab.classList.add('active');
-                suppliersView.classList.add('hidden');
-                quotesView.classList.remove('hidden');
-            }
+            suppliersTab.classList.toggle('active', activeTab === 'suppliers');
+            quotesTab.classList.toggle('active', activeTab === 'quotes');
+            suppliersView.classList.toggle('hidden', activeTab !== 'suppliers');
+            quotesView.classList.toggle('hidden', activeTab === 'suppliers');
         }
         suppliersTab.addEventListener('click', () => switchTab('suppliers'));
         quotesTab.addEventListener('click', () => switchTab('quotes'));
