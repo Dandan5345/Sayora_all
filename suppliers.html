@@ -581,23 +581,22 @@
         }
 
         // --- Form Modal (Add/Edit) ---
-        /**
-         * UPDATED FUNCTION: This function now handles all cases (add/edit/convert) for both suppliers and quotes.
-         * It explicitly populates every form field from the found data object or sets a default value.
-         * This ensures that when editing, all saved data is correctly displayed in the form.
-         */
         function openFormModal(id, type, isConversion = false) {
             dataForm.reset();
             currentStep = 1;
-            updateStepVisibility(); // Reset step visibility first
+            updateStepVisibility();
 
             const sourceDataArray = isConversion ? quotes : (type === 'supplier' ? suppliers : quotes);
-            const itemData = id ? sourceDataArray.find(item => item.id === id) : {};
+            
+            // *** BUG FIX ***
+            // The previous logic could result in `itemData` being `undefined`, causing the function to fail.
+            // This new logic ensures `itemData` is always an object, falling back to an empty one if no item is found.
+            const itemData = (id ? sourceDataArray.find(item => item.id === id) : null) || {};
 
-            // If itemData is not found for an existing ID, something is wrong. Log an error and exit.
-            if (id && !itemData) {
-                console.error("Could not find item with ID:", id, "in array:", sourceDataArray);
-                return;
+            // If an ID was provided but no item was found in the array, it's an error. Stop execution.
+            if (id && Object.keys(itemData).length === 0) {
+                console.error("EDIT FAILED: Could not find item with ID:", id, "in type:", type);
+                return; // Exit the function to prevent opening an empty/broken modal
             }
 
             // Set hidden fields that control the form's state
@@ -620,29 +619,29 @@
             // --- Explicitly pre-fill ALL form fields with data or defaults ---
             
             // Step 1 Fields
-            document.getElementById('data-name').value = itemData?.name || '';
-            document.getElementById('category-select').value = itemData?.categoryId || '';
-            document.querySelector(`input[name="data-type-radio"][value="${itemData?.type || 'regular'}"]`).checked = true;
-            document.getElementById('data-provides').value = itemData?.provides || '';
-            document.getElementById('data-phone').value = itemData?.phone || '';
+            document.getElementById('data-name').value = itemData.name || '';
+            document.getElementById('category-select').value = itemData.categoryId || '';
+            document.querySelector(`input[name="data-type-radio"][value="${itemData.type || 'regular'}"]`).checked = true;
+            document.getElementById('data-provides').value = itemData.provides || '';
+            document.getElementById('data-phone').value = itemData.phone || '';
 
             // Step 2 Fields (Common)
-            document.querySelector(`input[name="contacted"][value="${itemData?.contacted ? 'yes' : 'no'}"]`).checked = true;
-            document.getElementById('contact-details').value = itemData?.contactDetails || '';
-            document.getElementById('price').value = itemData?.price || '';
+            document.querySelector(`input[name="contacted"][value="${itemData.contacted ? 'yes' : 'no'}"]`).checked = true;
+            document.getElementById('contact-details').value = itemData.contactDetails || '';
+            document.getElementById('price').value = itemData.price || '';
 
             // Step 2 Fields (Supplier-specific)
-            const isFinalized = itemData?.isFinalized || false;
+            const isFinalized = itemData.isFinalized || false;
             document.querySelector(`input[name="finalized"][value="${isFinalized ? 'yes' : 'no'}"]`).checked = true;
-            document.getElementById('pending-details').value = itemData?.pendingDetails || '';
-            document.getElementById('agreement-link').value = itemData?.agreementLink || '';
+            document.getElementById('pending-details').value = itemData.pendingDetails || '';
+            document.getElementById('agreement-link').value = itemData.agreementLink || '';
             
-            // Tasks (deep copy)
-            currentTasks = itemData?.tasks ? JSON.parse(JSON.stringify(itemData.tasks)) : [];
+            // Tasks (deep copy to avoid modifying the original state)
+            currentTasks = itemData.tasks ? JSON.parse(JSON.stringify(itemData.tasks)) : [];
             
-            // After populating all data, render conditional parts and open
+            // After populating all data, render conditional parts and open the modal
             renderTodoEditor();
-            handleConditionalFormFields(); // Update visibility based on populated data
+            handleConditionalFormFields(); 
             openModal(document.getElementById('form-modal'));
         }
 
@@ -941,3 +940,4 @@
     </script>
 </body>
 </html>
+
