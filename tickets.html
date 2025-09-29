@@ -85,7 +85,12 @@
             background-color: #333;
         }
 
-        /* New Ticket Design */
+        /* Ticket Design */
+        .ticket-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
         .ticket {
             background: #1e1e1e;
             border-radius: 16px;
@@ -95,6 +100,7 @@
             flex-direction: column;
             border: 1px solid #333;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex-grow: 1;
         }
         .ticket:hover {
             transform: translateY(-5px);
@@ -131,7 +137,7 @@
             padding: 16px 24px;
             background-color: #252525;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
         }
         
@@ -149,18 +155,26 @@
         .ticket-vip:hover {
             box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4);
         }
-        .sayora-logo-watermark {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            opacity: 0.05;
-            background-image: url('https://i.imgur.com/L1bxSUe.jpeg');
-            background-size: cover;
-            border-radius: 50%;
+        
+        .vip-badge {
+            background: linear-gradient(45deg, #ffab00, #ffd700);
+            color: #412c00;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+            box-shadow: 0 4px 15px rgba(255, 171, 0, 0.4);
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
         }
-
+        
+        .sold-count-editor {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
         .editable-count:hover {
             background-color: rgba(255, 255, 255, 0.1);
             cursor: pointer;
@@ -225,7 +239,7 @@
                             <span>הוספת סוג כרטיס</span>
                         </button>
                     </div>
-                    <div id="tickets-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    <div id="tickets-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-4">
                         <!-- Ticket cards will be injected here -->
                     </div>
                 </div>
@@ -335,42 +349,48 @@
         }
         
         function createTicketCard(id, data) {
-            const cardWrapper = document.createElement('div');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'ticket-wrapper';
+
             const cardClass = data.type === 'vip' ? 'ticket ticket-vip' : 'ticket';
             const benefitsList = data.benefits ? data.benefits.split('\n').filter(b => b.trim() !== '').map(b => `<li><i class="fas fa-check text-gold/80 mr-2 text-sm"></i>${b}</li>`).join('') : '';
             
-            cardWrapper.className = cardClass;
-            cardWrapper.innerHTML = `
-                <div class="ticket-main">
-                    <div class="sayora-logo-watermark"></div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-4">
-                             <div>
-                                <h3 class="text-3xl font-bold ${data.type === 'vip' ? 'text-gold' : 'text-white'}">${data.name}</h3>
-                                <p class="text-sm text-gray-400">כמות שנמכרה: 
-                                    <span data-id="${id}" class="editable-count font-bold text-white px-2 py-1 rounded-md transition-colors">${(data.soldCount || 0).toLocaleString()}</span>
-                                    <input type="number" value="${data.soldCount || 0}" class="count-input hidden w-20 text-center bg-gray-600 rounded-md py-1">
-                                </p>
-                             </div>
-                             ${data.type === 'vip' ? '<span class="text-xs font-bold bg-gold text-black py-1 px-3 rounded-full uppercase shadow-lg shadow-gold/30">VIP</span>' : ''}
+            wrapper.innerHTML = `
+                <div class="${cardClass}">
+                    <div class="ticket-main">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-2">
+                                <img src="https://i.imgur.com/L1bxSUe.jpeg" alt="SAYORA Logo" class="w-8 h-8 rounded-full">
+                                <span class="font-bold text-gray-300 text-sm">SAYORA FESTIVAL</span>
+                            </div>
+                            ${data.type === 'vip' ? '<span class="vip-badge">VIP</span>' : ''}
                         </div>
-                        <p class="text-5xl font-bold mb-6">${(data.price || 0).toLocaleString()}<span class="text-2xl font-normal text-gray-400"> ₪</span></p>
-                        <ul class="space-y-2 text-gray-300">${benefitsList}</ul>
+                        <div class="flex-grow">
+                            <h3 class="text-3xl font-bold ${data.type === 'vip' ? 'text-gold' : 'text-white'} mb-4">${data.name}</h3>
+                            <p class="text-5xl font-bold mb-6">${(data.price || 0).toLocaleString()}<span class="text-2xl font-normal text-gray-400"> ₪</span></p>
+                            <ul class="space-y-2 text-gray-300">${benefitsList}</ul>
+                        </div>
+                    </div>
+                    <div class="ticket-rip"></div>
+                    <div class="ticket-footer">
+                        <div class="flex justify-end gap-4">
+                            <button data-id="${id}" class="edit-btn text-blue-400 hover:text-blue-300 transition-colors text-sm flex items-center gap-1"><i class="fas fa-edit"></i> עריכה</button>
+                            <button data-id="${id}" data-name="${data.name}" class="delete-btn text-red-500 hover:text-red-400 transition-colors text-sm flex items-center gap-1"><i class="fas fa-trash"></i> מחיקה</button>
+                        </div>
                     </div>
                 </div>
-                <div class="ticket-rip"></div>
-                <div class="ticket-footer">
-                    <div class="text-xs text-gray-400">SAYORA FESTIVAL</div>
-                    <div class="flex justify-end gap-4">
-                         <button data-id="${id}" class="edit-btn text-blue-400 hover:text-blue-300 transition-colors text-sm flex items-center gap-1"><i class="fas fa-edit"></i> עריכה</button>
-                         <button data-id="${id}" data-name="${data.name}" class="delete-btn text-red-500 hover:text-red-400 transition-colors text-sm flex items-center gap-1"><i class="fas fa-trash"></i> מחיקה</button>
+                <div class="sold-count-editor">
+                    <p class="text-sm text-gray-400 mb-1">כמות שנמכרה</p>
+                    <div data-id="${id}" class="text-2xl font-bold text-white">
+                        <span class="count-display editable-count p-2 rounded-md transition-colors">${(data.soldCount || 0).toLocaleString()}</span>
+                        <input type="number" value="${data.soldCount || 0}" class="count-input hidden w-24 text-center bg-gray-600 rounded-md p-2">
                     </div>
                 </div>
             `;
             
             // Event Listeners
-            cardWrapper.querySelector('.edit-btn').addEventListener('click', () => openModal(id, data));
-            cardWrapper.querySelector('.delete-btn').addEventListener('click', e => {
+            wrapper.querySelector('.edit-btn').addEventListener('click', () => openModal(id, data));
+            wrapper.querySelector('.delete-btn').addEventListener('click', e => {
                 const ticketId = e.currentTarget.dataset.id;
                 const ticketName = e.currentTarget.dataset.name;
                 showConfirmModal(`האם אתה בטוח שברצונך למחוק את הכרטיס "${ticketName}"?`, () => {
@@ -378,8 +398,8 @@
                 });
             });
             
-            const countDisplay = cardWrapper.querySelector('.editable-count');
-            const countInput = cardWrapper.querySelector('.count-input');
+            const countDisplay = wrapper.querySelector('.count-display');
+            const countInput = wrapper.querySelector('.count-input');
 
             countDisplay.addEventListener('click', () => {
                 countDisplay.classList.add('hidden');
@@ -409,7 +429,7 @@
                 }
             });
 
-            return cardWrapper;
+            return wrapper;
         }
 
         // --- Custom Confirm Modal Logic ---
