@@ -42,12 +42,16 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease-in-out;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
         }
         .modal-backdrop.is-open {
             opacity: 1;
             pointer-events: auto;
         }
         .modal-content {
+            background-color: #1a1a1a;
+            border: 1px solid #FFD700;
             transform: scale(0.95);
             opacity: 0;
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
@@ -171,8 +175,8 @@
                          <p class="text-gray-300"><i class="fas fa-info-circle text-gold ml-2"></i>כאן תוכלו לנהל את כל הספקים והצעות המחיר של הפסטיבל. לחצו על כרטיסיה כדי לראות פרטים מלאים.</p>
                     </div>
 
-                    <div id="data-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        <!-- Supplier and Quote cards will be injected here -->
+                    <div id="data-container" class="space-y-12">
+                        <!-- Grouped sections will be injected here -->
                     </div>
                 </div>
             </main>
@@ -180,12 +184,13 @@
     </div>
     
     <!-- Modals -->
-    <div id="form-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-black/80 backdrop-blur-sm">
-        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto border border-gold">
-            <form id="data-form" class="p-8 bg-[#1a1a1a] rounded-lg">
+    <div id="form-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto">
+            <form id="data-form" class="p-8">
                 <h2 id="form-modal-title" class="text-3xl font-bold text-gold mb-6 text-center">טופס</h2>
                 <input type="hidden" id="data-id">
                 <input type="hidden" id="data-type">
+                <input type="hidden" id="is-conversion">
 
                 <!-- Step 1 -->
                 <div id="form-step-1" class="form-step active space-y-6">
@@ -266,8 +271,8 @@
         </div>
     </div>
     
-    <div id="view-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-black/80 backdrop-blur-sm">
-        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto p-8 bg-[#1a1a1a] border border-gold">
+    <div id="view-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-2xl rounded-lg shadow-2xl shadow-gold/20 max-h-[90vh] overflow-y-auto p-8">
             <div id="view-modal-content"></div>
             <div class="flex justify-end gap-4 pt-6 mt-6 border-t border-gray-700">
                 <button type="button" id="view-modal-close-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 btn-active">סגור</button>
@@ -278,8 +283,8 @@
         </div>
     </div>
 
-    <div id="category-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-backdrop bg-black/80 backdrop-blur-sm">
-        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl p-8 bg-[#1a1a1a] border border-gold">
+    <div id="category-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl p-8">
             <h2 class="text-2xl font-bold text-gold mb-4">ניהול קטגוריות</h2>
             <div id="category-list" class="space-y-2 max-h-60 overflow-y-auto mb-4"></div>
             <div class="flex items-center gap-2">
@@ -292,8 +297,8 @@
         </div>
     </div>
     
-    <div id="confirmation-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 modal-backdrop bg-black/80 backdrop-blur-sm">
-        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl p-8 text-center bg-[#1a1a1a] border border-gold">
+    <div id="confirmation-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 modal-backdrop">
+        <div class="modal-content w-full max-w-md rounded-lg shadow-2xl p-8 text-center">
             <p id="confirmation-message" class="text-lg mb-6"></p>
             <div class="flex justify-center gap-4">
                 <button id="confirm-cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 btn-active">ביטול</button>
@@ -328,21 +333,21 @@
         
         const loader = document.getElementById('loader');
         const appContainer = document.getElementById('app-container');
+        const allModals = document.querySelectorAll('.modal-backdrop');
+        const dataContainer = document.getElementById('data-container');
         const formModal = document.getElementById('form-modal');
-        const viewModal = document.getElementById('view-modal');
-        const categoryModal = document.getElementById('category-modal');
-        const confirmationModal = document.getElementById('confirmation-modal');
         const dataForm = document.getElementById('data-form');
         let currentStep = 1;
 
-
         // --- Modal Helper Functions ---
         function openModal(modal) {
-            modal.classList.add('is-open');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('is-open'), 10);
         }
 
         function closeModal(modal) {
             modal.classList.remove('is-open');
+            setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
         // --- Authentication & Data Listeners ---
@@ -351,48 +356,34 @@
                 loader.style.display = 'none';
                 appContainer.classList.remove('hidden');
                 document.getElementById('welcome-msg').textContent = `ברוך הבא, ${user.email.split('@')[0]}`;
-                setupListeners();
+                setupDataListeners();
+                setupEventListeners();
             } else {
                 window.location.href = 'index.html';
             }
         });
         
-        function setupListeners() {
+        function setupDataListeners() {
             onSnapshot(collection(db, 'suppliers'), snapshot => {
                 suppliers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderGrid();
+                renderGroupedGrid();
             });
             onSnapshot(collection(db, 'priceQuotes'), snapshot => {
                 quotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderGrid();
+                renderGroupedGrid();
             });
             onSnapshot(collection(db, 'supplierCategories'), snapshot => {
                 categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.name.localeCompare(b.name));
                 populateCategorySelect();
-                populateCategoryEditor();
+                const categoryEditor = document.getElementById('category-modal');
+                if (categoryEditor.classList.contains('is-open')) {
+                    populateCategoryEditor();
+                }
+                renderGroupedGrid();
             });
         }
         
         // --- UI Rendering ---
-        function renderGrid() {
-            const grid = document.getElementById('data-grid');
-            grid.innerHTML = '';
-            const allItems = [
-                ...suppliers.map(s => ({...s, itemType: 'supplier'})),
-                ...quotes.map(q => ({...q, itemType: 'quote'}))
-            ].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-
-            if (allItems.length === 0) {
-                 grid.innerHTML = `<p class="text-gray-400 col-span-full text-center mt-8">לא נמצאו ספקים או הצעות מחיר. נסו להוסיף אחד חדש!</p>`;
-                 return;
-            }
-
-            allItems.forEach(item => {
-                const card = createCard(item.id, item, item.itemType);
-                grid.appendChild(card);
-            });
-        }
-        
         function createCard(id, data, type) {
             const card = document.createElement('div');
             let statusClass = 'status-default';
@@ -440,21 +431,77 @@
             return card;
         }
 
+        function renderGroupedGrid() {
+            dataContainer.innerHTML = '';
+
+            const renderSection = (title, items, type) => {
+                const sectionEl = document.createElement('div');
+                if (items.length === 0) return null;
+
+                sectionEl.innerHTML = `<h2 class="text-3xl font-bold text-gold mb-4 pb-2 border-b border-gold/20">${title}</h2>`;
+
+                const groupedByCategory = items.reduce((acc, item) => {
+                    const categoryId = item.categoryId || 'uncategorized';
+                    if (!acc[categoryId]) acc[categoryId] = [];
+                    acc[categoryId].push(item);
+                    return acc;
+                }, {});
+                
+                const sortedCategoryIds = Object.keys(groupedByCategory).sort((a, b) => {
+                    if (a === 'uncategorized') return 1;
+                    if (b === 'uncategorized') return -1;
+                    const nameA = categories.find(c => c.id === a)?.name || '';
+                    const nameB = categories.find(c => c.id === b)?.name || '';
+                    return nameA.localeCompare(nameB);
+                });
+
+                sortedCategoryIds.forEach(categoryId => {
+                    const categoryItems = groupedByCategory[categoryId];
+                    const categoryName = (categories.find(c => c.id === categoryId)?.name) || 'ללא קטגוריה';
+                    
+                    const categoryWrapper = document.createElement('div');
+                    categoryWrapper.className = 'mb-8';
+                    categoryWrapper.innerHTML = `<h3 class="text-xl font-semibold text-gray-300 mb-3">${categoryName}</h3>`;
+                    
+                    const itemsGrid = document.createElement('div');
+                    itemsGrid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
+                    categoryItems.forEach(item => itemsGrid.appendChild(createCard(item.id, item, type)));
+                    
+                    categoryWrapper.appendChild(itemsGrid);
+                    sectionEl.appendChild(categoryWrapper);
+                });
+                return sectionEl;
+            };
+            
+            const quotesSection = renderSection('הצעות מחיר', quotes, 'quote');
+            const suppliersSection = renderSection('ספקים', suppliers, 'supplier');
+
+            if (quotesSection) dataContainer.appendChild(quotesSection);
+            if (suppliersSection) dataContainer.appendChild(suppliersSection);
+
+            if (!quotesSection && !suppliersSection) {
+                dataContainer.innerHTML = `<p class="text-gray-400 col-span-full text-center mt-8">לא נמצאו ספקים או הצעות מחיר. נסו להוסיף אחד חדש!</p>`;
+            }
+        }
+
+
         // --- Main Form Modal (Add/Edit) ---
         function openFormModal(id, type, isConversion = false) {
             dataForm.reset();
             currentStep = 1;
             updateStepVisibility();
             
-            const itemData = id ? (type === 'supplier' ? suppliers : quotes).find(item => item.id === id) || {} : {};
+            const sourceDataArray = isConversion ? quotes : (type === 'supplier' ? suppliers : quotes);
+            const itemData = id ? sourceDataArray.find(item => item.id === id) || {} : {};
             
             document.getElementById('data-id').value = id || '';
             document.getElementById('data-type').value = type;
-            
+            document.getElementById('is-conversion').value = isConversion;
+
             let title = '';
-            if (!id) title = type === 'supplier' ? 'הוספת ספק חדש' : 'הוספת הצעת מחיר';
+            if (!id && !isConversion) title = type === 'supplier' ? 'הוספת ספק חדש' : 'הוספת הצעת מחיר';
+            else if (isConversion) title = 'הפיכת הצעת מחיר לספק';
             else title = type === 'supplier' ? 'עריכת ספק' : 'עריכת הצעת מחיר';
-            if (isConversion) title = 'הפיכת הצעת מחיר לספק';
             document.getElementById('form-modal-title').textContent = title;
 
             // Pre-filling form data
@@ -467,14 +514,14 @@
             document.getElementById('contact-details').value = itemData.contactDetails || '';
             document.getElementById('price').value = itemData.price || '';
             
-            if (type === 'supplier' && !isConversion) {
+            if (type === 'supplier') {
                 document.querySelector(`input[name="finalized"][value="${itemData.isFinalized ? 'yes' : 'no'}"]`).checked = true;
                 document.getElementById('pending-details').value = itemData.pendingDetails || '';
                 document.getElementById('agreement-link').value = itemData.agreementLink || '';
             }
 
             handleConditionalFormFields();
-            openModal(formModal);
+            openModal(document.getElementById('form-modal'));
         }
         
         function updateStepVisibility() {
@@ -492,9 +539,11 @@
             const isContacted = document.querySelector('input[name="contacted"]:checked').value === 'yes';
             document.getElementById('contacted-yes-fields').classList.toggle('hidden', !isContacted);
             
-            const isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
-            document.getElementById('finalized-no-field').classList.toggle('hidden', isFinalized);
-            document.getElementById('finalized-yes-field').classList.toggle('hidden', !isFinalized);
+            if(type === 'supplier') {
+                const isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
+                document.getElementById('finalized-no-field').classList.toggle('hidden', isFinalized);
+                document.getElementById('finalized-yes-field').classList.toggle('hidden', !isFinalized);
+            }
 
             const supplierType = document.querySelector('input[name="data-type-radio"]:checked').value;
             document.getElementById('price-field').style.display = supplierType === 'regular' ? 'block' : 'none';
@@ -503,7 +552,7 @@
 
         function openViewModal(id, type) {
             const data = (type === 'supplier' ? suppliers : quotes).find(item => item.id === id);
-            if (!data) return; // Prevent errors if data not found
+            if (!data) return;
             dataToViewOrEdit = { id, type, ...data };
             const categoryName = categories.find(c => c.id === data.categoryId)?.name || 'ללא קטגוריה';
             let content = `
@@ -534,16 +583,18 @@
             content += `</div>`;
             document.getElementById('view-modal-content').innerHTML = content;
             document.getElementById('view-modal-convert-btn').classList.toggle('hidden', type !== 'quote');
-            openModal(viewModal);
+            openModal(document.getElementById('view-modal'));
         }
         
         function populateCategorySelect() {
             const select = document.getElementById('category-select');
+            const currentVal = select.value;
             select.innerHTML = '<option value="">בחר קטגוריה...</option>';
             categories.forEach(cat => {
                 select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
             });
             select.innerHTML += '<option value="add_new">-- הוסף קטגוריה חדשה --</option>';
+            select.value = currentVal;
         }
 
         function populateCategoryEditor() {
@@ -563,15 +614,13 @@
         function showConfirmation(message, onConfirm) {
             document.getElementById('confirmation-message').textContent = message;
             const confirmBtn = document.getElementById('confirm-action-btn');
-            
             const newConfirmBtn = confirmBtn.cloneNode(true);
             confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-            
             newConfirmBtn.addEventListener('click', () => {
                 onConfirm();
-                closeModal(confirmationModal);
+                closeModal(document.getElementById('confirmation-modal'));
             });
-            openModal(confirmationModal);
+            openModal(document.getElementById('confirmation-modal'));
         }
         
         // --- Event Listeners Setup ---
@@ -579,20 +628,19 @@
             document.getElementById('add-supplier-btn').addEventListener('click', () => openFormModal(null, 'supplier'));
             document.getElementById('add-quote-btn').addEventListener('click', () => openFormModal(null, 'quote'));
             
-            document.getElementById('form-cancel-btn').addEventListener('click', () => closeModal(formModal));
+            allModals.forEach(modal => {
+                 document.getElementById(modal.id.replace('-modal', '-cancel-btn'))?.addEventListener('click', () => closeModal(modal));
+                 document.getElementById(modal.id.replace('-modal', '-close-btn'))?.addEventListener('click', () => closeModal(modal));
+            });
             
             document.getElementById('form-next-btn').addEventListener('click', () => { currentStep = 2; updateStepVisibility(); });
             document.getElementById('form-back-btn').addEventListener('click', () => { currentStep = 1; updateStepVisibility(); });
             dataForm.addEventListener('change', handleConditionalFormFields);
             
-            document.getElementById('view-modal-close-btn').addEventListener('click', () => closeModal(viewModal));
-            
             document.getElementById('view-modal-edit-btn').addEventListener('click', () => {
                 if (!dataToViewOrEdit) return;
-                closeModal(viewModal);
-                setTimeout(() => { // Timeout ensures smooth transition
-                    openFormModal(dataToViewOrEdit.id, dataToViewOrEdit.type);
-                }, 300); 
+                closeModal(document.getElementById('view-modal'));
+                setTimeout(() => openFormModal(dataToViewOrEdit.id, dataToViewOrEdit.type), 300); 
             });
             
             document.getElementById('view-modal-delete-btn').addEventListener('click', () => {
@@ -600,25 +648,26 @@
                  showConfirmation(`האם למחוק את "${dataToViewOrEdit.name}"?`, () => {
                     const collectionName = dataToViewOrEdit.type === 'supplier' ? 'suppliers' : 'priceQuotes';
                     deleteDoc(doc(db, collectionName, dataToViewOrEdit.id));
-                    closeModal(viewModal);
+                    closeModal(document.getElementById('view-modal'));
                 });
             });
             
             document.getElementById('view-modal-convert-btn').addEventListener('click', () => {
                 if (!dataToViewOrEdit) return;
-                closeModal(viewModal);
-                 setTimeout(() => {
-                    openFormModal(dataToViewOrEdit.id, 'supplier', true);
-                }, 300);
+                closeModal(document.getElementById('view-modal'));
+                 setTimeout(() => openFormModal(dataToViewOrEdit.id, 'supplier', true), 300);
             });
 
-            document.getElementById('edit-categories-btn').addEventListener('click', () => openModal(categoryModal));
-            document.getElementById('close-category-modal-btn').addEventListener('click', () => closeModal(categoryModal));
+            document.getElementById('edit-categories-btn').addEventListener('click', () => {
+                populateCategoryEditor();
+                openModal(document.getElementById('category-modal'));
+            });
             
             document.getElementById('category-select').addEventListener('change', e => {
                 if (e.target.value === 'add_new') {
-                    openModal(categoryModal);
                     e.target.value = ''; 
+                    populateCategoryEditor();
+                    openModal(document.getElementById('category-modal'));
                 }
             });
 
@@ -642,10 +691,8 @@
                 }
             });
             
-            document.getElementById('confirm-cancel-btn').addEventListener('click', () => closeModal(confirmationModal));
             document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-            // --- Mobile Sidebar Listeners ---
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
             document.getElementById('hamburger-btn').addEventListener('click', () => {
@@ -659,16 +706,14 @@
             document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
             sidebarOverlay.addEventListener('click', closeSidebar);
         }
-        setupEventListeners();
 
         // --- Form Submission Logic ---
         dataForm.addEventListener('submit', async e => {
             e.preventDefault();
             const id = document.getElementById('data-id').value;
             const type = document.getElementById('data-type').value;
-            const collectionName = type === 'supplier' ? 'suppliers' : 'priceQuotes';
-            const isOriginalQuote = dataToViewOrEdit && dataToViewOrEdit.type === 'quote' && type === 'supplier';
-
+            const isConversion = document.getElementById('is-conversion').value === 'true';
+            
             const formData = {
                 name: document.getElementById('data-name').value,
                 categoryId: document.getElementById('category-select').value,
@@ -687,15 +732,19 @@
             }
             
             try {
-                if (id && !isOriginalQuote) {
+                if (isConversion) {
+                    await addDoc(collection(db, 'suppliers'), formData);
+                    if (id) {
+                       await deleteDoc(doc(db, 'priceQuotes', id));
+                    }
+                } else if (id) {
+                    const collectionName = type === 'supplier' ? 'suppliers' : 'priceQuotes';
                     await setDoc(doc(db, collectionName, id), formData);
                 } else {
-                    await addDoc(collection(db, 'suppliers'), formData);
-                    if (isOriginalQuote) {
-                        await deleteDoc(doc(db, 'priceQuotes', dataToViewOrEdit.id));
-                    }
+                    const collectionName = type === 'supplier' ? 'suppliers' : 'priceQuotes';
+                    await addDoc(collection(db, collectionName), formData);
                 }
-                closeModal(formModal);
+                closeModal(document.getElementById('form-modal'));
                 dataToViewOrEdit = null;
             } catch (error) {
                 console.error("Error saving data: ", error);
