@@ -26,12 +26,21 @@
         .modal-content { background-color: #1a1a1a; border: 1px solid #FFD700; }
         .input-field {
             background-color: #2a2a2a; border: 1px solid #444; color: #E0E0E0;
-            width: 100%; padding: 0.75rem; border-radius: 0.5rem; text-align: center; letter-spacing: 0.5em;
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+            text-align: right; /* Changed from center to right for better UX */
         }
         .input-field:focus {
             outline: none; border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
-        .table-container { border: 1px solid rgba(255, 215, 0, 0.2); background-color: rgba(26, 26, 26, 0.7); backdrop-filter: blur(10px); }
+        .table-container { 
+            border: 1px solid rgba(255, 215, 0, 0.2); 
+            background-color: rgba(26, 26, 26, 0.7); 
+            backdrop-filter: blur(10px);
+            width: 100%;
+        }
+        .verification-input {
+             text-align: center; letter-spacing: 0.5em;
+        }
     </style>
 </head>
 <body class="bg-black">
@@ -84,7 +93,7 @@
             </aside>
 
             <main class="flex-1 p-6 sm:p-8 min-h-screen">
-                <div class="max-w-4xl mx-auto">
+                <div class="max-w-6xl mx-auto">
                     <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
                         <h1 class="text-4xl sm:text-5xl font-bold text-gold">ניהול משתמשים</h1>
                         <div class="flex gap-3">
@@ -99,13 +108,14 @@
                         </div>
                     </div>
                     
-                    <div class="table-container rounded-lg overflow-hidden">
-                        <table class="w-full text-right">
-                            <thead class="bg-gray-800">
+                    <!-- UPDATED TABLE CONTAINER: Added overflow-x-auto -->
+                    <div class="table-container rounded-lg overflow-x-auto">
+                        <table class="w-full text-right min-w-max sm:min-w-full">
+                            <thead class="bg-black/40">
                                 <tr>
-                                    <th class="p-4 font-semibold">שם מלא</th>
-                                    <th class="p-4 font-semibold">אימייל</th>
-                                    <th class="p-4 font-semibold">פעולות</th>
+                                    <th class="p-4 font-medium text-gray-300 uppercase tracking-wider text-sm">שם מלא</th>
+                                    <th class="p-4 font-medium text-gray-300 uppercase tracking-wider text-sm">אימייל</th>
+                                    <th class="p-4 font-medium text-gray-300 uppercase tracking-wider text-sm text-left">פעולות</th>
                                 </tr>
                             </thead>
                             <tbody id="users-table-body">
@@ -124,7 +134,7 @@
         <div class="modal-content w-full max-w-sm rounded-lg shadow-2xl shadow-gold/20">
             <form id="verification-form" class="p-8">
                 <h2 class="text-3xl font-bold text-gold mb-6 text-center">קוד אימות</h2>
-                <input type="password" id="verification-code-input" class="input-field" maxlength="4" required pattern="\d{4}" inputmode="numeric">
+                <input type="password" id="verification-code-input" class="input-field verification-input" maxlength="4" required pattern="\d{4}" inputmode="numeric">
                 <p id="verification-error" class="text-red-400 h-5 text-center mt-2"></p>
                 <button type="submit" class="btn-gold font-bold py-2 px-6 rounded-lg w-full mt-6">כניסה</button>
             </form>
@@ -138,11 +148,11 @@
                 <h2 id="setup-code-title" class="text-3xl font-bold text-gold mb-4 text-center">הגדרת קוד אימות</h2>
                 <div>
                     <label for="new-code" class="block text-sm font-medium text-gray-300 mb-1">קוד חדש (4 ספרות)</label>
-                    <input type="password" id="new-code" class="input-field" maxlength="4" required pattern="\d{4}" inputmode="numeric">
+                    <input type="password" id="new-code" class="input-field verification-input" maxlength="4" required pattern="\d{4}" inputmode="numeric">
                 </div>
                 <div>
                     <label for="confirm-new-code" class="block text-sm font-medium text-gray-300 mb-1">אימות קוד</label>
-                    <input type="password" id="confirm-new-code" class="input-field" maxlength="4" required pattern="\d{4}" inputmode="numeric">
+                    <input type="password" id="confirm-new-code" class="input-field verification-input" maxlength="4" required pattern="\d{4}" inputmode="numeric">
                 </div>
                 <p id="setup-code-error" class="text-red-400 h-5 text-center pt-2"></p>
                 <div class="flex justify-end gap-4 pt-4">
@@ -160,19 +170,23 @@
                 <h2 class="text-3xl font-bold text-gold mb-4 text-center">הוספת משתמש חדש</h2>
                 <div>
                     <label for="full-name" class="block text-sm font-medium text-gray-300 mb-1">שם מלא</label>
-                    <input type="text" id="full-name" class="input-field" style="letter-spacing: normal;" required>
+                    <!-- UPDATED: Added autocomplete="off" -->
+                    <input type="text" id="full-name" class="input-field" required autocomplete="off">
                 </div>
                 <div>
                     <label for="user-email" class="block text-sm font-medium text-gray-300 mb-1">אימייל</label>
-                    <input type="email" id="user-email" class="input-field" style="letter-spacing: normal;" required>
+                    <!-- UPDATED: Added autocomplete="off" -->
+                    <input type="email" id="user-email" class="input-field" required autocomplete="off">
                 </div>
                 <div>
                     <label for="user-password" class="block text-sm font-medium text-gray-300 mb-1">סיסמה</label>
-                    <input type="password" id="user-password" class="input-field" style="letter-spacing: normal;" required autocomplete="new-password">
+                    <!-- UPDATED: Kept autocomplete="new-password" to hint at creating a new password -->
+                    <input type="password" id="user-password" class="input-field" required autocomplete="new-password">
                 </div>
                 <div>
                     <label for="confirm-password" class="block text-sm font-medium text-gray-300 mb-1">אימות סיסמה</label>
-                    <input type="password" id="confirm-password" class="input-field" style="letter-spacing: normal;" required autocomplete="new-password">
+                    <!-- UPDATED: Kept autocomplete="new-password" -->
+                    <input type="password" id="confirm-password" class="input-field" required autocomplete="new-password">
                 </div>
                 <p id="modal-error" class="text-red-400 h-5 text-center"></p>
                 <div class="flex justify-end gap-4 pt-4">
@@ -265,7 +279,6 @@
                     openModal(verificationModal);
                 } else {
                     openModal(setupCodeModal);
-                    // Hide cancel button on first setup
                     document.getElementById('cancel-setup-btn').classList.add('hidden');
                 }
             } catch (error) {
@@ -281,7 +294,6 @@
         // --- Event Listeners ---
         logoutBtn.addEventListener('click', () => { signOut(auth); });
 
-        // Verification Form
         verificationForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const enteredCode = verificationCodeInput.value;
@@ -296,7 +308,6 @@
             }
         });
 
-        // Setup Code Form
         setupCodeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const newCode = document.getElementById('new-code').value;
@@ -317,7 +328,6 @@
                 await setDoc(settingsRef, { verificationCode: newCode });
                 correctVerificationCode = newCode;
                 closeModal(setupCodeModal);
-                // If the app is hidden, it means this was the first time setup
                 if(appContainer.classList.contains('hidden')){
                     showMainContent();
                 }
@@ -327,17 +337,14 @@
             }
         });
 
-        // Add User Form
         userForm.addEventListener('submit', handleAddUserSubmit);
         
-        // Buttons
         addUserBtn.addEventListener('click', () => openModal(userModal));
         editCodeBtn.addEventListener('click', () => {
              document.getElementById('setup-code-title').textContent = 'עריכת קוד אימות';
              document.getElementById('cancel-setup-btn').classList.remove('hidden');
              openModal(setupCodeModal)
         });
-
 
         // --- User Data Logic ---
         function loadUsers() {
@@ -349,19 +356,22 @@
             });
         }
 
+        // UPDATED: Function with improved styling
         function createUserRow(id, data) {
             const tr = document.createElement('tr');
-            tr.className = 'border-b border-gray-800';
+            tr.className = 'border-b border-gray-800 hover:bg-white/5 transition-colors';
             tr.innerHTML = `
-                <td class="p-4 font-semibold text-white">${data.fullName}</td>
-                <td class="p-4 text-gray-300">${data.email}</td>
-                <td class="p-4">
-                    <button data-id="${id}" data-name="${data.fullName}" class="delete-btn text-red-500 hover:text-red-400 transition-colors">
-                        <i class="fas fa-trash"></i> מחיקה
+                <td class="p-4 font-medium text-white">${data.fullName}</td>
+                <td class="p-4 text-gray-300 break-words">${data.email}</td>
+                <td class="p-4 text-left">
+                    <button data-id="${id}" data-name="${data.fullName}" class="delete-btn text-red-500 hover:text-red-400 font-medium py-1 px-2 rounded-md hover:bg-red-500/10 transition-colors flex items-center gap-1.5">
+                        <i class="fas fa-trash"></i>
+                        <span>מחיקה</span>
                     </button>
                 </td>`;
             tr.querySelector('.delete-btn').addEventListener('click', (e) => {
-                openDeleteModal(e.currentTarget.dataset.id, e.currentTarget.dataset.name);
+                const button = e.target.closest('button');
+                openDeleteModal(button.dataset.id, button.dataset.name);
             });
             return tr;
         }
@@ -413,12 +423,10 @@
         function closeModal(modal) {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-            // Reset forms inside modals when closed
             const form = modal.querySelector('form');
             if(form) form.reset();
         }
         
-        // Setup modal close buttons
         document.getElementById('cancel-user-btn').addEventListener('click', () => closeModal(userModal));
         document.getElementById('cancel-delete-btn').addEventListener('click', () => closeModal(deleteModal));
         document.getElementById('cancel-setup-btn').addEventListener('click', () => closeModal(setupCodeModal));
@@ -429,8 +437,11 @@
         function openDeleteModal(id, name) {
             const confirmBtn = document.getElementById('confirm-delete-btn');
             document.getElementById('delete-confirm-text').textContent = `האם אתה בטוח שברצונך למחוק את "${name}" מהרשימה?`;
-            confirmBtn.onclick = () => {
-                deleteDoc(doc(db, "users", id));
+            confirmBtn.onclick = async () => {
+                // Note: Deleting a user from Firestore doesn't delete them from Firebase Auth.
+                // This would require a backend function for security reasons.
+                // The current implementation only removes them from the visible list.
+                await deleteDoc(doc(db, "users", id));
                 closeModal(deleteModal);
             };
             openModal(deleteModal);
@@ -447,5 +458,4 @@
     </script>
 </body>
 </html>
-
 
