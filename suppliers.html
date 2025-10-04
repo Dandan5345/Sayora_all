@@ -350,6 +350,20 @@
                              <label for="price" class="block text-sm font-medium text-gray-300 mb-1">מה המחיר שסוכם?</label>
                             <input type="number" id="price" class="input-field">
                         </div>
+                        <!-- NEW: Advance Payment Section -->
+                        <div id="advance-payment-section" class="hidden space-y-2">
+                             <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">האם שולמה מקדמה?</label>
+                                <div class="flex gap-4">
+                                    <label class="flex items-center"><input type="radio" name="advance-paid" value="yes" class="ml-2"> כן</label>
+                                    <label class="flex items-center"><input type="radio" name="advance-paid" value="no" class="ml-2" checked> לא</label>
+                                </div>
+                            </div>
+                            <div id="advance-amount-field" class="hidden">
+                                <label for="advance-amount" class="block text-sm font-medium text-gray-300 mb-1">כמה שולם?</label>
+                                <input type="number" id="advance-amount" class="input-field">
+                            </div>
+                        </div>
                     </div>
 
                     <div id="finalized-section">
@@ -578,6 +592,11 @@
         const finalizedNoField = document.getElementById('finalized-no-field');
         const pendingDetailsInput = document.getElementById('pending-details');
         const agreementLinkInput = document.getElementById('agreement-link');
+
+        // NEW: Advance Payment Fields
+        const advancePaymentSection = document.getElementById('advance-payment-section');
+        const advanceAmountField = document.getElementById('advance-amount-field');
+        const advanceAmountInput = document.getElementById('advance-amount');
 
         // View Modal
         const viewModal = document.getElementById('view-modal');
@@ -852,6 +871,8 @@
             card.dataset.type = type;
 
             const updatedBy = getUserNameByEmail(data.lastEditor);
+            const balance = (data.price && data.advancePaid) ? data.price - (data.advanceAmount || 0) : null;
+
 
             card.innerHTML = `
                 <div class="flex-grow">
@@ -865,6 +886,8 @@
                         <p><i class="fas fa-user-tie fa-fw ml-2 text-gray-500"></i> <strong>מנהל מטפל:</strong> ${data.managingUserName || 'לא הוזן'}</p>
                         <p><i class="fas fa-phone fa-fw ml-2 text-gray-500"></i> ${data.phone || 'לא הוזן'}</p>
                         ${data.type === 'regular' && data.price ? `<p><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i> <strong>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>` : ''}
+                        ${(type === 'supplier' && data.advancePaid) ? `<p><i class="fas fa-hand-holding-usd fa-fw ml-2 text-green-400"></i> <strong>מקדמה שולמה:</strong> ${(data.advanceAmount || 0).toLocaleString()} ₪</p>` : ''}
+                        ${(balance !== null) ? `<p><i class="fas fa-file-invoice-dollar fa-fw ml-2 text-orange-400"></i> <strong>יתרה לתשלום:</strong> ${balance.toLocaleString()} ₪</p>`: ''}
                         <p><i class="fas fa-info-circle fa-fw ml-2 text-gray-500"></i> <strong>סטטוס:</strong> <span class="${statusColor}">${statusText}</span></p>
                         ${(type === 'supplier' && !data.isFinalized && data.pendingDetails) ? `<p><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i> <strong>פתוח:</strong> ${data.pendingDetails}</p>` : ''}
                     </div>
@@ -904,6 +927,9 @@
                     document.querySelector(`input[name="finalized"][value="${data.isFinalized ? 'yes' : 'no'}"]`).checked = true;
                     pendingDetailsInput.value = data.pendingDetails || '';
                     agreementLinkInput.value = data.agreementLink || '';
+                    // NEW: Populate advance payment
+                    document.querySelector(`input[name="advance-paid"][value="${data.advancePaid ? 'yes' : 'no'}"]`).checked = true;
+                    advanceAmountInput.value = data.advanceAmount || '';
                 }
             }
 
@@ -972,6 +998,8 @@
             } else if (data.contacted) { statusColor = 'text-blue-400'; statusText = 'נוצר קשר'; }
             
             const updatedBy = getUserNameByEmail(data.lastEditor);
+            const balance = (data.price && data.advancePaid) ? data.price - (data.advanceAmount || 0) : null;
+
 
             let contentHTML = `
                 <div class="flex justify-between items-start mb-4">
@@ -988,6 +1016,8 @@
 
             if (data.contacted) contentHTML += `<p><strong><i class="fas fa-file-alt fa-fw ml-2 text-gray-500"></i>פרטי סיכום:</strong> <span class="whitespace-pre-wrap">${data.contactDetails || 'אין פרטים'}</span></p>`;
             if (data.type === 'regular' && data.price) contentHTML += `<p><strong><i class="fas fa-dollar-sign fa-fw ml-2 text-gray-500"></i>מחיר:</strong> ${data.price.toLocaleString()} ₪</p>`;
+            if (type === 'supplier' && data.advancePaid) contentHTML += `<p><strong><i class="fas fa-hand-holding-usd fa-fw ml-2 text-green-400"></i>מקדמה שולמה:</strong> ${(data.advanceAmount || 0).toLocaleString()} ₪</p>`;
+            if (balance !== null) contentHTML += `<p><strong><i class="fas fa-file-invoice-dollar fa-fw ml-2 text-orange-400"></i>יתרה לתשלום:</strong> ${balance.toLocaleString()} ₪</p>`;
             if (type === 'supplier' && !data.isFinalized && data.pendingDetails) contentHTML += `<p><strong><i class="fas fa-exclamation-triangle fa-fw ml-2 text-yellow-500"></i>מה שפתוח:</strong> ${data.pendingDetails}</p>`;
             if (type === 'supplier' && data.isFinalized && data.agreementLink) contentHTML += `<p><strong><i class="fas fa-link fa-fw ml-2 text-gray-500"></i>קישור להסכם:</strong> <a href="${data.agreementLink}" target="_blank" class="text-blue-400 hover:underline">פתח קישור</a></p>`;
             if (data.lastEditor) contentHTML += `<p class="mt-4"><strong><i class="fas fa-user-edit fa-fw ml-2 text-gray-500"></i>עודכן לאחרונה ע"י:</strong> ${updatedBy}</p>`;
@@ -1050,6 +1080,9 @@
                 data.isFinalized = document.querySelector('input[name="finalized"]:checked').value === 'yes';
                 data.pendingDetails = data.isFinalized ? '' : pendingDetailsInput.value;
                 data.agreementLink = data.isFinalized ? agreementLinkInput.value : '';
+                // NEW: Save advance payment data
+                data.advancePaid = document.querySelector('input[name="advance-paid"]:checked').value === 'yes';
+                data.advanceAmount = data.advancePaid ? (parseInt(advanceAmountInput.value) || 0) : null;
             }
 
             try {
@@ -1145,6 +1178,12 @@
             const supplierType = document.querySelector('input[name="supplier-type"]:checked').value;
             priceField.classList.toggle('hidden', supplierType !== 'regular');
             supplierProvidesLabel.textContent = supplierType === 'regular' ? 'מה מספקים?' : 'מה הספונסר מספק?';
+
+            // NEW: Show/hide advance payment section logic
+            const formType = formTypeInput.value;
+            advancePaymentSection.classList.toggle('hidden', formType !== 'supplier' || !isContacted || supplierType !== 'regular');
+            const hasPaidAdvance = document.querySelector('input[name="advance-paid"]:checked').value === 'yes';
+            advanceAmountField.classList.toggle('hidden', !hasPaidAdvance);
         }
         mainForm.addEventListener('change', handleConditionalFields);
 
